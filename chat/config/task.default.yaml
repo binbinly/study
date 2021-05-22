@@ -1,0 +1,46 @@
+logger:
+  Development: false
+  DisableCaller: false
+  DisableStacktrace: false
+  Encoding: json                          # json or console
+  Level: INFO                             # 日志级别，DEBUG, INFO, WARN, ERROR, FATAL
+  Name: chat                              # 应用名称
+  Writers: console                        # 有2个可选项：file,console 选择file会将日志记录到logger_file指定的日志文件中，选择console会将日志输出到标准输出，当然也可以两者同时选择
+  LoggerFile: ./logs/chat.log   # 日志文件
+  LoggerWarnFile: ./logs/chat.wf.log
+  LoggerErrorFile: ./logs/chat.err.log
+  LogRollingPolicy: daily         # rotate依据，可选的有：daily, hourly。如果选daily(默认)则根据天进行转存，如果是hourly则根据小时进行转存
+  LogRotateDate: 1                # rotate转存时间，配合rollingPolicy: daily使用
+  LogRotateSize: 1                # rotate转存大小，配合rollingPolicy: size使用
+  LogBackupCount: 7               # 当日志文件达到转存标准时，log系统会将该日志文件进行压缩备份，这里指定了备份文件的最大个数。
+connect:
+  RoutineChan: 1024 #任务容量
+  RoutineSize: 16 #任务个数
+  ServiceName: chat-connect
+queue:
+  Plugin: redis
+  Channel: message
+  Nsq:
+    ConsumerHost:
+      - 127.0.0.1:4161
+    Topic: message
+    Channel: message
+    MaxAttempts: 3
+  Rabbitmq:
+    Addr: 'guest:guest@localhost:5672/'
+    QueueName: message
+redis:
+  Addr: 127.0.0.1:6379
+  Password: ""
+  DB: 0
+  MinIdleConn: 30
+  DialTimeout: 60s
+  ReadTimeout: 500ms
+  WriteTimeout: 500ms
+  PoolSize: 500
+  PoolTimeout: 240
+consul: 127.0.0.1:8500
+grpcClient:
+  Timeout: 5 #请求超时
+  KeepAliveTime: 15 #如果客户端闲置 x 秒钟，对其进行ping操作，以确保连接仍处于活动状态
+  KeepAliveTimeout: 1 #假设连接中断，等待 x 秒钟以进行ping确认

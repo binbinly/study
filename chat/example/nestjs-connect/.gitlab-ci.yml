@@ -1,0 +1,42 @@
+variables:
+  PROJECT_NAME: chat-connect
+
+#cache:
+#  paths:
+#    - node_modules/
+
+before_script:
+  - docker info
+
+stages:
+  - build
+  - test
+  - deploy
+
+build-job:
+  stage: build
+  only:
+    - tags
+  script:
+    - echo $PWD
+    - docker rmi chat/connect:latest
+    - docker build -t chat/connect:latest .
+
+test-job:
+  stage: test
+  only:
+   - master #当打了tag才会触发
+  script:
+    - echo 'test'
+
+deploy-job:
+  stage: deploy
+  only:
+    - tags #master 分支才会触发
+  script:
+   - docker stop chat-connect
+   - docker rm chat-connect
+   - docker run -d -p 3005:3005 3010:3010 20005:20005 --name chat-connect chat/connect
+
+after_script:
+  - docker ps

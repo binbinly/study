@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package connect;
+
+import "google/protobuf/empty.proto";
+import  "base/base.proto";
+
+service Connect {
+  // 关闭用户连接
+  rpc Close(CloseReq) returns (google.protobuf.Empty);
+  // 发送指定消息
+  rpc Send(SendReq) returns (google.protobuf.Empty);
+  // 广播消息
+  rpc Broadcast(BroadcastReq) returns (google.protobuf.Empty);
+}
+
+message CloseReq {
+  uint32 userId = 1;
+  base.Proto proto = 2;
+}
+
+message SendReq {
+  repeated uint32 userIds = 1;
+  base.Proto proto = 2;
+}
+
+message BroadcastReq {
+  base.Proto proto = 1;
+}

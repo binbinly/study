@@ -1,0 +1,30 @@
+web1:
+  image: liberalman/helloworld:latest
+  environment:
+    SERVICE_NAME: my-web-server
+    SERVICE_TAGS: backend-1
+    MY_HOST: host-1
+    SERVICE_CHECK_TCP: 1
+    SERVICE_CHECK_INTERVAL: 15s
+    SERVICE_CHECK_TIMEOUT: 3s
+  ports:
+    - "80"
+
+web:
+  image: liberalman/helloworld:latest
+  environment:
+    SERVICE_NAME: my-web-server
+    SERVICE_TAGS: backend-2
+    MY_HOST: host-2
+    SERVICE_80_CHECK_TCP: 1
+    SERVICE_80_CHECK_INTERVAL: 15s
+    SERVICE_80_CHECK_TIMEOUT: 3s
+  ports:
+    - "80"
+
+registrator:
+  image: gliderlabs/registrator:master
+  hostname: registrator-1
+  volumes:
+    - "/var/run/docker.sock:/tmp/docker.sock"
+  command: -ip=192.168.162.172 -cleanup -explicit consul://192.168.162.170:8500

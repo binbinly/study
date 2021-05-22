@@ -1,0 +1,11 @@
+[Unit]
+Description=elasticsearch
+After=network.target
+[Service]
+Type=simple
+User=es
+Group=es
+ExecStart=/www/server/elasticsearch-7.11.2/bin/elasticsearch
+Restart=on-failure
+[Install]
+WantedBy=multi-user.target

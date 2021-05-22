@@ -1,0 +1,28 @@
+lb:
+  image: liberalman/nginx-consul-template:latest
+  hostname: lb
+  links:
+    - consulserver:consul
+  ports:
+    - "80:80"
+
+consulserver:
+  image: consul:latest
+  environment:
+    SERVICE_TAGS: consul servers
+  hostname: consul_server_master
+  ports:
+    - "8300:8300"
+    - "8301:8301"
+    - "8302:8302"
+    - "8400:8400"
+    - "8500:8500"
+    - "8600:8600"
+  command: consul agent -server -bootstrap-expect 1 -advertise 192.168.162.170 -node consul_server_master -data-dir /tmp/data-dir -client 0.0.0.0 -ui
+
+registrator:
+  image: gliderlabs/registrator:master
+  hostname: registrator-1
+  volumes:
+    - "/var/run/docker.sock:/tmp/docker.sock"
+  command: -ip=192.168.162.170 -cleanup -explicit consul://192.168.162.170:8500

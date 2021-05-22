@@ -1,0 +1,10 @@
+[Unit]
+Description=nsqd
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/www/wwwroot/nsq/build/nsqd --lookupd-tcp-address=127.0.0.1:4160
+Restart=on-failure
+[Install]
+WantedBy=multi-user.target

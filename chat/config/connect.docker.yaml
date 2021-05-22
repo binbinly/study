@@ -1,0 +1,8 @@
+name: chat-connect
+logicName: chat-logic
+registry:
+  host: consul:8500
+jaeger:
+  Host: jaeger:6831
+  ServiceName: REST_API
+  LogSpans: false

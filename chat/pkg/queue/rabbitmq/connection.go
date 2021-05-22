@@ -1,0 +1,18 @@
+package rabbitmq
+
+import (
+	"fmt"
+	"github.com/pkg/errors"
+
+	"github.com/streadway/amqp"
+)
+
+func OpenConnection(addr string) (conn *amqp.Connection, err error) {
+	uri := fmt.Sprintf("amqp://%s", addr)
+
+	conn, err = amqp.Dial(uri)
+	if err != nil {
+		return nil, errors.Wrapf(err, "open connection err")
+	}
+	return
+}

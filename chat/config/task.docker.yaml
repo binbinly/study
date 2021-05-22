@@ -1,0 +1,8 @@
+consul: consul:8500
+connect:
+  ServiceName: chat-connect
+queue:
+  Channel: message
+redis:
+  Addr: redis:6379
+  Password: ""

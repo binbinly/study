@@ -1,0 +1,25 @@
+app:
+  name: chat-logic
+  Mode: debug                 # 开发模式, debug, release, test
+  JwtSecret: UCAYyw9S5Q9oS2Bh1GhXZZmOawfiGSZXbuYR6KcYvidfhoGOcwsk8zb7vwpsd37o
+  Debug: true
+Http:
+  Addr: :9050
+mysql:
+  Name: chat                     # 数据库名称
+  Addr: 192.168.8.76:3306            # 如果是 docker,可以替换为 对应的服务名称，eg: db:3306
+  UserName: root
+  Password: 123456
+  ShowLog: true                   # 是否打印SQL日志
+redis:
+  Addr: 192.168.8.76:6379
+  Password: ""
+queue:
+  Channel: message
+registry:
+  Name: consul
+  Host: 192.168.8.76:8500
+jaeger:
+  Host: 127.0.0.1:6831
+  ServiceName: REST_API
+  LogSpans: false

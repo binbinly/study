@@ -1,0 +1,10 @@
+[Unit]
+Description=nsqlookupd
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/www/wwwroot/nsq/build/nsqlookupd
+Restart=on-failure
+[Install]
+WantedBy=multi-user.target

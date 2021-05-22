@@ -1,0 +1,53 @@
+app:
+  key: UCAYyw9S5Q9oS2Bh1GhXZZmOawfiGSZXbuYR6KcYvidfhoGOcwsk8zb7vwpsd37o
+http:
+  port: 3005
+ws:
+  port: 3010
+consul:
+  host: 192.168.8.76
+  port: 8500
+redis:
+  host: 192.168.8.76
+  port: 6379
+  password: null
+  db: 0
+service:
+  discoveryHost: 192.168.8.2
+  id: conn-1
+  name: chat-connect
+  port: 20005
+  tags: ['v1.0.0']
+  healthCheck:
+    deregisterCriticalServiceAfter: 60s
+    timeout: 1s
+    interval: 10s
+    tcp: ${{ service.discoveryHost }}:${{ service.port }}
+  maxRetry: 3
+  retryInterval: 5000
+logger:
+  level: info
+  transports:
+    - transport: console
+      colorize: true
+      datePattern: YYYY-MM-DD h:mm:ss
+      label: chat
+    - transport: file
+      name: info
+      json: false
+      filename: ../logs/chat-all.log
+      datePattern: YYYY-MM-DD h:mm:ss
+      label: chat
+      # 200M
+      maxsize: 209715200
+      maxFiles: 10
+    - transport: file
+      name: error
+      level: error
+      json: false
+      filename: ../logs/chat-error.log
+      datePattern: YYYY-MM-DD h:mm:ss
+      label: chat
+      # 200M
+      maxsize: 209715200
+      maxFiles: 10

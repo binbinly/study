@@ -1,0 +1,49 @@
+package chat
+
+import (
+	"errors"
+
+	"github.com/gin-gonic/gin"
+
+	"chat/app/logic/ecode"
+	"chat/app/logic/service"
+	"chat/pkg/app"
+	"chat/pkg/errno"
+	"chat/pkg/log"
+)
+
+// Send 发送消息
+// @Summary 发送消息
+// @Description 发送消息
+// @Tags 聊天
+// @Produce  json
+// @Param Token header string true "用户令牌"
+// @Param type body int true "聊天信息类型"
+// @Param chat_type body int true "聊天类型，1=用户，2=群组"
+// @Param to_id body int true "用户/群组ID"
+// @Param content body string true "内容"
+// @Param options body []byte false "额外选项"
+// @Success 200 {string} json "{}"
+// @Router /chat/send [post]
+func Send(c *gin.Context) {
+	var req SendParams
+
+	valid := app.BindJson(c, &req)
+	if !valid {
+		app.Error(c, errno.ErrBind)
+		return
+	}
+	msg, err := service.Svc.ChatSend(c, app.GetUInt32UserId(c), req.ToId, req.Type, req.ChatType, req.Content, req.Options)
+	if errors.Is(err, service.ErrFriendNotFound) {
+		app.Error(c, ecode.ErrChatNotFound)
+		return
+	} else if errors.Is(err, service.ErrGroupNotFound) {
+		app.Error(c, ecode.ErrChatNotFound)
+		return
+	} else if err != nil {
+		log.Warnf("[http.chat] send err: %v", err)
+		app.Error(c, errno.InternalServerError)
+		return
+	}
+	app.Success(c, msg)
+}

@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package base;
+
+option go_package = "chat/proto/base;base";
+
+message UserToken{
+    UserInfo user = 1;
+    string token = 2;
+}
+
+message UserInfo{
+    int32 id = 1;
+    string username = 2;
+    string nickname = 3;
+    string sign = 4;
+    string avatar = 5;
+    int32 gender = 6;
+}
+
+message Proto {
+    string event = 1;
+    bytes data = 2;
+}

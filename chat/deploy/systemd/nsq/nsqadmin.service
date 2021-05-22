@@ -1,0 +1,12 @@
+[Unit]
+Description=nsqadmin
+After=network.target
+
+[Service]
+Type=simple
+User=www
+Group=www
+ExecStart=/www/wwwroot/nsq/build/nsqadmin --lookupd-http-address=127.0.0.1:4161
+Restart=on-failure
+[Install]
+WantedBy=multi-user.target

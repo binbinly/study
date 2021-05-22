@@ -1,0 +1,10 @@
+[Unit]
+Description=jaeger
+After=network.target
+[Service]
+Type=simple
+Environment="SPAN_STORAGE_TYPE=elasticsearch"
+ExecStart=/www/server/jaeger-1.22.0/jaeger-all-in-one --es.server-urls=http://127.0.0.1:9200  --log-level=debug
+Restart=on-failure
+[Install]
+WantedBy=multi-user.target

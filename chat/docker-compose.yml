@@ -1,0 +1,214 @@
+# yaml 配置
+# 官方文档：https://docs.docker.com/compose/compose-file/
+version: "3.7"
+
+services:
+  frontend:
+    container_name: chat-frontend
+    build: frontend/vant-chat/.
+    restart: on-failure
+    ports:
+      - 80:80
+    command: nginx -g 'daemon off';
+
+  app:
+    container_name: chat-connect
+    build: .
+    restart: on-failure
+    depends_on:
+      - consul
+    links:
+      - consul
+      - jaeger
+    ports:
+      - "9050:9050"
+      - "9070:9070"
+    networks:
+      - chat
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9050/health"]   # 用于健康检查的指令
+      interval: 1m30s   # 间隔时间
+      timeout: 10s  # 超时时间
+      retries: 3    # 重试次数
+      start_period: 40s # 启动多久后开始检查
+    command: connect -c ./config/connect.docker.yaml
+
+  logic:
+    container_name: chat-logic
+    image: chat_app:latest
+    restart: on-failure
+    depends_on:
+      - db
+      - redis
+      - consul
+      - app
+    links:
+      - db
+      - redis
+      - consul
+      - jaeger
+    ports:
+      - "20007:20007"
+    networks:
+      - chat
+    command: logic -c ./config/logic.docker.yaml
+
+  task:
+    container_name: chat-task
+    image: chat_app:latest
+    restart: on-failure
+    depends_on:
+      - redis
+      - consul
+      - app
+    links:
+      - redis
+      - consul
+      - jaeger
+    networks:
+      - chat
+    command: task -c ./config/task.docker.yaml
+
+  consul:
+    container_name: consul_containar
+    image: consul:latest
+    volumes:
+      - consul_data:/consul/data
+      - ./deploy/consul/config:/consul/config
+    ports:
+      - 8500:8500
+    networks:
+      - chat
+    command: agent -server -bind=0.0.0.0 -client=0.0.0.0 -node=consul_Server1 -bootstrap-expect=1 -ui
+
+  db:
+    container_name: mysql_container
+    image: mysql:5.7.34
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    # 参考：https://hub.docker.com/_/Mysql?tab=description&page=1&ordering=last_updated
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: chat
+      MYSQL_USER: chat
+      MYSQL_PASSWORD: 123456
+      TZ: Asia/Shanghai
+    # 解决外部无法访问 for mysql
+    command: [
+        '--character-set-server=utf8',
+        '--collation-server=utf8_unicode_ci',
+        '--default-authentication-plugin=mysql_native_password'
+    ]
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]   # 用于健康检查的指令
+      timeout: 20s  # 超时时间
+      retries: 10   # 重试次数
+      start_period: 40s # 启动多久后开始检查
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./deploy/mysql/my.cnf:/etc/my.cnf
+      - ./deploy/mysql/init/:/docker-entrypoint-initdb.d/
+    networks:
+      - chat
+
+  redis:
+    container_name: redis_container
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - chat
+    volumes:
+      - redis_data:/var/lib/redis
+      - ./deploy/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    # 优先使用命令行参数，期次是redis.conf中的参数
+    command: redis-server /usr/local/etc/redis/redis.conf
+
+  prometheus:
+    container_name: prometheus_container
+    image: prom/prometheus
+    restart: always
+    volumes:
+      - ./deploy/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:Z
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention=20d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - '9090:9090'
+    networks:
+      - chat
+
+  node_exporter:
+    container_name: node_exporter_container
+    restart: always
+    image: prom/node-exporter
+    ports:
+      - '9100:9100'
+    networks:
+      - chat
+
+  grafana:
+    container_name: grafana_container
+    restart: always
+    image: grafana/grafana
+    ports:
+      - '3000:3000'
+    networks:
+      - chat
+
+  jaeger:
+    container_name: jaeger_container
+    image: jaegertracing/all-in-one:latest
+    environment:
+      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+    ports:
+      - 5775:5775/udp
+      - 6831:6831/udp
+      - 6832:6832/udp
+      - 5778:5778
+      - 16686:16686
+      - 14268:14268
+      - 14250:14250
+      - 9411:9411
+    networks:
+      - chat
+
+  fastdfs:
+    container_name: fastdfs_container
+    image: sjqzhang/go-fastdfs
+    environment:
+      - GO_FASTDFS_DIR=/data
+    ports:
+      - 8080:8080
+    volumes:
+      - fastdfs_data:/data
+
+  # 配置参考：https://docs.min.io/docs/minio-docker-quickstart-guide.html
+  minio:
+    container_name: minio_container
+    image: minio/minio
+    environment:
+      - MINIO_ROOT_USER=K3AVR09Y7WH8JQPG
+      - MINIO_ROOT_PASSWORD=h1LnvfuEWUqZ3GiKDAOs2SMBz9JYjVabR0N5XkQeFP6Hlc4wptTm8Igoyr7dCx
+    ports:
+      - 9000:9000
+    volumes:
+      - minio_data:/data
+    command: server /data
+
+
+networks:
+  chat:
+    driver: "bridge"
+
+volumes:
+  mysql_data:
+  redis_data:
+  consul_data:
+  fastdfs_data:
+  minio_data:

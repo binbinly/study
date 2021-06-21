@@ -10,7 +10,7 @@
       <div v-if="item.image" class="pt-1 flex flex-wrap">
         <template v-for="(image,imageIndex) in imgs">
           <!-- 单图 -->
-          <van-image v-if="imgs.length === 1" :src="image" fit="cover" style="max-width:180px;max-height:300px;" imageClass="rounded bg-secondary"
+          <van-image v-if="imgs.length === 1" :src="image" fit="cover" style="max-width:180px;max-height:240px;" imageClass="rounded bg-secondary"
                      @click="prediv(image)">
           </van-image>
           <!-- 多图 -->
@@ -19,8 +19,13 @@
         </template>
       </div>
       <!-- 视频 -->
-      <div v-if="item.video" class="pt-1">
+      <!-- <div v-if="item.video" class="pt-1">
         <video :src="item.video" controls style="max-width:180px;max-height:300px;"></video>
+      </div> -->
+      <!-- 视频 -->
+      <div v-if="item.video" class="position-relative rounded" @click="openVideo">
+        <video :src="item.video" style="max-width:200px;max-height:300px;"></video>
+        <span class="iconfont text-white position-absolute" style="font-size: 35px;width:35px;height:35px;" :style="posterIconStyle">&#xe737;</span>
       </div>
       <!-- 时间|操作 -->
       <div class="flex align-center justify-between">
@@ -80,6 +85,11 @@ export default {
   },
   data() {
     return {
+      // 默认封面的宽高
+      poster: {
+        w: 100,
+        h: 100
+      },
       showPopover: false,
       actions: [{ text: '赞', event: 'like' }, { text: '评论', event: 'comment' }],
     }
@@ -87,6 +97,21 @@ export default {
   computed: {
     imgs() {
       return this.item.image ? this.item.image.split(',') : []
+    },
+    // 短视频封面图标位置
+    posterIconStyle() {
+      let w = this.poster.w / 2 - 35 / 2
+      let h = this.poster.h / 2 - 45 / 2
+      return `left:${w}px;top:${h}px;`
+    }
+  },
+  mounted() {
+    if (this.item.video) {
+      let video = document.querySelector('video');
+      //canplay 事件，视频达到可以播放时触发；
+      video.addEventListener('canplay', () => {
+        this.loadPoster(video.videoWidth, video.videoHeight)
+      });
     }
   },
   methods: {
@@ -107,6 +132,28 @@ export default {
         startPosition: index,
         closeable: true
       });
+    },
+    openVideo() {// 播放视频
+      this.$emit('openVideo', this.item.video)
+    },
+    // 加载封面
+    loadPoster(w, h) {
+      const scale = w / h
+      if (scale > 1) {//宽 > 高
+        if (w > 200) { //缩放
+          this.poster.w = 200
+          this.poster.h = parseInt(200 / w * h)
+          return
+        }
+      } else {
+        if (h > 300) { //缩放
+          this.poster.h = 300
+          this.poster.h = parseInt(300 / h * w)
+          return
+        }
+      }
+      this.poster.w = w
+      this.poster.h = h
     }
   },
 }

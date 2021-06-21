@@ -21,8 +21,8 @@ func Generate() string {
 	return reqID.String()
 }
 
-//GenSnowflakeId 获取雪花算法ID
-func GenSnowflakeId() string {
+//GenSnowflakeID 获取雪花算法ID
+func GenSnowflakeID() string {
 	//default node id eq 1,this can modify to different serverId node
 	node, _ := snowflake.NewNode(1)
 	// Generate a snowflake ID.

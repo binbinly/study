@@ -1,71 +1,71 @@
 package routers
 
 import (
-	"chat/app/logic/grpc"
-	grpc2 "chat/app/logic/handler/grpc"
+	"chat/app/logic/handler/grpc/v1"
+	"chat/app/logic/server"
 	"chat/proto"
 )
 
-// Grpc 路由定义
-func NewRouter() *grpc.Engine {
-	r := grpc.NewEngine()
+// NewGrpcRouter 实例化grpc路由
+func NewGrpcRouter() *server.Engine {
+	r := server.NewEngine()
 
 	//用户
-	r.AddRoute(proto.EventLogin, grpc2.Login)
-	r.AddRoute(proto.EventRegister, grpc2.Register)
-	r.AddRoute(proto.EventPhoneLogin, grpc2.LoginPhone)
-	r.AddRoute(proto.EventLogout, grpc2.Logout)
-	r.AddRoute(proto.EventSendCode, grpc2.SendCode)
-	r.AddRoute(proto.EventUserProfile, grpc2.UserProfile)
-	r.AddRoute(proto.EventSearch, grpc2.Search)
-	r.AddRoute(proto.EventUserTags, grpc2.UserTags)
-	r.AddRoute(proto.EventUserEdit, grpc2.UserEdit)
-	r.AddRoute(proto.EventUserReport, grpc2.UserReport)
+	r.AddRoute(proto.EventLogin, v1.Login)
+	r.AddRoute(proto.EventRegister, v1.Register)
+	r.AddRoute(proto.EventPhoneLogin, v1.LoginPhone)
+	r.AddRoute(proto.EventLogout, v1.Logout)
+	r.AddRoute(proto.EventSendCode, v1.SendCode)
+	r.AddRoute(proto.EventUserProfile, v1.UserProfile)
+	r.AddRoute(proto.EventSearch, v1.Search)
+	r.AddRoute(proto.EventUserTags, v1.UserTags)
+	r.AddRoute(proto.EventUserEdit, v1.UserEdit)
+	r.AddRoute(proto.EventUserReport, v1.UserReport)
 
 	//朋友圈
-	r.AddRoute(proto.EventMomentCreate, grpc2.MomentCreate)
-	r.AddRoute(proto.EventMomentComment, grpc2.MomentComment)
-	r.AddRoute(proto.EventMomentLike, grpc2.MomentLike)
-	r.AddRoute(proto.EventMomentList, grpc2.MomentList)
-	r.AddRoute(proto.EventMomentTimeline, grpc2.MomentTimeline)
+	r.AddRoute(proto.EventMomentCreate, v1.MomentCreate)
+	r.AddRoute(proto.EventMomentComment, v1.MomentComment)
+	r.AddRoute(proto.EventMomentLike, v1.MomentLike)
+	r.AddRoute(proto.EventMomentList, v1.MomentList)
+	r.AddRoute(proto.EventMomentTimeline, v1.MomentTimeline)
 
 	//群组
-	r.AddRoute(proto.EventGroupCreate, grpc2.GroupCreate)
-	r.AddRoute(proto.EventGroupInfo, grpc2.GroupInfo)
-	r.AddRoute(proto.EventGroupInvite, grpc2.GroupInvite)
-	r.AddRoute(proto.EventGroupJoin, grpc2.GroupJoin)
-	r.AddRoute(proto.EventGroupKickoff, grpc2.GroupKickoff)
-	r.AddRoute(proto.EventGroupList, grpc2.GroupList)
-	r.AddRoute(proto.EventGroupQuit, grpc2.GroupQuit)
-	r.AddRoute(proto.EventGroupEdit, grpc2.GroupEdit)
-	r.AddRoute(proto.EventGroupEditNickname, grpc2.GroupEditNickname)
-	r.AddRoute(proto.EventGroupUser, grpc2.GroupUser)
+	r.AddRoute(proto.EventGroupCreate, v1.GroupCreate)
+	r.AddRoute(proto.EventGroupInfo, v1.GroupInfo)
+	r.AddRoute(proto.EventGroupInvite, v1.GroupInvite)
+	r.AddRoute(proto.EventGroupJoin, v1.GroupJoin)
+	r.AddRoute(proto.EventGroupKickoff, v1.GroupKickoff)
+	r.AddRoute(proto.EventGroupList, v1.GroupList)
+	r.AddRoute(proto.EventGroupQuit, v1.GroupQuit)
+	r.AddRoute(proto.EventGroupEdit, v1.GroupEdit)
+	r.AddRoute(proto.EventGroupEditNickname, v1.GroupEditNickname)
+	r.AddRoute(proto.EventGroupUser, v1.GroupUser)
 
 	//好友
-	r.AddRoute(proto.EventFriendInfo, grpc2.FriendInfo)
-	r.AddRoute(proto.EventFriendDestroy, grpc2.FriendDestroy)
-	r.AddRoute(proto.EventFriendList, grpc2.FriendList)
-	r.AddRoute(proto.EventFriendTagList, grpc2.FriendTagList)
-	r.AddRoute(proto.EventFriendEditBlack, grpc2.FriendEditBlack)
-	r.AddRoute(proto.EventFriendEditStar, grpc2.FriendEditStar)
-	r.AddRoute(proto.EventFriendEditAuth, grpc2.FriendEditAuth)
-	r.AddRoute(proto.EventFriendEditRemark, grpc2.FriendEditRemark)
+	r.AddRoute(proto.EventFriendInfo, v1.FriendInfo)
+	r.AddRoute(proto.EventFriendDestroy, v1.FriendDestroy)
+	r.AddRoute(proto.EventFriendList, v1.FriendList)
+	r.AddRoute(proto.EventFriendTagList, v1.FriendTagList)
+	r.AddRoute(proto.EventFriendEditBlack, v1.FriendEditBlack)
+	r.AddRoute(proto.EventFriendEditStar, v1.FriendEditStar)
+	r.AddRoute(proto.EventFriendEditAuth, v1.FriendEditAuth)
+	r.AddRoute(proto.EventFriendEditRemark, v1.FriendEditRemark)
 
 	//收藏
-	r.AddRoute(proto.EventCollectCreate, grpc2.CollectCreate)
-	r.AddRoute(proto.EventCollectDestroy, grpc2.CollectDestroy)
-	r.AddRoute(proto.EventCollectList, grpc2.CollectList)
+	r.AddRoute(proto.EventCollectCreate, v1.CollectCreate)
+	r.AddRoute(proto.EventCollectDestroy, v1.CollectDestroy)
+	r.AddRoute(proto.EventCollectList, v1.CollectList)
 
 	//聊天会话
-	r.AddRoute(proto.EventChatDetail, grpc2.ChatDetail)
-	r.AddRoute(proto.EventChatSend, grpc2.ChatSend)
-	r.AddRoute(proto.EventChatRecall, grpc2.ChatRecall)
+	r.AddRoute(proto.EventChatDetail, v1.ChatDetail)
+	r.AddRoute(proto.EventChatSend, v1.ChatSend)
+	r.AddRoute(proto.EventChatRecall, v1.ChatRecall)
 
 	//好友申请
-	r.AddRoute(proto.EventApplyFriend, grpc2.ApplyFriend)
-	r.AddRoute(proto.EventApplyHandle, grpc2.ApplyHandle)
-	r.AddRoute(proto.EventApplyList, grpc2.ApplyList)
-	r.AddRoute(proto.EventApplyCount, grpc2.ApplyCount)
+	r.AddRoute(proto.EventApplyFriend, v1.ApplyFriend)
+	r.AddRoute(proto.EventApplyHandle, v1.ApplyHandle)
+	r.AddRoute(proto.EventApplyList, v1.ApplyList)
+	r.AddRoute(proto.EventApplyCount, v1.ApplyCount)
 
 	return r
 }

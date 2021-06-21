@@ -7,9 +7,9 @@ import (
 )
 
 //Online 用户建立连接，鉴权上线操作
-func (s *Server) Online(c context.Context, serverId, token string) (uid uint32, err error) {
+func (s *Server) Online(c context.Context, serverID, token string) (uid uint32, err error) {
 	reply, err := s.rpcClient.Online(c, &logic.OnlineReq{
-		Server: serverId,
+		Server: serverID,
 		Token:  token,
 	})
 	if err != nil {

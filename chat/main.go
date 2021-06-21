@@ -2,7 +2,6 @@ package main
 
 import (
 	"chat/cmd"
-	_ "chat/pkg/registry/consul"
 )
 
 // @title chat docs api

@@ -20,21 +20,21 @@ import (
 // @Produce  json
 // @Param Token header string true "用户令牌"
 // @Param req body BlackParams true "black"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":null}"
+// @Success 0 {string} json "{"code":0,"msg":"OK","data":{}}"
 // @Router /friend/black [post]
 func Black(c *gin.Context) {
 	var req BlackParams
-	v := app.BindJson(c, &req)
+	v := app.BindJSON(c, &req)
 	if !v {
 		app.Error(c, errno.ErrBind)
 		return
 	}
-	userId := app.GetUInt32UserId(c)
-	if userId == req.UserId {
+	userID := app.GetUInt32UserID(c)
+	if userID == req.UserID {
 		app.Error(c, ecode.ErrUserNoSelf)
 		return
 	}
-	err := service.Svc.FriendSetBlack(c, userId, req.UserId, req.Black)
+	err := service.Svc.FriendSetBlack(c.Request.Context(), userID, req.UserID, req.Black)
 	if errors.Is(err, service.ErrFriendNotRecord) {
 		app.Error(c, ecode.ErrFriendNotFound)
 		return
@@ -54,21 +54,21 @@ func Black(c *gin.Context) {
 // @Produce  json
 // @Param Authorization header string true "Authentication header"
 // @Param req body StarParams true "star"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":null}"
+// @Success 0 {string} json "{"code":0,"msg":"OK","data":{}}"
 // @Router /friend/star [post]
 func Star(c *gin.Context) {
 	var req StarParams
-	v := app.BindJson(c, &req)
+	v := app.BindJSON(c, &req)
 	if !v {
 		app.Error(c, errno.ErrBind)
 		return
 	}
-	userId := app.GetUInt32UserId(c)
-	if userId == req.UserId {
+	userID := app.GetUInt32UserID(c)
+	if userID == req.UserID {
 		app.Error(c, ecode.ErrUserNoSelf)
 		return
 	}
-	err := service.Svc.FriendSetStar(c, userId, req.UserId, req.Star)
+	err := service.Svc.FriendSetStar(c.Request.Context(), userID, req.UserID, req.Star)
 	if errors.Is(err, service.ErrFriendNotRecord) {
 		app.Error(c, ecode.ErrFriendNotFound)
 		return
@@ -88,21 +88,21 @@ func Star(c *gin.Context) {
 // @Produce  json
 // @Param Authorization header string true "Authentication header"
 // @Param req body RemarkParams true "remark"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":null}"
+// @Success 0 {string} json "{"code":0,"msg":"OK","data":{}}"
 // @Router /friend/remark [post]
 func Remark(c *gin.Context) {
 	var req RemarkParams
-	v := app.BindJson(c, &req)
+	v := app.BindJSON(c, &req)
 	if !v {
 		app.Error(c, errno.ErrBind)
 		return
 	}
-	userId := app.GetUInt32UserId(c)
-	if userId == req.UserId {
+	userID := app.GetUInt32UserID(c)
+	if userID == req.UserID {
 		app.Error(c, ecode.ErrUserNoSelf)
 		return
 	}
-	err := service.Svc.FriendSetRemarkTag(c, userId, req.UserId, req.Nickname, req.Tags)
+	err := service.Svc.FriendSetRemarkTag(c.Request.Context(), userID, req.UserID, req.Nickname, req.Tags)
 	if errors.Is(err, service.ErrFriendNotRecord) {
 		app.Error(c, ecode.ErrFriendNotFound)
 		return
@@ -122,21 +122,21 @@ func Remark(c *gin.Context) {
 // @Produce  json
 // @Param Authorization header string true "Authentication header"
 // @Param req body AuthParams true "auth"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":null}"
+// @Success 0 {string} json "{"code":0,"msg":"OK","data":{}}"
 // @Router /friend/auth [post]
 func Auth(c *gin.Context) {
 	var req AuthParams
-	v := app.BindJson(c, &req)
+	v := app.BindJSON(c, &req)
 	if !v {
 		app.Error(c, errno.ErrBind)
 		return
 	}
-	userId := app.GetUInt32UserId(c)
-	if userId == req.UserId {
+	userID := app.GetUInt32UserID(c)
+	if userID == req.UserID {
 		app.Error(c, ecode.ErrUserNoSelf)
 		return
 	}
-	err := service.Svc.FriendSetMomentAuth(c, userId, req.UserId, req.LookMe, req.LookHim)
+	err := service.Svc.FriendSetMomentAuth(c.Request.Context(), userID, req.UserID, req.LookMe, req.LookHim)
 	if errors.Is(err, service.ErrFriendNotRecord) {
 		app.Error(c, ecode.ErrFriendNotFound)
 		return

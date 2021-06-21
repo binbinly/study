@@ -22,53 +22,61 @@ func NewFriendCache() *FriendCache {
 	}
 }
 
+//GetCacheKey 缓存键
 func (u *FriendCache) GetCacheKey(uid, fid uint32) string {
-	return fmt.Sprintf(FriendCacheKey, uid, fid)
+	return fmt.Sprintf(friendCacheKey, uid, fid)
 }
 
+//GetCacheAllKey 缓存键
 func (u *FriendCache) GetCacheAllKey(uid uint32) string {
-	return fmt.Sprintf(FriendAllCacheKey, uid)
+	return fmt.Sprintf(friendAllCacheKey, uid)
 }
 
+//SetCache 设置缓存
 func (u *FriendCache) SetCache(ctx context.Context, uid, fid uint32, friend *model.FriendModel) error {
 	if friend == nil || friend.ID == 0 {
 		return nil
 	}
-	return u.cache.Set(u.GetCacheKey(uid, fid), friend, defaultExpireTime)
+	return u.cache.Set(ctx, u.GetCacheKey(uid, fid), friend, defaultExpireTime)
 }
 
+//SetCacheAll 设置缓存
 func (u *FriendCache) SetCacheAll(ctx context.Context, uid uint32, all []*model.FriendModel) error {
 	if len(all) == 0 { // 空列表设置占位符
-		return u.cache.SetCacheWithNotFound(u.GetCacheAllKey(uid))
+		return u.cache.SetCacheWithNotFound(ctx, u.GetCacheAllKey(uid))
 	}
-	return u.cache.Set(u.GetCacheAllKey(uid), all, defaultExpireTime)
+	return u.cache.Set(ctx, u.GetCacheAllKey(uid), all, defaultExpireTime)
 }
 
+//GetCache 获取缓存
 func (u *FriendCache) GetCache(ctx context.Context, uid, fid uint32) (friend *model.FriendModel, err error) {
-	err = u.cache.Get(u.GetCacheKey(uid, fid), &friend)
+	err = u.cache.Get(ctx, u.GetCacheKey(uid, fid), &friend)
 	if err != nil {
 		return nil, err
 	}
 	return friend, nil
 }
 
+//GetCacheAll 获取缓存
 func (u *FriendCache) GetCacheAll(ctx context.Context, uid uint32) (all []*model.FriendModel, err error) {
-	err = u.cache.Get(u.GetCacheAllKey(uid), &all)
+	err = u.cache.Get(ctx, u.GetCacheAllKey(uid), &all)
 	if err != nil {
 		return nil, err
 	}
 	return all, nil
 }
 
+//DelCache 删除缓存
 func (u *FriendCache) DelCache(ctx context.Context, uid, fid uint32) error {
-	return u.cache.Del(u.GetCacheKey(uid, fid))
+	return u.cache.Del(ctx, u.GetCacheKey(uid, fid))
 }
 
+//DelCacheAll 删除缓存
 func (u *FriendCache) DelCacheAll(ctx context.Context, uid uint32) error {
-	return u.cache.Del(u.GetCacheAllKey(uid))
+	return u.cache.Del(ctx, u.GetCacheAllKey(uid))
 }
 
 // SetCacheWithNotFound 设置空
 func (u *FriendCache) SetCacheWithNotFound(ctx context.Context, uid, fid uint32) error {
-	return u.cache.SetCacheWithNotFound(u.GetCacheKey(uid, fid))
+	return u.cache.SetCacheWithNotFound(ctx, u.GetCacheKey(uid, fid))
 }

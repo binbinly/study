@@ -2,17 +2,31 @@
 # 官方文档：https://docs.docker.com/compose/compose-file/
 version: "3.7"
 
+# 已设置全局可以忽略
+x-logging:
+  &loki-logging
+  driver: loki
+  options:
+    loki-url: "http://loki:3100/loki/api/v1/push"
+    max-size: "100m"
+    max-file: "10"
+    loki-pipeline-stages: |
+      - multiline:
+          firstline: '^\[\d{2}:\d{2}:\d{2} \w{4}\]'
+
 services:
   frontend:
-    container_name: chat-frontend
-    build: frontend/vant-chat/.
+    container_name: chat_frontend
+    build: frontend/.
     restart: on-failure
+    volumes:
+      - /var/log/nginx:/var/log/nginx
     ports:
       - 80:80
     command: nginx -g 'daemon off';
 
   app:
-    container_name: chat-connect
+    container_name: chat_connect
     build: .
     restart: on-failure
     depends_on:
@@ -21,7 +35,6 @@ services:
       - consul
       - jaeger
     ports:
-      - "9050:9050"
       - "9070:9070"
     networks:
       - chat
@@ -34,7 +47,7 @@ services:
     command: connect -c ./config/connect.docker.yaml
 
   logic:
-    container_name: chat-logic
+    container_name: chat_logic
     image: chat_app:latest
     restart: on-failure
     depends_on:
@@ -42,19 +55,21 @@ services:
       - redis
       - consul
       - app
+      - elastic
     links:
       - db
       - redis
       - consul
       - jaeger
+      - elastic
     ports:
-      - "20007:20007"
+      - "9050:9050"
     networks:
       - chat
     command: logic -c ./config/logic.docker.yaml
 
   task:
-    container_name: chat-task
+    container_name: chat_task
     image: chat_app:latest
     restart: on-failure
     depends_on:
@@ -72,6 +87,7 @@ services:
   consul:
     container_name: consul_containar
     image: consul:latest
+    restart: on-failure
     volumes:
       - consul_data:/consul/data
       - ./deploy/consul/config:/consul/config
@@ -84,6 +100,7 @@ services:
   db:
     container_name: mysql_container
     image: mysql:5.7.34
+    restart: on-failure
     ports:
       - "3306:3306"
     expose:
@@ -113,9 +130,29 @@ services:
     networks:
       - chat
 
+  elastic:
+    container_name: es_container
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.2
+    restart: on-failure
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elastic_data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - chat
+
   redis:
     container_name: redis_container
     image: redis:latest
+    restart: on-failure
     ports:
       - "6379:6379"
     networks:
@@ -129,7 +166,7 @@ services:
   prometheus:
     container_name: prometheus_container
     image: prom/prometheus
-    restart: always
+    restart: on-failure
     volumes:
       - ./deploy/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:Z
     command:
@@ -145,7 +182,7 @@ services:
 
   node_exporter:
     container_name: node_exporter_container
-    restart: always
+    restart: on-failure
     image: prom/node-exporter
     ports:
       - '9100:9100'
@@ -154,16 +191,38 @@ services:
 
   grafana:
     container_name: grafana_container
-    restart: always
+    restart: on-failure
     image: grafana/grafana
     ports:
       - '3000:3000'
     networks:
       - chat
 
+  #https://grafana.com/docs/loki/latest/installation/docker/
+  loki:
+    container_name: loki_containar
+    image: grafana/loki
+    restart: on-failure
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - chat
+
+  promtail:
+    container_name: promtail_containar
+    image: grafana/promtail
+    restart: on-failure
+    volumes:
+      - /var/log:/var/log
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - chat
+
   jaeger:
     container_name: jaeger_container
     image: jaegertracing/all-in-one:latest
+    restart: on-failure
     environment:
       - COLLECTOR_ZIPKIN_HTTP_PORT=9411
     ports:
@@ -181,6 +240,7 @@ services:
   fastdfs:
     container_name: fastdfs_container
     image: sjqzhang/go-fastdfs
+    restart: on-failure
     environment:
       - GO_FASTDFS_DIR=/data
     ports:
@@ -192,6 +252,7 @@ services:
   minio:
     container_name: minio_container
     image: minio/minio
+    restart: on-failure
     environment:
       - MINIO_ROOT_USER=K3AVR09Y7WH8JQPG
       - MINIO_ROOT_PASSWORD=h1LnvfuEWUqZ3GiKDAOs2SMBz9JYjVabR0N5XkQeFP6Hlc4wptTm8Igoyr7dCx
@@ -212,3 +273,4 @@ volumes:
   consul_data:
   fastdfs_data:
   minio_data:
+  elastic_data:

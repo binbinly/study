@@ -21,15 +21,15 @@ import (
 // @Produce  json
 // @Param Token header string true "用户令牌"
 // @Param id query int true "群ID"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":null}"
+// @Success 0 {string} json "{"code":0,"msg":"OK","data":{}}"
 // @Router /group/join [get]
 func Join(c *gin.Context) {
-	gId := cast.ToUint32(c.Query("id"))
-	if gId == 0 {
+	gID := cast.ToUint32(c.Query("id"))
+	if gID == 0 {
 		app.Error(c, errno.ErrBind)
 		return
 	}
-	err := service.Svc.GroupJoin(c, app.GetUInt32UserId(c), gId)
+	err := service.Svc.GroupJoin(c.Request.Context(), app.GetUInt32UserID(c), gID)
 	if errors.Is(err, service.ErrGroupNotFound) {
 		app.Error(c, ecode.ErrGroupNotFound)
 		return

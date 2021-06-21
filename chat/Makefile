@@ -3,6 +3,10 @@ GOCMD=GO111MODULE=on go
 GOBUILD=$(GOCMD) build
 GOTEST=$(GOCMD) test
 
+PROJECT_NAME := "chat"
+PKG := "$(PROJECT_NAME)"
+PKG_LIST := $(shell go list ${PKG}/... | grep -v /example)
+
 all: test build
 build:
 	rm -rf target/
@@ -13,7 +17,7 @@ build:
 	$(GOBUILD) -o target/chat main.go
 
 test:
-	$(GOTEST) -v ./...
+	$(GOTEST) -v ${PKG_LIST}
 
 clean:
 	rm -rf target/
@@ -29,21 +33,32 @@ run:
 stop:
 	pkill -f target/chat
 
+#生成docker镜像，请确保已安装docker
+docker:
+	docker build -t chat_app:latest -f Dockerfile .
+
 # 生成api文档
-gen-docs:
+doc:
 	@swag init
-	echo "gen-docs done"
+	echo "docs done"
 	echo "see docs by: http://localhost:9050/swagger/index.html"
 
 # 生成交互式的可视化Go程序调用图
-gen-graph:
-	echo "downloading go-callvis"
-	echo "generating graph"
-	@go-callvis chat
+graph:
+	@echo "downloading go-callvis"
+	@echo "generating graph"
+	@go get -u github.com/ofabry/go-callvis
+	@go-callvis ${PROJECT_NAME}
 
 # 生成ca证书
 ca:
 	openssl req -new -nodes -x509 -out target/cert/server.crt -keyout target/cert/server.key -days 3650 -subj "/C=DE/ST=NRW/L=Earth/O=Random Company/OU=IT/CN=127.0.0.1/emailAddress=xxxxx@qq.com"
 
+#检查代码规范
+lint:
+	@go get -u golang.org/x/lint/golint
+	@golint -set_exit_status ${PKG_LIST}
+
+#查看帮助
 help:
-	shell target/chat --help
+	target/chat --help

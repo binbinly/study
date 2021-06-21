@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 导航栏 -->
-    <van-nav-bar :title="nickname" left-arrow @click-left="onClickLeft" @click-right="onClickRight">
+    <van-nav-bar :title="nickname" fixed placeholder left-arrow @click-left="onClickLeft" @click-right="onClickRight">
       <template #right>
         <van-icon name="ellipsis" size="24" color="#0E151D" />
       </template>
@@ -30,7 +30,7 @@
       </template>
     </van-cell>
     <van-divider />
-    <van-cell title="朋友圈" center is-link v-if="is_friend" @click="openMoments">
+    <van-cell title="朋友圈" center is-link @click="openMoments">
       <template #default v-if="friend.moments">
         <span v-if="friend.moments[0].content && !friend.moments[0].image.length" class="text-secondary">{{friend.moments[0].content}}</span>
         <van-image v-for="(item,index) in friend.moments[0].image" :src="item" width="40" height="40" style="margin:5px;" />

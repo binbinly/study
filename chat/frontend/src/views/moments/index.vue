@@ -10,10 +10,14 @@
         <span class="text-white font-sm position-absolute" style="bottom: 10px;right: 80px;">{{userinfo.name}}</span>
       </div>
 
+      <div class="w-100 text-center mt-1" v-if="showNotice">
+        <van-tag round type="primary" size="medium" @click="onRefresh">有新动态哦</van-tag>
+      </div>
       <!-- 朋友圈列表 -->
       <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
         <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
-          <moment-list v-for="(item,index) in list" :key="index" :item="item" :index="index" @action="doAction" @reply="replyEvent"></moment-list>
+          <moment-list v-for="(item,index) in list" :key="index" :item="item" :index="index" @action="doAction" @reply="replyEvent"
+                       @openVideo="openVideo"></moment-list>
         </van-list>
       </van-pull-refresh>
     </div>
@@ -32,6 +36,12 @@
         </div>
       </div>
     </van-popup>
+
+    <van-overlay :show="showVideo" @click="showVideo = false">
+      <div class="wrapper">
+        <video :src="videoUrl" controls class="w-100"></video>
+      </div>
+    </van-overlay>
 
     <van-action-sheet v-model="showAction" :actions="actions" cancel-text="取消" close-on-click-action @cancel="onCancel" @select="onSelect" />
   </div>
@@ -54,6 +64,9 @@ export default {
   },
   data() {
     return {
+      showVideo: false,
+      videoUrl: '',
+      showNotice: false,
       showAction: false,
       actions: [{
         name: "图文",
@@ -80,7 +93,6 @@ export default {
       finished: false,
       refreshing: false,
       page: 1,
-      key: "list",
       reply_user: false,
 
       user_id: 0,
@@ -109,28 +121,33 @@ export default {
     }
   },
   activated() {
-    if (this.$route.query.id) {
-      this.user_id = parseInt(this.$route.query.id)
+    const id = parseInt(this.$route.query.id) || 0
+    console.log('store', this.user_id)
+    if (id) {
+      if (this.user_id != id) {
+        this.user_id = id
+        this.refresh()
+      }
     }
-    console.log('query', this.$route.query)
-    if (this.$route.query.key) {
-      this.key = this.$route.query.key
-      this.onRefresh()
-    }
+    console.log('query', id)
   },
   mounted() {
     this.chat.readMoments()
     event.$on('momentNotice', this.momentNotice)
+    event.$on('refreshMoment', this.onRefresh)
     //绑定滚动事件
     window.addEventListener('scroll', this.scroll, true);
   },
   destroyed() {
     event.$off('momentNotice', this.momentNotice)
+    event.$off('refreshMoment', this.onRefresh)
     window.removeEventListener('scroll', this.scroll); // 离开页面清除（移除）滚轮滚动事件
   },
   methods: {
-    momentNotice() {
-      this.onRefresh()
+    momentNotice(notice) {
+      if (notice.user_id && notice.num) {
+        this.showNotice = true
+      }
     },
     scroll(e) {
       //可滚动总高度
@@ -144,9 +161,14 @@ export default {
       }
     },
     onLoad() {
+      this.showNotice = false
       this.getData()
     },
     onRefresh() {
+      this.chat.readMoments()
+      this.refresh()
+    },
+    refresh() {
       this.page = 1
       // 清空列表数据
       this.finished = false;
@@ -156,16 +178,15 @@ export default {
       this.onLoad();
     },
     getData() {
-      momentList(this.key, this.user_id, this.page).then(res => {
+      momentList(this.user_id, this.page).then(res => {
         if (this.refreshing) {
           this.list = [];
           this.refreshing = false;
         }
-        if (this.userinfo.id === 0) {
+        if (this.page == 1) {
           this.userinfo = res['user']
         }
         this.list = this.page === 1 ? res['list'] : [...this.list, ...res['list']]
-        console.log('list', this.list, this.userinfo)
         this.loading = false;
         if (res['list'].length < $const.PAGE_SIZE) {
           this.finished = true;
@@ -183,6 +204,10 @@ export default {
         this.commentIndex = index
         this.reply_user = false
       }
+    },
+    openVideo(url) {
+      this.showVideo = true
+      this.videoUrl = url
     },
     initComment() {
       this.content = ''
@@ -252,7 +277,7 @@ export default {
     onCancel() {
 
     },
-    onSelect({ type }, index) {
+    onSelect({ type }) {
       this.$router.push({ path: '/add_moment', query: { type } })
     }
   }

@@ -16,17 +16,17 @@ import (
 // @Produce  json
 // @Param Token header string true "用户令牌"
 // @Param req body RecallParams true "recall"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":{}"
+// @Success 0 {string} json "{"code":0,"msg":"OK","data":{}}"
 // @Router /chat/recall [post]
 func Recall(c *gin.Context) {
 	var req RecallParams
 
-	valid := app.BindJson(c, &req)
+	valid := app.BindJSON(c, &req)
 	if !valid {
 		app.Error(c, errno.ErrBind)
 		return
 	}
-	err := service.Svc.ChatRecall(c, app.GetUInt32UserId(c), req.ToId, req.ChatType, req.Id)
+	err := service.Svc.ChatRecall(c.Request.Context(), app.GetUInt32UserID(c), req.ToID, req.ChatType, req.ID)
 	if err != nil {
 		log.Warnf("[http.chat] recall err: %v", err)
 		app.Error(c, errno.InternalServerError)

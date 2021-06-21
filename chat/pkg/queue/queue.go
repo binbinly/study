@@ -16,7 +16,7 @@ const (
 	pluginKafka    = "kafka"
 )
 
-//queue 生产者
+//NewProducer 生产者
 func NewProducer(c *iqueue.Config) iqueue.Producer {
 	switch c.Plugin {
 	case pluginRedis:
@@ -25,12 +25,12 @@ func NewProducer(c *iqueue.Config) iqueue.Producer {
 		return nsq.NewProducer(&c.Nsq)
 	case pluginRabbitmq:
 		return rabbitmq.NewProducer(&c.Rabbitmq)
+	default:
+		return redis.NewProducer(c.Channel)
 	}
-	log.Panicf("not found producer plugin:%v", c.Plugin)
-	return nil
 }
 
-//queue 消费者
+//NewConsumer 消费者
 func NewConsumer(c *iqueue.Config, handler func([]byte) error) iqueue.Consumer {
 	switch c.Plugin {
 	case pluginRedis:

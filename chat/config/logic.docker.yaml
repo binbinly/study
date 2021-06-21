@@ -1,10 +1,7 @@
 app:
-  name: chat-logic
-  Mode: debug                 # 开发模式, debug, release, test
+  Mode: release                 # 开发模式, debug, release, test
   JwtSecret: UCAYyw9S5Q9oS2Bh1GhXZZmOawfiGSZXbuYR6KcYvidfhoGOcwsk8zb7vwpsd37o
   Debug: true
-Http:
-  Addr: :9050
 mysql:
   Name: chat                     # 数据库名称
   Addr: db:3306            # 如果是 docker,可以替换为 对应的服务名称，eg: db:3306
@@ -14,12 +11,16 @@ mysql:
 redis:
   Addr: redis:6379
   Password: ""
-queue:
-  Channel: message
+elastic:
+  Host: http://elastic:9200
 registry:
   Name: consul
   Host: consul:8500
-jaeger:
-  Host: jaeger:6831
-  ServiceName: REST_API
-  LogSpans: false
+logger:
+  Level: DEBUG
+  Writers: file,console
+trace:
+  Enable: true
+  Jaeger:
+    SamplingServerURL: "http://jaeger:5778/sampling"
+    LocalAgentHostPort: "jaeger:6831"

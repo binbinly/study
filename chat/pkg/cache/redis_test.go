@@ -1,12 +1,20 @@
 package cache
 
 import (
-	"reflect"
+	"context"
+	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 
 	"chat/pkg/redis"
 )
+
+func TestMain(m *testing.M) {
+	redis.InitTestRedis()
+	if code := m.Run(); code != 0 {
+		panic(code)
+	}
+}
 
 func Test_redisCache_SetGet(t *testing.T) {
 
@@ -41,7 +49,7 @@ func Test_redisCache_SetGet(t *testing.T) {
 	for _, tt := range setTests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := tt.cache
-			if err := c.Set(tt.args.key, tt.args.value, tt.args.expiration); (err != nil) != tt.wantErr {
+			if err := c.Set(context.TODO(), tt.args.key, tt.args.value, tt.args.expiration); (err != nil) != tt.wantErr {
 				t.Errorf("Set() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -71,15 +79,12 @@ func Test_redisCache_SetGet(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := tt.cache
 			var gotVal interface{}
-			err := c.Get(tt.args.key, &gotVal)
+			err := c.Get(context.TODO(), tt.args.key, &gotVal)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Get() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			t.Log("gotval", gotVal)
-			if !reflect.DeepEqual(gotVal, tt.wantVal) {
-				t.Errorf("Get() gotVal = %v, want %v", gotVal, tt.wantVal)
-			}
+			assert.Equal(t, gotVal, tt.wantVal)
 		})
 	}
 }

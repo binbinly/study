@@ -1,34 +1,23 @@
 package cache
 
 import (
-	"chat/app/logic/conf"
-	"chat/pkg/redis"
+	"context"
 	"testing"
-)
 
-func init()  {
-	conf.Init("../../../../config/logic.local.yaml")
-	redis.Init(&conf.Conf.Redis)
-}
+	"github.com/stretchr/testify/assert"
+)
 
 func TestLikeCache_MultiGetCache(t *testing.T) {
 	cache := NewLikeCache()
-	err := cache.SetCache(nil, 1, []uint32{1,2,3})
-	if err != nil {
-		t.Errorf("err:%v", err)
-	}
-	err = cache.SetCache(nil, 2, []uint32{4,5,6})
-	if err != nil {
-		t.Errorf("err:%v", err)
-	}
-	data, err := cache.GetCache(nil, 1)
-	if err != nil {
-		t.Errorf("err:%v", err)
-	}
+	ctx := context.Background()
+	err := cache.SetCache(ctx, 1, []uint32{1,2,3})
+	assert.NoError(t, err)
+	err = cache.SetCache(ctx, 2, []uint32{4,5,6})
+	assert.NoError(t, err)
+	data, err := cache.GetCache(ctx, 1)
+	assert.NoError(t, err)
 	t.Logf("data:%v:%v", data, len(*data))
-	datas, err := cache.MultiGetCache(nil, []uint32{1,2})
-	if err != nil {
-		t.Errorf("err:%v", err)
-	}
+	datas, err := cache.MultiGetCache(ctx, []uint32{1,2})
+	assert.NoError(t, err)
 	t.Logf("datas:%#v", datas)
 }

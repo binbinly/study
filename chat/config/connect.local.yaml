@@ -1,4 +1,0 @@
-name: chat-connect
-logicName: chat-logic
-registry:
-  host: 192.168.8.76:8500

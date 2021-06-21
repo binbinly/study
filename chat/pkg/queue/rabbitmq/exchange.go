@@ -5,6 +5,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
+//NewExchange 实例化交换器
 func NewExchange(ch *amqp.Channel, name, t string) (err error) {
 	err = ch.ExchangeDeclare(
 		name,

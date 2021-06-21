@@ -1,5 +1,6 @@
 package rabbitmq
 
+//Config 配置结构
 type Config struct {
 	Addr         string
 	Exchange     string //交换机名

@@ -18,16 +18,16 @@ import (
 // @Produce  json
 // @Param Token header string true "用户令牌"
 // @Param user body ActionParams true "The group info"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":{}}"
+// @Success 0 {string} json "{"code":0,"msg":"OK","data":{}}"
 // @Router /group/invite [post]
 func Invite(c *gin.Context) {
 	var req ActionParams
-	valid := app.BindJson(c, &req)
+	valid := app.BindJSON(c, &req)
 	if !valid {
 		app.Error(c, errno.ErrBind)
 		return
 	}
-	err := service.Svc.GroupInviteUser(c, app.GetUInt32UserId(c), req.Id, req.UserId)
+	err := service.Svc.GroupInviteUser(c.Request.Context(), app.GetUInt32UserID(c), req.ID, req.UserID)
 	if errors.Is(err, service.ErrGroupNotFound) {
 		app.Error(c, ecode.ErrGroupNotFound)
 		return

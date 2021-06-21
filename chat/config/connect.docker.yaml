@@ -1,8 +1,10 @@
-name: chat-connect
-logicName: chat-logic
 registry:
   host: consul:8500
-jaeger:
-  Host: jaeger:6831
-  ServiceName: REST_API
-  LogSpans: false
+logger:
+  Level: DEBUG
+  Writers: file,console
+trace:
+  Enable: true
+  Jaeger:
+    SamplingServerURL: "http://jaeger:5778/sampling"
+    LocalAgentHostPort: "jaeger:6831"

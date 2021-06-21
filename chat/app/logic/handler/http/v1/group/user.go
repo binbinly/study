@@ -21,15 +21,15 @@ import (
 // @Produce  json
 // @Param Token header string true "用户令牌"
 // @Param id query int true "群ID"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":null}"
+// @success 0 {object} app.Response{data=[]model.UserBase} "调用成功结构"
 // @Router /group/user [get]
 func User(c *gin.Context) {
-	gId := cast.ToUint32(c.Query("id"))
-	if gId == 0 {
+	gID := cast.ToUint32(c.Query("id"))
+	if gID == 0 {
 		app.Error(c, errno.ErrBind)
 		return
 	}
-	user, err := service.Svc.GroupUserAll(c, app.GetUInt32UserId(c), gId)
+	user, err := service.Svc.GroupUserAll(c.Request.Context(), app.GetUInt32UserID(c), gID)
 	if errors.Is(err, service.ErrGroupNotFound) {
 		app.Error(c, ecode.ErrGroupNotFound)
 		return

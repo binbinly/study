@@ -11,5 +11,5 @@ type CreateParams struct {
 
 // DestroyParams 删除收藏
 type DestroyParams struct {
-	Id uint32 `json:"id" binding:"required,numeric" example:"1"` // 收藏id
+	ID uint32 `json:"id" binding:"required,numeric" example:"1"` // 收藏id
 }

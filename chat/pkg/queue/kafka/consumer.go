@@ -9,12 +9,14 @@ import (
 	"github.com/Shopify/sarama"
 )
 
+//Consumer 消费者结构
 type Consumer struct {
 	group   sarama.ConsumerGroup
 	topics  []string
 	groupID string
 }
 
+//NewConsumer 创建消费者
 func NewConsumer(config *sarama.Config, logger *log.Logger, topic string, groupID string, brokers []string) *Consumer {
 	// Init config, specify appropriate versio
 	sarama.Logger = log.New(os.Stderr, "[sarama_logger]", log.LstdFlags)
@@ -42,6 +44,7 @@ func NewConsumer(config *sarama.Config, logger *log.Logger, topic string, groupI
 	}
 }
 
+//Consume 启动消费者
 func (c Consumer) Consume() {
 	// Track errors
 	go func() {
@@ -62,6 +65,7 @@ func (c Consumer) Consume() {
 	}
 }
 
-func (c Consumer) CloseConnection() {
+//Stop 停止消费者
+func (c Consumer) Stop() {
 	c.group.Close()
 }

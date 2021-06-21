@@ -27,6 +27,7 @@
 import { groupUser, groupKick } from '@/api/group.js'
 import auth from '@/mixin/auth.js';
 import { Dialog, Toast } from 'vant';
+import event from '@/utils/event.js';
 export default {
   mixins: [auth],
   data() {
@@ -72,6 +73,7 @@ export default {
             user_id: item.id
           }).then(() => {
             Toast.success('踢出成功')
+            event.$emit('refreshGroupInfo')
             this.$router.back()
           })
         })

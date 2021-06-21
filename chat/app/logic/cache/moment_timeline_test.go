@@ -1,30 +1,20 @@
 package cache
 
 import (
+	"context"
 	"testing"
 
-	"chat/app/logic/conf"
-	"chat/pkg/redis"
+	"github.com/stretchr/testify/assert"
 )
-
-func init()  {
-	conf.Init("../../../config/logic.local.yaml")
-	redis.Init(&conf.Conf.Redis)
-}
 
 func TestTimelineCache_GetCache(t *testing.T) {
 	cache := NewTimelineCache()
-	err := cache.SetCache(nil, 1, 2, 10)
-	if err != nil {
-		t.Errorf("err:%v", err)
-	}
-	err = cache.SetCache(nil, 3, 4, 20)
-	if err != nil {
-		t.Errorf("err:%v", err)
-	}
-	data, err := cache.GetCache(nil, 1, 3)
-	if err != nil {
-		t.Errorf("err:%v", err)
-	}
-	t.Logf("data:%v", data)
+	ctx := context.Background()
+	err := cache.SetCache(ctx, 1, 2, 10)
+	assert.NoError(t, err)
+	err = cache.SetCache(ctx, 3, 4, 20)
+	assert.NoError(t, err)
+	data, err := cache.GetCache(ctx, 1, 2)
+	assert.NoError(t, err)
+	assert.Equal(t, data, int64(10))
 }

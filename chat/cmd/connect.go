@@ -15,10 +15,18 @@ import (
 	logger "chat/pkg/log"
 	"chat/pkg/registry"
 	"chat/pkg/registry/consul"
+	"chat/pkg/trace"
+)
+
+var (
+	ws  bool
+	tcp bool
 )
 
 func init() {
-	connectCmd.Flags().StringVarP(&cfg, "config", "c", "", "config file (default is $ROOT/config/connect.local.yaml)")
+	connectCmd.Flags().StringVarP(&cfg, "config", "c", "", "config file (default is $ROOT/config/connect.yaml)")
+	connectCmd.Flags().BoolVar(&ws, "ws", false, "start websocket server")
+	connectCmd.Flags().BoolVar(&tcp, "tcp", false, "start tcp server")
 }
 
 var connectCmd = &cobra.Command{
@@ -26,11 +34,19 @@ var connectCmd = &cobra.Command{
 	Short: "chat connect server start",
 	Run: func(cmd *cobra.Command, args []string) {
 		if cfg == "" {
-			cfg = "./config/connect.local.yaml"
+			cfg = "./config/connect.yaml"
 		}
 		conf.Init(cfg)
 		connectStart()
 	},
+}
+
+func Connect() {
+	if cfg == "" {
+		cfg = "./config/connect.yaml"
+	}
+	conf.Init(cfg)
+	connectStart()
 }
 
 func connectStart() {
@@ -45,11 +61,22 @@ func connectStart() {
 	if err != nil {
 		log.Fatalf("failed to init register: %v", err)
 	}
+	// init tracer
+	if conf.Conf.Trace.Enable {
+		_, err = trace.Init(conf.Conf.App.Name, conf.Conf.Trace.GetTraceConfig())
+		if err != nil {
+			log.Fatalf("failed to init trace: %v", err)
+		}
+	}
 	// init service
-	svc := connect.NewServer(conf.Conf, rs)
-	svc.StartWsServer()
+	svc := connect.NewServer(conf.Conf)
 	// init grpc server
 	grpcSrv := grpc.New(conf.Conf, svc, rs)
+	if tcp {
+		svc.StartTCP(rs, grpcSrv.GetServerID())
+	} else { // 默认开启websocket服务
+		svc.StartWs(rs, grpcSrv.GetServerID())
+	}
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
@@ -59,12 +86,10 @@ func connectStart() {
 		switch s {
 		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
 			log.Println("Connect Server is exiting")
-			if err := svc.Close(); err != nil {
+			if err = svc.Close(); err != nil {
 				log.Printf("Server close err: %s", err)
 			}
 			//注销服务
-			rs.Unregister(context.Background(), &registry.Service{Id:"h-"+conf.Conf.ServerId})
-			rs.Unregister(context.Background(), &registry.Service{Id:conf.Conf.ServerId})
 			grpcSrv.Stop()
 			return
 		case syscall.SIGHUP:

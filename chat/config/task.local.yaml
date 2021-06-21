@@ -1,8 +1,0 @@
-consul: 192.168.8.76:8500
-connect:
-  ServiceName: chat-connect
-queue:
-  Channel: message
-redis:
-  Addr: 192.168.8.76:6379
-  Password: ""

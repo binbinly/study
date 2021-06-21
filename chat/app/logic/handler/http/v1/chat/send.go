@@ -23,17 +23,17 @@ import (
 // @Param to_id body int true "用户/群组ID"
 // @Param content body string true "内容"
 // @Param options body []byte false "额外选项"
-// @Success 200 {string} json "{}"
+// @Success 0 {string} json "{"code":0,"msg":"OK","data":{}}"
 // @Router /chat/send [post]
 func Send(c *gin.Context) {
 	var req SendParams
 
-	valid := app.BindJson(c, &req)
+	valid := app.BindJSON(c, &req)
 	if !valid {
 		app.Error(c, errno.ErrBind)
 		return
 	}
-	msg, err := service.Svc.ChatSend(c, app.GetUInt32UserId(c), req.ToId, req.Type, req.ChatType, req.Content, req.Options)
+	msg, err := service.Svc.ChatSend(c.Request.Context(), app.GetUInt32UserID(c), req.ToID, req.Type, req.ChatType, req.Content, req.Options)
 	if errors.Is(err, service.ErrFriendNotFound) {
 		app.Error(c, ecode.ErrChatNotFound)
 		return

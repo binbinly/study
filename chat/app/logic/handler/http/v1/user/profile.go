@@ -16,10 +16,10 @@ import (
 // @Accept json
 // @Produce  json
 // @Param Token header string true "用户令牌"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":null}"
+// @success 0 {object} app.Response{data=model.UserInfo} "调用成功结构"
 // @Router /user/profile [get]
 func Profile(c *gin.Context) {
-	user, err := service.Svc.UserInfoById(c, app.GetUInt32UserId(c))
+	user, err := service.Svc.UserInfoByID(c.Request.Context(), app.GetUInt32UserID(c))
 	if err != nil {
 		log.Warnf("[http.user] profile get user info err: %v", err)
 		app.Error(c, ecode.ErrUserNotFound)

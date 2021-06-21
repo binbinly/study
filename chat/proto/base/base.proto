@@ -19,6 +19,6 @@ message UserInfo{
 }
 
 message Proto {
-    string event = 1;
+    int32 msgId = 1;
     bytes data = 2;
 }

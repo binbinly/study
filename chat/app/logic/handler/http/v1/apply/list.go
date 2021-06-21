@@ -16,12 +16,12 @@ import (
 // @Produce  json
 // @Param Token header string true "用户令牌"
 // @Param p query int false "页码"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6Ik"}}"
+// @success 0 {object} app.Response{data=[]model.ApplyList} "调用成功结构"
 // @Router /apply/list [get]
 func List(c *gin.Context) {
-	userId := app.GetUInt32UserId(c)
+	userID := app.GetUInt32UserID(c)
 
-	list, err := service.Svc.ApplyMyList(c, userId, app.GetPageOffset(c))
+	list, err := service.Svc.ApplyMyList(c.Request.Context(), userID, app.GetPageOffset(c))
 	if err != nil {
 		log.Warnf("[http.apply] list err: %v", err)
 		app.Error(c, errno.ErrEmpty)
@@ -39,8 +39,8 @@ func List(c *gin.Context) {
 // @Success 200 {string} json "{"code":0,"message":"OK","data":1}"
 // @Router /apply/count [get]
 func Count(c *gin.Context) {
-	userId := app.GetUInt32UserId(c)
-	count, err := service.Svc.ApplyPendingCount(c, userId)
+	userID := app.GetUInt32UserID(c)
+	count, err := service.Svc.ApplyPendingCount(c.Request.Context(), userID)
 	if err != nil {
 		log.Warnf("[http.count] err: %v", err)
 		app.Success(c, 0)

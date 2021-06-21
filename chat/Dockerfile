@@ -14,13 +14,13 @@ ENV GO111MODULE=on \
 # 执行镜像的工作目录
 WORKDIR /go/src/chat
 
-# 将目录拷贝到镜像里，也可用COPY命令
+# 将目录拷贝到镜像里
 COPY . .
 
 RUN go build -o chat .
 
-# 开放http ws端口
-EXPOSE 9050 9070
+# 开放http tcp ws端口
+EXPOSE 9050 9060 9070
 
 # 启动执行命令
 ENTRYPOINT ["/go/src/chat/chat"]

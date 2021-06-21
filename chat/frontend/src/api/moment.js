@@ -12,9 +12,9 @@ export function momentComment(data) {
   return api.post(api.Moment.Comment, data)
 }
 
-export function momentList(key, user_id, p) {
-  if (key == 'timeline') {
-    return api.get(api.Moment.Timeline, { p })
+export function momentList(user_id, p) {
+  if (user_id > 0) {
+    return api.get(api.Moment.List, { user_id, p })
   }
-  return api.get(api.Moment.List, { user_id, p })
+  return api.get(api.Moment.Timeline, { p })
 }

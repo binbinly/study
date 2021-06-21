@@ -5,6 +5,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
+//NewChannel 创建信道
 func NewChannel(conn *amqp.Connection) (ch *amqp.Channel, err error) {
 	ch, err = conn.Channel()
 	if err != nil {

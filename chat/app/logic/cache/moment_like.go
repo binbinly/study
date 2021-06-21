@@ -22,19 +22,22 @@ func NewLikeCache() *LikeCache {
 	}
 }
 
+//GetCacheKey 获取缓存键
 func (u *LikeCache) GetCacheKey(id uint32) string {
-	return fmt.Sprintf(MomentLikeCacheKey, id)
+	return fmt.Sprintf(momentLikeCacheKey, id)
 }
 
+//SetCache 设置缓存
 func (u *LikeCache) SetCache(ctx context.Context, id uint32, userIds []uint32) error {
 	if len(userIds) == 0 {
-		return u.cache.SetCacheWithNotFound(u.GetCacheKey(id))
+		return u.cache.SetCacheWithNotFound(ctx, u.GetCacheKey(id))
 	}
-	return u.cache.Set(u.GetCacheKey(id), userIds, defaultExpireTime)
+	return u.cache.Set(ctx, u.GetCacheKey(id), userIds, defaultExpireTime)
 }
 
+//GetCache 获取缓存
 func (u *LikeCache) GetCache(ctx context.Context, id uint32) (userIds *[]uint32, err error) {
-	err = u.cache.Get(u.GetCacheKey(id), &userIds)
+	err = u.cache.Get(ctx, u.GetCacheKey(id), &userIds)
 	if err != nil {
 		return nil, err
 	}
@@ -51,14 +54,14 @@ func (u *LikeCache) MultiGetCache(ctx context.Context, ids []uint32) (map[string
 
 	// 需要在这里make实例化，如果在返回参数里直接定义会报 nil map
 	likeMap := make(map[string]*[]uint32)
-	err := u.cache.MultiGet(keys, likeMap)
+	err := u.cache.MultiGet(ctx, keys, likeMap)
 	if err != nil {
 		return nil, err
 	}
 	return likeMap, nil
 }
 
-// DelCacheList 删除列表缓存
+// DelCache 删除列表缓存
 func (u *LikeCache) DelCache(ctx context.Context, id uint32) error {
-	return u.cache.Del(u.GetCacheKey(id))
+	return u.cache.Del(ctx, u.GetCacheKey(id))
 }

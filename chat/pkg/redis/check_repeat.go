@@ -1,10 +1,11 @@
 package redis
 
 import (
+	"context"
 	"strings"
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 )
 
 const (
@@ -16,10 +17,10 @@ const (
 
 // CheckRepeat define interface
 type CheckRepeat interface {
-	Set(key string, value interface{}, expiration time.Duration) error
-	Get(key string) (string, error)
-	SetNX(key string, value interface{}, expiration time.Duration) (bool, error)
-	Del(keys string) int64
+	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error
+	Get(ctx context.Context, key string) (string, error)
+	SetNX(ctx context.Context, key string, value interface{}, expiration time.Duration) (bool, error)
+	Del(ctx context.Context, keys string) int64
 }
 
 type checkRepeat struct {
@@ -39,24 +40,24 @@ func getKey(key string) string {
 	return strings.Join([]string{keyPrefix, PrefixCheckRepeat, key}, ":")
 }
 
-func (c *checkRepeat) Set(key string, value interface{}, expiration time.Duration) error {
+func (c *checkRepeat) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
 	key = getKey(key)
-	return c.client.Set(key, value, expiration).Err()
+	return c.client.Set(ctx, key, value, expiration).Err()
 }
 
-func (c *checkRepeat) Get(key string) (string, error) {
+func (c *checkRepeat) Get(ctx context.Context, key string) (string, error) {
 	key = getKey(key)
-	return c.client.Get(key).Result()
+	return c.client.Get(ctx, key).Result()
 }
 
-func (c *checkRepeat) SetNX(key string, value interface{}, expiration time.Duration) (bool, error) {
+func (c *checkRepeat) SetNX(ctx context.Context, key string, value interface{}, expiration time.Duration) (bool, error) {
 	key = getKey(key)
-	return c.client.SetNX(key, value, expiration).Result()
+	return c.client.SetNX(ctx, key, value, expiration).Result()
 }
 
-func (c *checkRepeat) Del(key string) int64 {
+func (c *checkRepeat) Del(ctx context.Context, key string) int64 {
 	key = getKey(key)
 	var keys []string
 	keys = append(keys, key)
-	return c.client.Del(keys...).Val()
+	return c.client.Del(ctx, keys...).Val()
 }

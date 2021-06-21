@@ -2,38 +2,42 @@ package consul
 
 import (
 	"context"
-	"github.com/pkg/errors"
 	"time"
 
-	"chat/pkg/registry"
 	"github.com/hashicorp/consul/api"
+	"github.com/pkg/errors"
+
+	"chat/pkg/registry"
 )
 
 const (
-	MaxSyncServiceInterval = time.Second * 15 //健康检查间隔
-	Deregister             = 24 * time.Hour   //服务自动注销时间
+	//MaxSyncServiceInterval 健康检查间隔
+	MaxSyncServiceInterval = time.Second * 15
+	//Deregister 服务自动注销时间
+	Deregister = 24 * time.Hour
 )
 
 var consul *Registry
 
-//consul 注册插件
+//Registry 注册插件
 type Registry struct {
 	options *registry.Options
 	client  *api.Client
 	service *registry.Service
 }
 
+//NewConsul 实例化服务注册中心
 func NewConsul() *Registry {
 	consul = &Registry{}
 	return consul
 }
 
-//插件的名字
+//Name 插件的名字
 func (e *Registry) Name() string {
 	return "consul"
 }
 
-//初始化
+//Init 初始化
 func (e *Registry) Init(ctx context.Context, opts ...registry.Option) (err error) {
 
 	e.options = &registry.Options{}
@@ -48,10 +52,10 @@ func (e *Registry) Init(ctx context.Context, opts ...registry.Option) (err error
 	return err
 }
 
-//服务注册
+//Register 服务注册
 func (e *Registry) Register(ctx context.Context, service *registry.Service) (err error) {
 	reg := &api.AgentServiceRegistration{
-		ID:      service.Id,
+		ID:      service.ID,
 		Name:    service.Name,
 		Tags:    []string{service.Name},
 		Port:    service.Port,
@@ -74,12 +78,12 @@ func (e *Registry) Register(ctx context.Context, service *registry.Service) (err
 	return
 }
 
-//服务反注册
+//Unregister 服务反注册
 func (e *Registry) Unregister(ctx context.Context, service *registry.Service) (err error) {
-	return e.client.Agent().ServiceDeregister(service.Id)
+	return e.client.Agent().ServiceDeregister(service.ID)
 }
 
-//服务发现
+//Find 服务发现
 func (e *Registry) Find(ctx context.Context, name string) (service *registry.Service, err error) {
 	return
 }

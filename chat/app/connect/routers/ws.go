@@ -1,13 +1,14 @@
 package routers
 
 import (
-	ws2 "chat/app/connect/handler/ws"
-	"chat/pkg/server/ws"
+	"chat/app/connect/handler/ws/v1"
+	"chat/pkg/connect"
 )
 
-func NewWsEngine() *ws.Engine {
-	r := ws.NewEngine()
-	r.AddRoute("ping", ws2.Ping)
+//NewWsEngine 实例化websocket路由
+func NewWsEngine() *connect.Engine {
+	r := connect.NewEngine()
+	r.AddRoute("ping", v1.Ping)
 	return r
 }
 

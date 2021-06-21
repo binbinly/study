@@ -20,19 +20,22 @@ func NewTimelineCache() *TimelineCache {
 	}
 }
 
+//GetCacheKey 获取缓存键
 func (u *TimelineCache) GetCacheKey(uid, mid uint32) string {
-	return fmt.Sprintf(MomentTimelineCacheKey, uid, mid)
+	return fmt.Sprintf(momentTimelineCacheKey, uid, mid)
 }
 
+//SetCache 设置缓存
 func (u *TimelineCache) SetCache(ctx context.Context, uid, mid uint32, c int64) error {
 	if c == 0 {
-		return u.cache.SetCacheWithNotFound(u.GetCacheKey(uid, mid))
+		return u.cache.SetCacheWithNotFound(ctx, u.GetCacheKey(uid, mid))
 	}
-	return u.cache.Set(u.GetCacheKey(uid, mid), c, defaultExpireTime)
+	return u.cache.Set(ctx, u.GetCacheKey(uid, mid), c, defaultExpireTime)
 }
 
+// GetCache 获取缓存
 func (u *TimelineCache) GetCache(ctx context.Context, uid, mid uint32) (c int64, err error) {
-	err = u.cache.Get(u.GetCacheKey(uid, mid), &c)
+	err = u.cache.Get(ctx, u.GetCacheKey(uid, mid), &c)
 	if err != nil {
 		return 0, err
 	}

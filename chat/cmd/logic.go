@@ -1,31 +1,30 @@
 package cmd
 
 import (
+	"chat/app/logic/routers"
 	"context"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 
 	"chat/app/logic/conf"
-	"chat/app/logic/grpc"
-	"chat/app/logic/http"
 	"chat/app/logic/model"
-	"chat/app/logic/routers"
+	"chat/app/logic/server"
 	"chat/app/logic/service"
 	"chat/pkg/database/orm"
 	logger "chat/pkg/log"
 	"chat/pkg/redis"
 	"chat/pkg/registry"
 	"chat/pkg/registry/consul"
+	"chat/pkg/trace"
 )
 
 func init() {
-	logicCmd.Flags().StringVarP(&cfg, "config", "c", "", "config file (default is $ROOT/config/logic.local.yaml)")
+	logicCmd.Flags().StringVarP(&cfg, "config", "c", "", "config file (default is $ROOT/config/logic.yaml)")
 }
 
 var logicCmd = &cobra.Command{
@@ -33,7 +32,7 @@ var logicCmd = &cobra.Command{
 	Short: "chat logic server start",
 	Run: func(cmd *cobra.Command, args []string) {
 		if cfg == "" {
-			cfg = "./config/logic.local.yaml"
+			cfg = "./config/logic.yaml"
 		}
 		conf.Init(cfg)
 		logicStart()
@@ -53,6 +52,13 @@ func logicStart() {
 	if err != nil {
 		log.Fatalf("failed to init register: %v", err)
 	}
+	// init tracer
+	if conf.Conf.Trace.Enable {
+		_, err = trace.Init(conf.Conf.App.Name, conf.Conf.Trace.GetTraceConfig())
+		if err != nil {
+			log.Fatalf("failed to init trace: %v", err)
+		}
+	}
 	// init db
 	model.Init(&conf.Conf.MySQL)
 	// init redis
@@ -60,14 +66,12 @@ func logicStart() {
 	// Set gin mode.
 	gin.SetMode(conf.Conf.App.Mode)
 	// init http server
-	httpSrv := http.StartServer(rs)
+	httpSrv := server.NewHTTPServer(conf.Conf, rs, routers.NewRouter(&conf.Conf.App))
 	// init service
 	svc := service.New(conf.Conf)
 	// init grpc server
-	grpcSrv := grpc.New(conf.Conf, rs, svc, routers.NewRouter())
+	grpcSrv := server.NewGRPCServer(conf.Conf, rs, svc, routers.NewGrpcRouter())
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
 	for {
@@ -76,7 +80,7 @@ func logicStart() {
 		switch s {
 		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
 			log.Println("Server is exiting") // close http server
-			if err = httpSrv.Shutdown(ctx); err != nil {
+			if err = httpSrv.Stop(); err != nil {
 				log.Printf("Server shutdown err: %s", err)
 			}
 			// close grpc server
@@ -93,7 +97,6 @@ func logicStart() {
 			if err = redis.Close(); err != nil {
 				log.Printf("redis close err:%v", err)
 			}
-			rs.Unregister(context.Background(), &registry.Service{Id: conf.Conf.App.ServerId})
 			return
 		case syscall.SIGHUP:
 		default:

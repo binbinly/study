@@ -1,6 +1,7 @@
 package rabbitmq
 
 import (
+	"context"
 	"time"
 
 	"github.com/google/uuid"
@@ -10,12 +11,15 @@ import (
 )
 
 const (
-	// 交换器模式，
+	//ExchangeFanout 交换器常用三种模式，
 	ExchangeFanout = "fanout"
+	//ExchangeDirect direct
 	ExchangeDirect = "direct"
+	//ExchangeTopic topic
 	ExchangeTopic  = "topic"
 )
 
+//Producer 生产者
 type Producer struct {
 	addr          string
 	conn          *amqp.Connection
@@ -30,6 +34,7 @@ type Producer struct {
 	quit          chan struct{}
 }
 
+//NewProducer 创建生成者
 func NewProducer(c *Config) *Producer {
 	p := &Producer{
 		addr:         c.Addr,
@@ -43,6 +48,7 @@ func NewProducer(c *Config) *Producer {
 	return p
 }
 
+//Start 开启生产者
 func (p *Producer) Start() error {
 	if err := p.Run(); err != nil {
 		return err
@@ -53,6 +59,7 @@ func (p *Producer) Start() error {
 	return nil
 }
 
+//Stop 体质生产者
 func (p *Producer) Stop() {
 	close(p.quit)
 
@@ -63,6 +70,7 @@ func (p *Producer) Stop() {
 	}
 }
 
+//Run 运行
 func (p *Producer) Run() error {
 	var err error
 	if p.conn, err = OpenConnection(p.addr); err != nil {
@@ -94,7 +102,7 @@ func (p *Producer) Run() error {
 	return err
 }
 
-// 断线重连必读文章 https://ms2008.github.io/2019/06/16/golang-rabbitmq/
+//ReConnect 断线重连必读文章 https://ms2008.github.io/2019/06/16/golang-rabbitmq/
 func (p *Producer) ReConnect() {
 	for {
 		select {
@@ -147,7 +155,8 @@ func (p *Producer) ReConnect() {
 	}
 }
 
-func (p *Producer) Publish(msg []byte) error {
+//Publish push消息
+func (p *Producer) Publish(ctx context.Context, msg []byte) error {
 	if p.exchange == "" {
 		p.routingKey = p.queue.Name
 	}
@@ -164,9 +173,10 @@ func (p *Producer) Publish(msg []byte) error {
 		})
 }
 
-func (p *Producer) MultiPublish(msg ...[]byte) (err error) {
+//MultiPublish 批量push消息
+func (p *Producer) MultiPublish(ctx context.Context, msg ...[]byte) (err error) {
 	for _, m := range msg {
-		err = p.Publish(m)
+		err = p.Publish(ctx, m)
 		if err != nil {
 			log.Warnf("[queue.redis] multi publish err:%v", err)
 		}

@@ -3,6 +3,7 @@ package main
 import (
 	logger "chat/pkg/log"
 	"chat/pkg/queue/rabbitmq"
+	"context"
 	"log"
 )
 
@@ -27,7 +28,7 @@ func main()  {
 		if err := producer.Start(); err != nil {
 			log.Printf("start producer err: %s", err.Error())
 		}
-		if err := producer.Publish(message); err != nil {
+		if err := producer.Publish(context.Background(), message); err != nil {
 			log.Printf("failed publish message: %s", err.Error())
 		}
 	}()

@@ -8,8 +8,8 @@ import (
 	"chat/pkg/log"
 )
 
-// BindJson 绑定请求参数
-func BindJson(c *gin.Context, form interface{}) bool {
+// BindJSON 绑定请求参数
+func BindJSON(c *gin.Context, form interface{}) bool {
 	if err := c.ShouldBindJSON(form); err != nil {
 		log.Infof("[bind.json] param err: %v", err)
 		return false
@@ -17,8 +17,8 @@ func BindJson(c *gin.Context, form interface{}) bool {
 	return true
 }
 
-// GetUserId 返回用户id
-func GetUserId(c *gin.Context) int {
+// GetUserID 返回用户id
+func GetUserID(c *gin.Context) int {
 	if c == nil {
 		return 0
 	}
@@ -26,8 +26,9 @@ func GetUserId(c *gin.Context) int {
 	return c.GetInt("uid")
 }
 
-func GetUInt32UserId(c *gin.Context) uint32 {
-	return uint32(GetUserId(c))
+//GetUInt32UserID 获取uint32用户id
+func GetUInt32UserID(c *gin.Context) uint32 {
+	return uint32(GetUserID(c))
 }
 
 // RouteNotFound 未找到相关路由

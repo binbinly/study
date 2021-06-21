@@ -3,6 +3,7 @@ package main
 import (
 	"chat/app/logic/conf"
 	"chat/pkg/redis"
+	"context"
 	"os"
 )
 
@@ -13,5 +14,5 @@ func init()  {
 }
 
 func main()  {
-	redis.Client.Publish("message", "aaa")
+	redis.Client.Publish(context.Background(),"message", "aaa")
 }

@@ -17,10 +17,10 @@ import (
 // @Accept json
 // @Produce json
 // @Param Token header string true "用户令牌"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":null}"
+// @success 0 {object} app.Response{data=[]model.UserBase} "调用成功结构"
 // @Router /friend/list [get]
 func List(c *gin.Context) {
-	list, err := service.Svc.FriendMyAll(c, app.GetUInt32UserId(c))
+	list, err := service.Svc.FriendMyAll(c.Request.Context(), app.GetUInt32UserID(c))
 	if err != nil {
 		log.Warnf("[http.friend] list err: %v", err)
 		app.Error(c, errno.ErrEmpty)
@@ -37,16 +37,16 @@ func List(c *gin.Context) {
 // @Produce json
 // @Param Authorization header string true "Authentication header"
 // @Param id query int true "标签ID"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":null}"
+// @success 0 {object} app.Response{data=[]model.UserBase} "调用成功结构"
 // @Router /friend/tag_list [get]
 func TagList(c *gin.Context) {
-	tagId := cast.ToUint32(c.Query("id"))
-	if tagId == 0 {
+	tagID := cast.ToUint32(c.Query("id"))
+	if tagID == 0 {
 		app.Error(c, errno.ErrBind)
 		return
 	}
 
-	list, err := service.Svc.FriendMyListByTagId(c, app.GetUInt32UserId(c), tagId)
+	list, err := service.Svc.FriendMyListByTagID(c.Request.Context(), app.GetUInt32UserID(c), tagID)
 	if err != nil {
 		log.Warnf("[http.friend] tag list err: %v", err)
 		app.Error(c, errno.ErrEmpty)

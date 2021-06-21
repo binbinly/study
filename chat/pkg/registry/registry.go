@@ -4,6 +4,7 @@ import (
 	"context"
 )
 
+//Registry 注册器
 type Registry interface {
 	//插件名字
 	Name() string
@@ -17,7 +18,7 @@ type Registry interface {
 	Find(ctx context.Context, name string) (service *Service, err error)
 }
 
-// Config 服务注册中心
+//Config 服务注册中心
 type Config struct {
 	Name string
 	Host string

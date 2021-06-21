@@ -44,10 +44,25 @@
     <!-- 扩展菜单 -->
     <van-popup v-model="show" position="bottom" :overlay="false" transition-appea>
       <div style="height: 203px;" class="border-top border-light-secondary bg-light flex flex-wrap">
-        <div style="width: 45px;height: 45px;" class="flex align-center justify-center" hover-class="bg-white" v-for="(item,index) in faceList"
-             @click="addFace(item)">
-          <span style="font-size:24px;">{{item}}</span>
-        </div>
+        <template v-if="mode=='action'">
+          <van-swipe :loop=" false">
+            <van-swipe-item v-for="(item,index) in emoticonOrActionList" :key="index">
+              <van-grid :column-num="3">
+                <van-grid-item v-for="(item2,index2) in item" @click="actionEvent(item2)" :text="item2.name">
+                  <template #icon>
+                    <van-image :src="item2.icon" fit="center" width="50" height="50" />
+                  </template>
+                </van-grid-item>
+              </van-grid>
+            </van-swipe-item>
+          </van-swipe>
+        </template>
+        <template v-else>
+          <div style="width: 45px;height: 45px;" class="flex align-center justify-center" hover-class="bg-white"
+               v-for="(item,index) in emoticonOrActionList" @click="addFace(item)">
+            <span style="font-size:24px;">{{item}}</span>
+          </div>
+        </template>
       </div>
     </van-popup>
 
@@ -87,7 +102,6 @@ import IconButton from '@/components/icon-button.vue';
 import FreePopup from '@/components/free-popup.vue';
 import { chatDetail } from '@/api/chat.js'
 import { collectCreate } from '@/api/collect.js'
-import $C from '@/config/index.js'
 import event from '@/utils/event.js'
 import { uploadFile } from '@/api/common.js'
 import { mapState, mapMutations } from 'vuex'
@@ -137,7 +151,7 @@ export default {
           event: ""
         }]
       ],
-      faceList: ["😀", "😁", "😂", "😃", "😄", "😅", "😆", "😉", "😊", "😋", "😎", "😍", "😘", "😗", "😙", "😚", "😇", "😐", "😑", "😶", "😏", "😣", "😥", "😮", "😯", "😪", "😫", "😴", "😌", "😛", "😜", "😝", "😒", "😓", "😔", "😕", "😲", "😷", "😖", "😞", "😟", "😤", "😢", "😭", "😦", "😧", "😨", "😬", "😰", "😱", "😳", "😵", "😡", "😠"],
+      emoticonList: ["😀", "😁", "😂", "😃", "😄", "😅", "😆", "😉", "😊", "😋", "😎", "😍", "😘", "😗", "😙", "😚", "😇", "😐", "😑", "😶", "😏", "😣", "😥", "😮", "😯", "😪", "😫", "😴", "😌", "😛", "😜", "😝", "😒", "😓", "😔", "😕", "😲", "😷", "😖", "😞", "😟", "😤", "😢", "😭", "😦", "😧", "😨", "😬", "😰", "😱", "😳", "😵", "😡", "😠"],
       // 键盘高度
       KeyboardHeight: 0,
       menusList: [],
@@ -311,25 +325,6 @@ export default {
       }
     },
     initData() {
-      var total = 20
-      var page = Math.ceil(total / 8)
-      var arr = []
-      for (var i = 0; i < page; i++) {
-        var start = i * 6
-        arr[i] = []
-        for (var j = 0; j < 6; j++) {
-          var no = start + j
-          if ((no + 1) > total) {
-            continue;
-          }
-          arr[i].push({
-            name: "表情" + no,
-            icon: $C.emoticonUrl + no + '.gif',
-            event: "sendEmoticon"
-          })
-        }
-      }
-      this.emoticonList = arr
       chatDetail({
         id: this.detail.id,
         type: this.detail.chat_type
@@ -375,6 +370,7 @@ export default {
       this.chat.send(message, onProgress).then(res => {
         // 发送成功
         this.list[index].id = res.id
+        this.list[index].from.name = res.from.name
         this.list[index].status = 'success'
       }).catch(err => {
         // 发送失败

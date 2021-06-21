@@ -1,5 +1,3 @@
-// span logger for tracing
-// reference: https://github.com/jaegertracing/jaeger/tree/master/examples/hotrod/pkg/log
 package log
 
 import (
@@ -7,12 +5,14 @@ import (
 	"time"
 
 	"github.com/opentracing/opentracing-go"
-	tag "github.com/opentracing/opentracing-go/ext"
+	"github.com/opentracing/opentracing-go/ext"
 	spanlog "github.com/opentracing/opentracing-go/log"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
+// span logger for tracing
+// reference: https://github.com/jaegertracing/jaeger/tree/master/examples/hotrod/pkg/log
 type spanLogger struct {
 	logger     *zap.Logger
 	span       opentracing.Span
@@ -20,62 +20,75 @@ type spanLogger struct {
 }
 
 func (sl spanLogger) Debug(args ...interface{}) {
-	panic("implement me")
+	msg := fmt.Sprint(args...)
+	var fields []zap.Field
+	sl.logToSpan("debug", msg)
+	sl.logger.Debug(msg, append(sl.spanFields, fields...)...)
 }
 
 func (sl spanLogger) Debugf(format string, args ...interface{}) {
-	msg := fmt.Sprintf(format, args)
+	msg := fmt.Sprintf(format, args...)
 	var fields []zap.Field
-	sl.logToSpan("info", msg)
+	sl.logToSpan("debug", msg)
 	sl.logger.Debug(msg, append(sl.spanFields, fields...)...)
 }
 
 func (sl spanLogger) Info(args ...interface{}) {
-	msg := fmt.Sprint(args)
+	msg := fmt.Sprint(args...)
 	var fields []zap.Field
 	sl.logToSpan("info", msg)
 	sl.logger.Info(msg, append(sl.spanFields, fields...)...)
 }
 
 func (sl spanLogger) Infof(format string, args ...interface{}) {
-	panic("implement me")
+	msg := fmt.Sprintf(format, args...)
+	var fields []zap.Field
+	sl.logToSpan("info", msg)
+	sl.logger.Info(msg, append(sl.spanFields, fields...)...)
 }
 
 func (sl spanLogger) Warn(args ...interface{}) {
-	msg := fmt.Sprint(args)
+	msg := fmt.Sprint(args...)
 	var fields []zap.Field
-	sl.logToSpan("error", msg)
+	sl.logToSpan("warn", msg)
 	sl.logger.Warn(msg, append(sl.spanFields, fields...)...)
 }
 
 func (sl spanLogger) Warnf(format string, args ...interface{}) {
-	msg := fmt.Sprint(format, args)
+	msg := fmt.Sprintf(format, args...)
 	var fields []zap.Field
-	sl.logToSpan("error", msg)
+	sl.logToSpan("warn", msg)
 	sl.logger.Warn(msg, append(sl.spanFields, fields...)...)
 }
 
 func (sl spanLogger) Error(args ...interface{}) {
-	msg := fmt.Sprint(args)
+	msg := fmt.Sprint(args...)
 	var fields []zap.Field
 	sl.logToSpan("error", msg)
 	sl.logger.Error(msg, append(sl.spanFields, fields...)...)
 }
 
 func (sl spanLogger) Errorf(format string, args ...interface{}) {
-	panic("implement me")
+	msg := fmt.Sprintf(format, args...)
+	var fields []zap.Field
+	sl.logToSpan("error", msg)
+	sl.logger.Error(msg, append(sl.spanFields, fields...)...)
 }
 
 func (sl spanLogger) Fatal(args ...interface{}) {
-	msg := fmt.Sprint(args)
+	msg := fmt.Sprint(args...)
 	var fields []zap.Field
 	sl.logToSpan("fatal", msg)
-	tag.Error.Set(sl.span, true)
+	ext.Error.Set(sl.span, true)
 	sl.logger.Fatal(msg, append(sl.spanFields, fields...)...)
 }
 
 func (sl spanLogger) Fatalf(format string, args ...interface{}) {
-	panic("implement me")
+	msg := fmt.Sprintf(format, args...)
+	var fields []zap.Field
+	sl.logToSpan("fatal", msg)
+	ext.Error.Set(sl.span, true)
+	sl.logger.Fatal(msg, append(sl.spanFields, fields...)...)
 }
 
 func (sl spanLogger) Panicf(format string, args ...interface{}) {

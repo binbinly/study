@@ -2,11 +2,19 @@
 package redis
 
 import (
-	"fmt"
+	logger "chat/pkg/log"
 	"sync"
 	"testing"
 	"time"
 )
+
+func TestMain(m *testing.M) {
+	InitTestRedis()
+	logger.InitLog(logger.NewConfig())
+	if code := m.Run(); code != 0 {
+		panic(code)
+	}
+}
 
 // go test -v redis_example_test.go
 func TestOneRedisData(t *testing.T) {
@@ -14,7 +22,7 @@ func TestOneRedisData(t *testing.T) {
 	for i := 0; i < 120; i++ {
 		getRemoteOneRedisData(i)
 	}
-	fmt.Println("Test_OneRedisData cost: ", time.Since(t1))
+	t.Log("Test_OneRedisData cost: ", time.Since(t1))
 }
 
 func TestPipelineRedisData(t *testing.T) {
@@ -24,7 +32,7 @@ func TestPipelineRedisData(t *testing.T) {
 		ids = append(ids, i)
 	}
 	getRemotePipelineRedisData(ids)
-	fmt.Println("Test_PipelineRedisData cost: ", time.Since(t1))
+	t.Log("Test_PipelineRedisData cost: ", time.Since(t1))
 }
 
 func TestGoroutinePipelineRedisData(t *testing.T) {
@@ -34,7 +42,7 @@ func TestGoroutinePipelineRedisData(t *testing.T) {
 		ids = append(ids, i)
 	}
 	getGoroutinePipelineRedisData(ids)
-	fmt.Println("Test_GoroutinePipelineRedisData cost: ", time.Since(t1))
+	t.Log("Test_GoroutinePipelineRedisData cost: ", time.Since(t1))
 }
 
 func getRemoteOneRedisData(i int) int {

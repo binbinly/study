@@ -3,17 +3,15 @@ package orm
 import (
 	"database/sql"
 	"fmt"
-	"gorm.io/gorm/logger"
-	"gorm.io/gorm/schema"
 	"log"
 	"os"
 	"time"
 
-	// MySQL driver.
 	"gorm.io/driver/mysql"
-	// GORM MySQL
 	"gorm.io/gorm"
-	gromopentracing "gorm.io/plugin/opentracing"
+	"gorm.io/gorm/logger"
+	"gorm.io/gorm/schema"
+	"gorm.io/plugin/opentracing"
 )
 
 var mysqlDB *sql.DB
@@ -46,15 +44,15 @@ func NewMySQL(c *Config) (db *gorm.DB) {
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
 			SlowThreshold: 2 * time.Second, // 慢 SQL 阈值
-			LogLevel:      logger.Info, // Log level
-			Colorful:      false,       // 禁用彩色打印
+			LogLevel:      logger.Warn,     // Log level
+			Colorful:      false,           // 禁用彩色打印
 		},
 	)
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger:      newLogger,
-		DisableForeignKeyConstraintWhenMigrating: true,  //禁用自动创建数据库外键约束
-		PrepareStmt: true, //PreparedStmt 在执行任何 SQL 时都会创建一个 prepared statement 并将其缓存，以提高后续的效率
+		Logger:                                   newLogger,
+		DisableForeignKeyConstraintWhenMigrating: true, //禁用自动创建数据库外键约束
+		PrepareStmt:                              true, //PreparedStmt 在执行任何 SQL 时都会创建一个 prepared statement 并将其缓存，以提高后续的效率
 		NamingStrategy: schema.NamingStrategy{
 			TablePrefix:   c.TablePrefix, // 表名前缀，`User` 的表名应该是 `t_users`
 			SingularTable: true,          // 使用单数表名，启用该选项，此时，`User` 的表名应该是 `t_user`
@@ -79,7 +77,10 @@ func NewMySQL(c *Config) (db *gorm.DB) {
 	// SetConnMaxLifetime 设置了连接可复用的最大时间。
 	mysqlDB.SetConnMaxLifetime(c.ConnMaxLifeTime)
 
-	db.Use(gromopentracing.New())
+	err = db.Use(gormopentracing.New())
+	if err != nil {
+		log.Panicf("using gorm opentracing, err: %+v", err)
+	}
 
 	return db
 }

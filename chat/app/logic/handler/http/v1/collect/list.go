@@ -16,10 +16,10 @@ import (
 // @Produce  json
 // @Param Token header string true "用户令牌"
 // @Param p query int false "页码"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":{}"
+// @success 0 {object} app.Response{data=[]model.Collect} "调用成功结构"
 // @Router /collect/list [get]
 func List(c *gin.Context) {
-	list, err := service.Svc.CollectGetList(c, app.GetUInt32UserId(c), app.GetPageOffset(c))
+	list, err := service.Svc.CollectGetList(c.Request.Context(), app.GetUInt32UserID(c), app.GetPageOffset(c))
 	if err != nil {
 		log.Warnf("[http.collect] list err: %v", err)
 		app.Error(c, errno.ErrEmpty)

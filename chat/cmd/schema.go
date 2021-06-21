@@ -12,7 +12,7 @@ import (
 var reset bool
 
 func init() {
-	migrateCmd.Flags().StringVarP(&cfg, "config", "c", "", "config file (default is $ROOT/config/logic.local.yaml)")
+	migrateCmd.Flags().StringVarP(&cfg, "config", "c", "", "config file (default is $ROOT/config/logic.yaml)")
 	migrateCmd.Flags().BoolVar(&reset,"reset", false, "db migrate reset all")
 }
 
@@ -22,7 +22,7 @@ var migrateCmd = &cobra.Command{
 	Short: "chat migrate database",
 	Run: func(cmd *cobra.Command, args []string) {
 		if cfg == "" {
-			cfg = "./config/logic.local.yaml"
+			cfg = "./config/logic.yaml"
 		}
 		conf.Init(cfg)
 		schema()

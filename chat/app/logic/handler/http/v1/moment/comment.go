@@ -19,16 +19,16 @@ import (
 // @Produce  json
 // @Param Token header string true "用户令牌"
 // @Param req body CommentParams true "create"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":{}"
+// @Success 0 {string} json "{"code":0,"msg":"OK","data":{}}"
 // @Router /moment/comment [post]
 func Comment(c *gin.Context) {
 	var req CommentParams
-	v := app.BindJson(c, &req)
+	v := app.BindJSON(c, &req)
 	if !v {
 		app.Error(c, errno.ErrBind)
 		return
 	}
-	err := service.Svc.MomentComment(c, app.GetUInt32UserId(c), req.ReplyId, req.Id, req.Content)
+	err := service.Svc.MomentComment(c.Request.Context(), app.GetUInt32UserID(c), req.ReplyID, req.ID, req.Content)
 	if errors.Is(err, service.ErrMomentNotFound) {
 		app.Error(c, ecode.ErrMomentNotFound)
 		return

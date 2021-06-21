@@ -3,7 +3,7 @@
     <!-- 导航栏 -->
     <nav-bar title="发现"></nav-bar>
 
-    <van-cell title="朋友圈" is-link center to="/moments?key=timeline">
+    <van-cell title="朋友圈" is-link center to="/moments">
       <template #icon>
         <span slot="icon" class="iconfont font-lg pr-1">&#xe667;</span>
       </template>

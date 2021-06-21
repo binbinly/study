@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"time"
 
 	"chat/app/logic/conf"
 	"chat/pkg/redis"
@@ -15,17 +17,31 @@ func init()  {
 }
 
 func main()  {
-	Subscribe()
+	//Subscribe()
+	Pipe()
+}
+
+func Pipe()  {
+	pipe := redis.Client.Pipeline()
+	c := context.Background()
+	key := "test"
+	pipe.Incr(c, key)
+	pipe.Expire(c, key, time.Minute)
+	_, err := pipe.Exec(c)
+	if err != nil {
+		fmt.Println("err", err)
+	}
+
 }
 
 func Subscribe(){
 	//参数1 频道名 字符串类型
-	pubsub := redis.Client.Subscribe("message")
-	_, err := pubsub.Receive()
+	sub := redis.Client.Subscribe(context.Background(), "message")
+	_, err := sub.Receive(context.Background())
 	if err != nil {
 		return
 	}
-	ch := pubsub.Channel()
+	ch := sub.Channel()
 	for msg := range ch {
 		fmt.Println( msg.Channel, msg.Payload)
 	}

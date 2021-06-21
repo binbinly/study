@@ -1,15 +1,18 @@
 package model
 
 import (
-	"chat/pkg/auth"
+	"chat/pkg/crypt/auth"
 	"gorm.io/gorm"
 )
 
 const (
-	StatusNormal  = iota //状态 - 正常
-	StatusDisable        //状态 - 禁用
+	//StatusNormal 状态 - 正常
+	StatusNormal = iota
+	//StatusDisable 状态 - 禁用
+	StatusDisable
 )
 
+//UserModel 用户模型
 type UserModel struct {
 	PriID
 	Username string `json:"username" gorm:"column:username;not null;uniqueIndex;type:varchar(60);comment:用户名"`
@@ -27,7 +30,7 @@ type UserModel struct {
 
 // UserInfo 对外暴露的用户信息结构体
 type UserInfo struct {
-	ID       uint32    `json:"id"`
+	ID       uint32 `json:"id"`
 	Username string `json:"username"`
 	Nickname string `json:"nickname"`
 	Sign     string `json:"sign"`
@@ -37,7 +40,7 @@ type UserInfo struct {
 
 // UserBase 用户基础信息
 type UserBase struct {
-	ID     uint32    `json:"id"`
+	ID     uint32 `json:"id"`
 	Name   string `json:"name"`
 	Avatar string `json:"avatar"`
 }
@@ -46,6 +49,15 @@ type UserBase struct {
 type UserToken struct {
 	User  *UserInfo `json:"user"`
 	Token string    `json:"token"`
+}
+
+// UserEs 存入es中结构
+type UserEs struct {
+	ID       uint32 `json:"id"`
+	Username string `json:"username"`
+	Nickname string `json:"nickname"`
+	Phone    string `json:"phone"`
+	Avatar   string `json:"avatar"`
 }
 
 // TableName 表名

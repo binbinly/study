@@ -1,14 +1,16 @@
 package repository
 
 import (
-	"chat/app/logic/cache"
 	"context"
 
 	"gorm.io/gorm"
+
+	"chat/app/logic/cache"
 )
 
 var _ IRepo = (*Repo)(nil)
 
+//IRepo 数据仓库接口
 type IRepo interface {
 	IApply
 	ICollect
@@ -26,7 +28,7 @@ type IRepo interface {
 	IReport
 }
 
-// repo mysql struct
+// Repo mysql struct
 type Repo struct {
 	db *gorm.DB
 
@@ -34,6 +36,7 @@ type Repo struct {
 	collectCache *cache.CollectCache
 	tagCache     *cache.TagCache
 
+	momentCache   *cache.MomentCache
 	likeCache     *cache.LikeCache
 	commentCache  *cache.CommentCache
 	timelineCache *cache.TimelineCache
@@ -53,6 +56,7 @@ func New(db *gorm.DB) IRepo {
 		collectCache: cache.NewCollectCache(),
 		tagCache:     cache.NewTagCache(),
 
+		momentCache:   cache.NewMomentCache(),
 		likeCache:     cache.NewLikeCache(),
 		commentCache:  cache.NewCommentCache(),
 		timelineCache: cache.NewTimelineCache(),

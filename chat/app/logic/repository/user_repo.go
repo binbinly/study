@@ -15,13 +15,14 @@ import (
 	"chat/pkg/redis"
 )
 
+//IUser 用户数据仓库
 type IUser interface {
 	// 创建用户
-	UserCreate(ctx context.Context, user model.UserModel) (id uint32, err error)
+	UserCreate(ctx context.Context, user *model.UserModel) (id uint32, err error)
 	// 修改用户信息
 	UserUpdate(ctx context.Context, id uint32, userMap map[string]interface{}) (err error)
 	// id获取用户信息
-	GetUserById(ctx context.Context, id uint32) (*model.UserModel, error)
+	GetUserByID(ctx context.Context, id uint32) (*model.UserModel, error)
 	// 批量获取用户信息
 	GetUsersByIds(ctx context.Context, ids []uint32) ([]*model.UserModel, error)
 	// 搜索用户
@@ -35,8 +36,8 @@ type IUser interface {
 }
 
 // UserCreate 创建用户
-func (r *Repo) UserCreate(ctx context.Context, user model.UserModel) (id uint32, err error) {
-	err = r.db.Create(&user).Error
+func (r *Repo) UserCreate(ctx context.Context, user *model.UserModel) (id uint32, err error) {
+	err = r.db.WithContext(ctx).Create(user).Error
 	if err != nil {
 		return 0, errors.Wrap(err, "[repo.user] Create err")
 	}
@@ -46,7 +47,7 @@ func (r *Repo) UserCreate(ctx context.Context, user model.UserModel) (id uint32,
 
 // UserUpdate 更新用户信息
 func (r *Repo) UserUpdate(ctx context.Context, id uint32, userMap map[string]interface{}) (err error) {
-	info, err := r.GetUserById(ctx, id)
+	info, err := r.GetUserByID(ctx, id)
 	if err != nil {
 		return errors.Wrap(err, "[repo.user] Update err")
 	}
@@ -57,16 +58,16 @@ func (r *Repo) UserUpdate(ctx context.Context, id uint32, userMap map[string]int
 		return errors.Wrap(err, "[repo.user] delete cache")
 	}
 
-	return r.db.Model(info).Updates(userMap).Error
+	return r.db.WithContext(ctx).Model(info).Updates(userMap).Error
 }
 
 // GetUserByID 获取用户
 // 缓存的更新策略使用 Cache Aside Pattern
 // see: https://coolshell.cn/articles/17416.html
-func (r *Repo) GetUserById(ctx context.Context, id uint32) (user *model.UserModel, err error) {
+func (r *Repo) GetUserByID(ctx context.Context, id uint32) (user *model.UserModel, err error) {
 	start := time.Now()
 	defer func() {
-		log.Infof("[repo.user] get user by uid: %d cost: %d μs", id, time.Since(start).Microseconds())
+		log.Debugf("[repo.user] get user by uid: %d cost: %d μs", id, time.Since(start).Microseconds())
 	}()
 	// 从cache获取
 	user, err = r.userCache.GetUserCache(ctx, id)
@@ -80,7 +81,7 @@ func (r *Repo) GetUserById(ctx context.Context, id uint32) (user *model.UserMode
 	}
 	// hit cache
 	if user != nil {
-		log.Infof("[repo.user] get user data from cache, uid: %d", id)
+		log.Debugf("[repo.user] get user data from cache, uid: %d", id)
 		return
 	}
 
@@ -91,7 +92,7 @@ func (r *Repo) GetUserById(ctx context.Context, id uint32) (user *model.UserMode
 	getDataFn := func() (interface{}, error) {
 		data := new(model.UserModel)
 		// 从数据库中获取
-		err = r.db.First(data, id).Error
+		err = r.db.WithContext(ctx).First(data, id).Error
 		// if data is empty, set not found cache to prevent cache penetration(缓存穿透)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = r.userCache.SetCacheWithNotFound(ctx, id)
@@ -106,7 +107,7 @@ func (r *Repo) GetUserById(ctx context.Context, id uint32) (user *model.UserMode
 		// set cache
 		err = r.userCache.SetUserCache(ctx, id, data)
 		if err != nil {
-			return data, errors.Wrap(err, "[repo.user] set user data err")
+			return data, errors.Wrap(err, "[repo.user] set cache data err")
 		}
 		return data, nil
 	}
@@ -137,7 +138,7 @@ func (r *Repo) GetUsersByIds(ctx context.Context, ids []uint32) ([]*model.UserMo
 		idx := r.userCache.GetUserCacheKey(uid)
 		userModel, ok := userCacheMap[idx]
 		if !ok {
-			userModel, err = r.GetUserById(ctx, uid)
+			userModel, err = r.GetUserByID(ctx, uid)
 			if err != nil {
 				log.Warnf("[repo.user] get user model err: %v", err)
 				continue
@@ -150,7 +151,7 @@ func (r *Repo) GetUsersByIds(ctx context.Context, ids []uint32) ([]*model.UserMo
 
 // GetUsersByKeyword 搜索用户
 func (r *Repo) GetUsersByKeyword(ctx context.Context, keyword string) (users []*model.UserModel, err error) {
-	err = r.db.Where("username like ?", keyword+"%").Limit(10).Find(&users).Error
+	err = r.db.WithContext(ctx).Where("username like ?", keyword+"%").Limit(10).Find(&users).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, errors.Wrap(err, "[repo.user] search user err by keyword")
 	}
@@ -160,7 +161,7 @@ func (r *Repo) GetUsersByKeyword(ctx context.Context, keyword string) (users []*
 // GetUserByUsername 根据账号获取用户
 func (r *Repo) GetUserByUsername(ctx context.Context, username string) (user *model.UserModel, err error) {
 	user = new(model.UserModel)
-	err = r.db.Where("username = ?", username).First(&user).Error
+	err = r.db.WithContext(ctx).Where("username = ?", username).First(&user).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, errors.Wrap(err, "[repo.user] get user err by username")
 	}
@@ -170,7 +171,7 @@ func (r *Repo) GetUserByUsername(ctx context.Context, username string) (user *mo
 // GetUserByPhone 根据手机号获取用户
 func (r *Repo) GetUserByPhone(ctx context.Context, phone int64) (user *model.UserModel, err error) {
 	user = new(model.UserModel)
-	err = r.db.Where("phone = ?", phone).First(&user).Error
+	err = r.db.WithContext(ctx).Where("phone = ?", phone).First(&user).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, errors.Wrap(err, "[repo.user] get user err by phone")
 	}
@@ -180,9 +181,9 @@ func (r *Repo) GetUserByPhone(ctx context.Context, phone int64) (user *model.Use
 // UserCheckExist 用户是否已存在
 func (r *Repo) UserCheckExist(ctx context.Context, username string, phone int64) bool {
 	var c int64
-	err := r.db.Model(&model.UserModel{}).Where("phone = ? or username=?", phone, username).Count(&c).Error
+	err := r.db.WithContext(ctx).Model(&model.UserModel{}).Where("phone = ? or username=?", phone, username).Count(&c).Error
 	if err != nil {
-		log.Errorf("[repo.user] user exist err:%v", err)
+		log.Warnf("[repo.user] user exist err:%v", err)
 		return false
 	}
 	return c > 0

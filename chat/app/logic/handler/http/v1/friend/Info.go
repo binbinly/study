@@ -21,15 +21,15 @@ import (
 // @Produce  json
 // @Param Token header string true "用户令牌"
 // @Param id query int true "好友ID"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":null}"
+// @success 0 {object} app.Response{data=model.FriendInfo} "调用成功结构"
 // @Router /friend/info [get]
 func Info(c *gin.Context) {
-	friendId := cast.ToUint32(c.Query("id"))
-	if friendId == 0 {
+	friendID := cast.ToUint32(c.Query("id"))
+	if friendID == 0 {
 		app.Error(c, errno.ErrBind)
 		return
 	}
-	info, err := service.Svc.FriendInfo(c, app.GetUInt32UserId(c), friendId)
+	info, err := service.Svc.FriendInfo(c.Request.Context(), app.GetUInt32UserID(c), friendID)
 	if errors.Is(err, service.ErrUserNotFound) {
 		app.Error(c, ecode.ErrUserNotFound)
 		return

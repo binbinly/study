@@ -2,6 +2,7 @@ package idl
 
 import "chat/app/logic/model"
 
+//TransferFriendInput 好友对外转化结构
 type TransferFriendInput struct {
 	User       *model.UserModel
 	Friend     *model.FriendModel

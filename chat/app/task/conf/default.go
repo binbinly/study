@@ -8,30 +8,32 @@ import (
 
 func defaultConf(v *viper.Viper) {
 	conf.DefaultConf(v)
+	v.SetDefault("app", map[string]interface{}{
+		"Name":        "chat_task",
+		"RoutineChan": 1024,
+		"RoutineSize": 8,
+	})
 	v.SetDefault("consul", "127.0.0.1:8500")
 	v.SetDefault("queue", map[string]interface{}{
 		"Plugin":  "redis",
 		"Channel": "message",
 		"Nsq": map[string]interface{}{
 			"ConsumerHost": []string{"127.0.0.1:4161"},
-			"Topic":   "message",
-			"Channel": "message",
-			"MaxAttempts": 3,
+			"Topic":        "message",
+			"Channel":      "message",
+			"MaxAttempts":  3,
 		},
 		"Rabbitmq": map[string]interface{}{
-			"Addr": "guest:guest@localhost:5672/",
-			"QueueName":"message",
+			"Addr":      "guest:guest@localhost:5672/",
+			"QueueName": "message",
 		},
 	})
 	v.SetDefault("grpcClient", map[string]interface{}{
+		"ServiceName":      "chat_connect",
 		"Timeout":          "5s",
+		"QPSLimit":         100,
 		"KeepAliveTime":    "15s",
 		"KeepAliveTimeout": "1s",
-	})
-	v.SetDefault("connect", map[string]interface{}{
-		"RoutineChan": 1024,
-		"RoutineSize": 32,
-		"ServiceName": "connect",
 	})
 	v.SetDefault("redis", map[string]interface{}{
 		"Addr":         "127.0.0.1:6379",

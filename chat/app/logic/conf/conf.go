@@ -1,19 +1,22 @@
 package conf
 
 import (
+	"chat/pkg/database/elasticsearch"
 	"log"
 	"time"
 
 	"chat/internal/conf"
 	"chat/pkg/database/orm"
 	logger "chat/pkg/log"
-	"chat/pkg/net/tracing"
+	"chat/pkg/net/grpc"
+	"chat/pkg/net/http"
 	"chat/pkg/queue/iqueue"
 	"chat/pkg/redis"
 	"chat/pkg/registry"
-	"chat/pkg/server/grpc"
+	"chat/pkg/trace"
 )
 
+//Conf 全局配置
 var Conf = &Config{}
 
 // Init init config
@@ -34,45 +37,34 @@ func Init(cfg string) {
 // Config global config
 type Config struct {
 	App        AppConfig
-	Http       HttpConfig
+	HTTP       http.ServerConfig
 	Sms        SmsConfig
 	MySQL      orm.Config
 	Redis      redis.Config
+	Elastic    elasticsearch.Config
 	GrpcServer grpc.ServerConfig
-	GrpcClient grpc.ClientConfig
 	Queue      iqueue.Config
 	Registry   registry.Config
 	Logger     logger.Config
-	Jaeger     tracing.Config
-	Prometheus conf.PrometheusConfig
-	Sentry     conf.SentryConfig
+	Trace      trace.Config
 }
 
 // AppConfig app config
 type AppConfig struct {
-	Name       string
-	Host       string
-	ServerId   string
-	LogicName  string
-	Mode       string
-	PprofPort  string
-	JwtSecret  string
-	JwtTimeout int64
-	Debug      bool
+	Name        string
+	Host        string
+	ServerID    string
+	Env         string
+	Mode        string
+	JwtSecret   string
+	JwtTimeout  int64
+	Debug       bool
+	MaxLimit    int
+	IPLimit     int
+	IPLimitExpr time.Duration
 }
 
-type HttpConfig struct {
-	Port         int
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
-}
-
-// LimitConfig 限流器
-type LimitConfig struct {
-	Enable bool
-	Qps    int
-}
-
+//SmsConfig 短信配置
 type SmsConfig struct {
 	IsReal bool `yaml:"is_real"` //是否真实发送
 }

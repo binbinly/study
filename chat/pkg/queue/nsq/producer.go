@@ -1,13 +1,16 @@
 package nsq
 
 import (
+	"context"
 	"log"
+	"os"
 	"time"
 
 	"github.com/nsqio/go-nsq"
 	"github.com/pkg/errors"
 )
 
+//Producer 生产者
 type Producer struct {
 	Producer *nsq.Producer
 	topic    string
@@ -19,12 +22,13 @@ func NewProducer(c *Config) *Producer {
 	if err != nil {
 		log.Panicf("[CreateProducer] create nsq producar: %v", err)
 	}
+	producer.SetLogger(log.New(os.Stderr, c.Topic, log.Flags()), nsq.LogLevelWarning)
 	log.Println("nsq producer start!!!")
 	return &Producer{Producer: producer, topic: c.Topic}
 }
 
 //Publish 发布消息入队列
-func (p *Producer) Publish(message []byte) error {
+func (p *Producer) Publish(ctx context.Context, message []byte) error {
 	err := p.Producer.Publish(p.topic, message)
 	if err != nil {
 		return errors.Wrapf(err, "[nsq.publish]")
@@ -33,7 +37,7 @@ func (p *Producer) Publish(message []byte) error {
 }
 
 //DeferredPublish 发布延迟消息入队列
-func (p *Producer) DeferredPublish(message []byte, delay time.Duration) error {
+func (p *Producer) DeferredPublish(ctx context.Context, message []byte, delay time.Duration) error {
 	err := p.Producer.DeferredPublish(p.topic, delay, message)
 	if err != nil {
 		return errors.Wrapf(err, "[nsq.publish]")
@@ -42,7 +46,7 @@ func (p *Producer) DeferredPublish(message []byte, delay time.Duration) error {
 }
 
 //MultiPublish 批量发布消息
-func (p *Producer) MultiPublish(message ...[]byte) error {
+func (p *Producer) MultiPublish(ctx context.Context, message ...[]byte) error {
 	err := p.Producer.MultiPublish(p.topic, message)
 	if err != nil {
 		return errors.Wrapf(err, "[nsq.MultiPublish]")

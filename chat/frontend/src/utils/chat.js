@@ -147,6 +147,7 @@ class chat {
         if (message.user_id !== this.user.id) {
           notice.avatar = message.avatar
           notice.user_id = message.user_id
+          notice.num += 1
           ev.$emit('tabBarBadge', {
             index: 2,
             text: ''

@@ -16,10 +16,10 @@ import (
 // @Accept json
 // @Produce json
 // @Param Token header string true "用户令牌"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":null}"
+// @success 0 {object} app.Response{data=[]model.UserTag} "调用成功结构"
 // @Router /user/tag [get]
 func Tag(c *gin.Context) {
-	list, err := service.Svc.UserTagList(c, app.GetUInt32UserId(c))
+	list, err := service.Svc.UserTagList(c.Request.Context(), app.GetUInt32UserID(c))
 	if err != nil {
 		log.Warnf("[http.user] tag err: %v", err)
 		app.Error(c, errno.ErrEmpty)

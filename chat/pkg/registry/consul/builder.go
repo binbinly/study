@@ -11,6 +11,7 @@ const schemeName = "consul"
 // builder implements resolver.Builder and use for constructing all consul resolvers
 type builder struct{}
 
+//NewBuilder 实例化 consul resolver
 func NewBuilder() resolver.Builder {
 	return &builder{}
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
+//OpenConnection 建立链接
 func OpenConnection(addr string) (conn *amqp.Connection, err error) {
 	uri := fmt.Sprintf("amqp://%s", addr)
 

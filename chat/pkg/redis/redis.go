@@ -1,14 +1,17 @@
 package redis
 
 import (
+	"context"
+	"fmt"
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/alicebob/miniredis"
+	"github.com/go-redis/redis/v8"
 
 	"chat/pkg/log"
 )
 
-// RedisClient redis 客户端
+//Client redis 客户端
 var Client *redis.Client
 
 // Nil redis 返回为空
@@ -44,11 +47,29 @@ func Init(c *Config) *redis.Client {
 		PoolTimeout:  c.PoolTimeout,
 	})
 
-	_, err := Client.Ping().Result()
+	_, err := Client.Ping(context.Background()).Result()
 	if err != nil {
 		log.Panicf("[redis] redis ping err: %+v", err)
 	}
+	// 追踪
+	Client.AddHook(NewTracingHook())
+
 	return Client
+}
+
+// InitTestRedis 实例化一个可以用于单元测试的redis
+func InitTestRedis() {
+	mr, err := miniredis.Run()
+	if err != nil {
+		panic(err)
+	}
+	// 打开下面命令可以测试链接关闭的情况
+	// defer mr.Close()
+
+	Client = redis.NewClient(&redis.Options{
+		Addr: mr.Addr(),
+	})
+	fmt.Println("mini redis addr:", mr.Addr())
 }
 
 // Close 关闭连接

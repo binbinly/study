@@ -1,21 +1,29 @@
 package model
 
 const (
-	MomentSeeTypeAll    = iota + 1 // 公开
-	MomentSeeTypeNone              // 私密
-	MomentSeeTypeOnly              // 指定可看
-	MomentSeeTypeExcept            // 不给谁看
+	//MomentSeeTypeAll 公开
+	MomentSeeTypeAll = iota + 1
+	//MomentSeeTypeNone 私密
+	MomentSeeTypeNone
+	//MomentSeeTypeOnly 指定可看
+	MomentSeeTypeOnly
+	//MomentSeeTypeExcept 不给谁看
+	MomentSeeTypeExcept
 )
 
 const (
-	MomentTypeText  = iota + 1 // 文本
-	MomentTypeImage            // 图文
-	MomentTypeVideo            // 视频
+	//MomentTypeText 文本
+	MomentTypeText = iota + 1
+	//MomentTypeImage 图文
+	MomentTypeImage
+	//MomentTypeVideo 视频
+	MomentTypeVideo
 )
 
+//MomentModel 朋友圈模型
 type MomentModel struct {
 	PriID
-	Uid
+	UID
 	Content  string `gorm:"column:content;not null;type:varchar(1000);comment:内容" json:"content"`
 	Image    string `gorm:"column:image;not null;type:varchar(1000);default:'';comment:图片" json:"image"`
 	Video    string `gorm:"column:video;not null;type:varchar(255);default:'';comment:视频地址" json:"video"`
@@ -32,14 +40,15 @@ func (m *MomentModel) TableName() string {
 	return "moment"
 }
 
-// 对外朋友圈结构体
+//Moment 对外朋友圈结构体
 type Moment struct {
 	User *UserBase     `json:"user"`
 	List []*MomentList `json:"list"`
 }
 
+//MomentList 朋友圈列表结构体
 type MomentList struct {
-	Id        uint32        `json:"id"`
+	ID        uint32     `json:"id"`
 	Content   string     `json:"content"`
 	Image     string     `json:"image"`
 	Video     string     `json:"video"`
@@ -53,7 +62,7 @@ type MomentList struct {
 
 // User 朋友圈点赞评论用户结构
 type User struct {
-	Id   uint32    `json:"id"`
+	ID   uint32 `json:"id"`
 	Name string `json:"name"`
 }
 
@@ -62,4 +71,11 @@ type Comment struct {
 	Content string `json:"content"`
 	User    *User  `json:"user"`
 	Reply   *User  `json:"reply"`
+}
+
+// MomentEs 保存至es中结构
+type MomentEs struct {
+	ID      uint32 `json:"id"`
+	UserID  uint32 `json:"user_id"`
+	Content string `json:"content"`
 }

@@ -22,19 +22,22 @@ func NewCollectCache() *CollectCache {
 	}
 }
 
+//GetCacheListKey 获取缓存
 func (u *CollectCache) GetCacheListKey(id uint32) string {
-	return fmt.Sprintf(CollectListCacheKey, id)
+	return fmt.Sprintf(collectListCacheKey, id)
 }
 
+//SetCacheList 设置缓存
 func (u *CollectCache) SetCacheList(ctx context.Context, id uint32, field string, list []*model.CollectModel) error {
 	if len(list) == 0 {
-		return u.cache.HSetCacheWithNotFound(u.GetCacheListKey(id), field)
+		return u.cache.HSetCacheWithNotFound(ctx, u.GetCacheListKey(id), field)
 	}
-	return u.cache.HSet(u.GetCacheListKey(id), field, list, defaultExpireTime)
+	return u.cache.HSet(ctx, u.GetCacheListKey(id), field, list, defaultExpireTime)
 }
 
+//GetCacheList 获取缓存
 func (u *CollectCache) GetCacheList(ctx context.Context, id uint32, field string) (list []*model.CollectModel, err error) {
-	err = u.cache.HGet(u.GetCacheListKey(id), field, &list)
+	err = u.cache.HGet(ctx, u.GetCacheListKey(id), field, &list)
 	if err != nil {
 		return nil, err
 	}
@@ -43,5 +46,5 @@ func (u *CollectCache) GetCacheList(ctx context.Context, id uint32, field string
 
 // DelCacheList 删除列表缓存
 func (u *CollectCache) DelCacheList(ctx context.Context, id uint32) error {
-	return u.cache.Del(u.GetCacheListKey(id))
+	return u.cache.Del(ctx, u.GetCacheListKey(id))
 }

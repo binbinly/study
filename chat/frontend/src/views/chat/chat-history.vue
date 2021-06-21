@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 导航栏 -->
-    <van-nav-bar left-text="聊天记录" left-arrow @click-left="onClickLeft" />
+    <van-nav-bar left-text="聊天记录" fixed placeholder left-arrow @click-left="onClickLeft" />
     <!-- 搜索框 -->
     <van-search v-model="keyword" placeholder="搜索" />
 

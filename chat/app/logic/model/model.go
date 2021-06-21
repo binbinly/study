@@ -17,12 +17,19 @@ const (
 	// IsNotNull the same as `is not null`
 	IsNotNull
 
-	ReleaseYes   = 1         //已发布
-	DefaultOrder = "id DESC" //默认排序
+	//ReleaseYes 已发布
+	ReleaseYes = 1
+	//DefaultOrder 默认排序
+	DefaultOrder = "id DESC"
+)
 
-	StatusInit    = 0 //状态-初始化
-	StatusSuccess = 1 //状态-成功
-	StatusError   = 2 //状态-失败
+const (
+	//StatusInit 状态-初始化
+	StatusInit = iota
+	//StatusSuccess 状态-成功
+	StatusSuccess
+	//StatusError 状态-失败
+	StatusError
 )
 
 // UpdateTime 公共时间字段
@@ -31,7 +38,7 @@ type UpdateTime struct {
 	UpdatedAt int64 `gorm:"column:updated_at;type:int(11) unsigned;not null;autoUpdateTime;comment:更新时间" json:"updated_at"`
 }
 
-// ID 主键
+// PriID 主键
 type PriID struct {
 	ID uint32 `gorm:"primaryKey;autoIncrement;type:int(11) unsigned auto_increment;column:id;comment:ID" json:"id"`
 }
@@ -46,12 +53,12 @@ type Update struct {
 	UpdatedAt int64 `gorm:"column:updated_at;type:int(11) unsigned;not null;autoUpdateTime;comment:更新时间" json:"updated_at"`
 }
 
-// Uid 用户ID
-type Uid struct {
-	UserId uint32 `gorm:"column:user_id;not null;type:int(11) unsigned;index;comment:用户id" json:"user_id"`
+// UID 用户ID
+type UID struct {
+	UserID uint32 `gorm:"column:user_id;not null;type:int(11) unsigned;index;comment:用户id" json:"user_id"`
 }
 
-//分页查询
+//OffsetPage 分页查询
 func OffsetPage(offset, limit int) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		return db.Offset(offset).Limit(limit)

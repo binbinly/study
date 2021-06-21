@@ -8,7 +8,7 @@ const (
 	// MaxID 最大id
 	MaxID = 0xffffffffffff
 
-	//历史消息键
+	//HistoryPrefix 历史消息键
 	HistoryPrefix = "history:message:%d"
 
 	// ModeDebug debug mode

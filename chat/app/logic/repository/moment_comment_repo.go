@@ -14,59 +14,60 @@ import (
 	"chat/pkg/redis"
 )
 
+//IMomentComment 朋友圈评论接口
 type IMomentComment interface {
 	// 创建
 	CommentCreate(ctx context.Context, model *model.MomentCommentModel) (id uint32, err error)
 	// 动态评论用户列表
-	GetCommentsByMomentId(ctx context.Context, momentId uint32) (*[]*model.MomentCommentModel, error)
+	GetCommentsByMomentID(ctx context.Context, momentID uint32) (*[]*model.MomentCommentModel, error)
 	// 朋友圈动态下指定动态评论列表
 	GetCommentsByMomentIds(ctx context.Context, momentIds []uint32) (map[uint32]*[]*model.MomentCommentModel, error)
 }
 
 // CommentCreate 创建
 func (r *Repo) CommentCreate(ctx context.Context, model *model.MomentCommentModel) (id uint32, err error) {
-	err = r.db.Create(model).Error
+	err = r.db.WithContext(ctx).Create(model).Error
 	if err != nil {
 		return 0, errors.Wrapf(err, "[repo.moment_comment] create err")
 	}
 	// 删除cache
-	err = r.commentCache.DelCache(ctx, model.MomentId)
+	err = r.commentCache.DelCache(ctx, model.MomentID)
 	if err != nil {
 		log.Warnf("[repo.moment_comment] delete cache err:%v", err)
 	}
 	return model.ID, nil
 }
 
-// GetCommentsByMomentId 获取动态下所有评论
-func (r *Repo) GetCommentsByMomentId(ctx context.Context, momentId uint32) (comments *[]*model.MomentCommentModel, err error) {
+// GetCommentsByMomentID 获取动态下所有评论
+func (r *Repo) GetCommentsByMomentID(ctx context.Context, momentID uint32) (comments *[]*model.MomentCommentModel, err error) {
 	start := time.Now()
 	defer func() {
-		log.Infof("[repo.moment_comment] get comments by mid: %d cost: %d μs", momentId, time.Since(start).Microseconds())
+		log.Debugf("[repo.moment_comment] get comments by mid: %d cost: %d μs", momentID, time.Since(start).Microseconds())
 	}()
 	// 从cache获取
-	comments, err = r.commentCache.GetCache(ctx, momentId)
+	comments, err = r.commentCache.GetCache(ctx, momentID)
 	if err != nil {
 		if err == cache.ErrPlaceholder {
 			return &[]*model.MomentCommentModel{}, nil
 		} else if err != redis.Nil {
-			return nil, errors.Wrapf(err, "[repo.moment_comment] get cache comments by mid: %d", momentId)
+			return nil, errors.Wrapf(err, "[repo.moment_comment] get cache comments by mid: %d", momentID)
 		}
 	}
 	if comments != nil {
-		log.Infof("[repo.moment_comment] get comments from cache, mid: %d", momentId)
+		log.Debugf("[repo.moment_comment] get comments from cache, mid: %d", momentID)
 		return
 	}
 
 	getDataFn := func() (interface{}, error) {
 		data := make([]*model.MomentCommentModel, 0)
 		// 从数据库中获取
-		err = r.db.Where("moment_id=?", momentId).Order("id asc").Find(&data).Error
+		err = r.db.WithContext(ctx).Where("moment_id=?", momentID).Order("id asc").Find(&data).Error
 		if err != nil {
 			return nil, errors.Wrapf(err, "[repo.moment_comment] query db err")
 		}
 
 		// set cache
-		err = r.commentCache.SetCache(ctx, momentId, data)
+		err = r.commentCache.SetCache(ctx, momentID, data)
 		if err != nil {
 			return data, errors.Wrap(err, "[repo.moment_comment] set cache err")
 		}
@@ -74,7 +75,7 @@ func (r *Repo) GetCommentsByMomentId(ctx context.Context, momentId uint32) (comm
 	}
 
 	g := singleflight.Group{}
-	doKey := fmt.Sprintf("get_moment_comment_%d", momentId)
+	doKey := fmt.Sprintf("get_moment_comment_%d", momentID)
 	val, err, _ := g.Do(doKey, getDataFn)
 	if err != nil {
 		return nil, errors.Wrap(err, "[repo.moment_comment] get err via single flight do")
@@ -95,17 +96,17 @@ func (r *Repo) GetCommentsByMomentIds(ctx context.Context, momentIds []uint32) (
 	}
 
 	// 查询未命中
-	for _, momentId := range momentIds {
-		idx := r.commentCache.GetCacheKey(momentId)
+	for _, momentID := range momentIds {
+		idx := r.commentCache.GetCacheKey(momentID)
 		comments, ok := commentMap[idx]
 		if !ok {
-			comments, err = r.GetCommentsByMomentId(ctx, momentId)
+			comments, err = r.GetCommentsByMomentID(ctx, momentID)
 			if err != nil {
 				log.Warnf("[repo.moment_comment] get moments err: %v", err)
 				continue
 			}
 		}
-		mComments[momentId] = comments
+		mComments[momentID] = comments
 	}
 	return mComments, nil
 }

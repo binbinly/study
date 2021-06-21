@@ -20,6 +20,7 @@ func GetDB() *gorm.DB {
 	return DB
 }
 
+//CloseDB 关闭DB连接
 func CloseDB()  {
 	orm.CloseDB()
 }

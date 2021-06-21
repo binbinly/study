@@ -9,9 +9,7 @@ import (
 // 用于触发编译期的接口的合理性检查机制
 var _ IMessage = (*Message)(nil)
 
-/*
-	将请求的一个消息封装到message中，定义抽象层接口
-*/
+// IMessage 将请求的一个消息封装到message中，定义抽象层接口
 type IMessage interface {
 	GetDataLen() int          //获取消息数据段长度
 	GetEvent() string         //获取消息动作

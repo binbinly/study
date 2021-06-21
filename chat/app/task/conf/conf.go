@@ -5,32 +5,31 @@ import (
 
 	"chat/internal/conf"
 	logger "chat/pkg/log"
-	"chat/pkg/net/tracing"
+	"chat/pkg/net/grpc"
 	"chat/pkg/queue/iqueue"
 	"chat/pkg/redis"
-	"chat/pkg/server/grpc"
+	"chat/pkg/trace"
 )
 
+//Conf 全局配置
 var Conf = &Config{}
 
 // Config global config
 type Config struct {
 	Consul     string
-	Connect    Connect
+	App        AppConfig
 	Queue      iqueue.Config
 	Redis      redis.Config
 	GrpcClient grpc.ClientConfig
 	Logger     logger.Config
-	Jaeger     tracing.Config
-	Prometheus conf.PrometheusConfig
-	Sentry     conf.SentryConfig
+	Trace      trace.Config
 }
 
-// Connect
-type Connect struct {
+// AppConfig app配置
+type AppConfig struct {
 	RoutineChan int
 	RoutineSize int
-	ServiceName string
+	Name        string
 }
 
 // Init init config

@@ -36,7 +36,10 @@
           <!-- 文字 -->
           <span v-if="isText" class="font-sm">{{item.content}}</span>
           <!-- 表情包 | 图片-->
-          <van-image v-else-if="isEmoticon || isImage" style="max-width: 200px;max-height:300px" @click="prediv(item.content)" :src="item.content" />
+          <div class="flex flex-wrap" v-else-if="isEmoticon || isImage">
+            <van-image style="max-width: 200px;max-height:240px;" fit="cover" imageClass="rounded bg-secondary" @click="prediv(item.content)"
+                       :src="item.content" />
+          </div>
 
           <!-- 音频 -->
           <div v-else-if="isAudio" class="flex align-center" @click="openAudio">

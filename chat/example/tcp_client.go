@@ -2,7 +2,8 @@ package main
 
 import (
 	"chat/app/logic/conf"
-	"chat/pkg/server/tcp"
+	"chat/pkg/connect"
+	"chat/pkg/connect/tcp"
 	logger "chat/pkg/log"
 	"fmt"
 	"io"
@@ -31,8 +32,8 @@ func main() {
 	for {
 		//发封包message消息
 		dp := tcp.NewDataPack()
-		msg, _ := dp.Pack(tcp.NewMsgPackage(tcp.MsgIdAuth, []byte("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTk0MjQwNjAsImlhdCI6MTYxOTMzNzY2MCwibmJmIjoxNjE5MzM3NjYwLCJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6InRlc3QifQ.rHtuRf4tDSh6SprvkDwJ9FIMZ-iM0hGMeovF9cR_JKc")))
-		_, err := conn.Write(msg)
+		msg, _ := dp.Pack(connect.NewMsgPackage(tcp.MsgIdAuth, []byte("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTk0MjQwNjAsImlhdCI6MTYxOTMzNzY2MCwibmJmIjoxNjE5MzM3NjYwLCJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6InRlc3QifQ.rHtuRf4tDSh6SprvkDwJ9FIMZ-iM0hGMeovF9cR_JKc")))
+		_, err = conn.Write(msg)
 		if err != nil {
 			fmt.Println("write error err ", err)
 			return
@@ -41,7 +42,7 @@ func main() {
 
 		//发封包message消息
 		dp = tcp.NewDataPack()
-		msg, _ = dp.Pack(tcp.NewMsgPackage(1, []byte("Zinx client Demo Test MsgID=0, [Ping]")))
+		msg, _ = dp.Pack(connect.NewMsgPackage(1, []byte("Zinx client Demo Test MsgID=0, [Ping]")))
 		_, err = conn.Write(msg)
 		if err != nil {
 			fmt.Println("write error err ", err)
@@ -64,7 +65,7 @@ func main() {
 
 		if msgHead.GetDataLen() > 0 {
 			//msg 是有data数据的，需要再次读取data数据
-			msg := msgHead.(*tcp.Message)
+			msg := msgHead.(*connect.Message)
 			msg.Data = make([]byte, msg.GetDataLen())
 
 			//根据dataLen从io中读取字节流

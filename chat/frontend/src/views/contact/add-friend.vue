@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <!-- 导航栏 -->
-    <van-nav-bar :left-text="titleText" left-arrow @click-left="onClickLeft" />
+    <van-nav-bar :left-text="titleText" fixed placeholder left-arrow @click-left="onClickLeft" />
 
     <van-form @submit="onSubmit">
       <van-cell-group title="备注名">

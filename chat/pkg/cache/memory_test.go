@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"context"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -19,7 +20,7 @@ func TestMemoStore_Set(t *testing.T) {
 
 	store, err := NewMemoryCache("memory-unit-test", JSONEncoding{})
 	asserts.NoError(err)
-	err = store.Set("test-key", "test-val", -1)
+	err = store.Set(context.TODO(), "test-key", "test-val", -1)
 	asserts.NoError(err)
 }
 
@@ -31,15 +32,14 @@ func TestMemoStore_Get(t *testing.T) {
 	{
 		var gotVal string
 		setVal := "test-val"
-		err := store.Set("test-get-key", setVal, 3600)
+		err = store.Set(context.TODO(), "test-get-key", setVal, time.Minute)
 		asserts.NoError(err)
 
 		// wait for value to pass through buffers
 		time.Sleep(10 * time.Millisecond)
 
-		err = store.Get("test-get-key", &gotVal)
+		err = store.Get(context.TODO(), "test-get-key", &gotVal)
 		asserts.NoError(err)
-		t.Log(setVal, gotVal)
 		asserts.Equal(setVal, gotVal)
 	}
 }

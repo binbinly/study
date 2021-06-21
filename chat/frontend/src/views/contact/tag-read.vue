@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 导航栏 -->
-    <van-nav-bar left-text="标签用户" left-arrow @click-left="onClickLeft">
+    <van-nav-bar left-text="标签用户" fixed placeholder left-arrow @click-left="onClickLeft">
     </van-nav-bar>
 
     <van-cell v-for="(item,index) in list" :title="item.name" is-link center @click="openUser(item.id)">

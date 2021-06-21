@@ -22,21 +22,21 @@ import (
 // @Param nickname body string true "备注昵称"
 // @Param look_me body int true "看我"
 // @Param look_him body int true "看他"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6Ik"}}"
+// @Success 0 {string} json "{"code":0,"msg":"OK","data":{}}"
 // @Router /apply/friend [post]
 func Friend(c *gin.Context) {
 	var req FriendParams
-	v := app.BindJson(c, &req)
+	v := app.BindJSON(c, &req)
 	if !v {
 		app.Error(c, errno.ErrBind)
 		return
 	}
-	userId := app.GetUInt32UserId(c)
-	if userId == req.FriendId {
+	userID := app.GetUInt32UserID(c)
+	if userID == req.FriendID {
 		app.Error(c, ecode.ErrUserNoSelf)
 		return
 	}
-	err := service.Svc.ApplyFriend(c, userId, req.FriendId, req.Nickname, req.LookMe, req.LookHim)
+	err := service.Svc.ApplyFriend(c.Request.Context(), userID, req.FriendID, req.Nickname, req.LookMe, req.LookHim)
 	if errors.Is(err, service.ErrApplyExisted) {
 		app.Error(c, ecode.ErrApplyRepeatFailed)
 		return

@@ -9,12 +9,14 @@ import (
 	"github.com/Shopify/sarama"
 )
 
+//Producer 生产者结构
 type Producer struct {
 	asyncProducer sarama.AsyncProducer
 	topic         string
 	enqueued      int
 }
 
+//NewProducer 创建生产者
 func NewProducer(config *sarama.Config, logger *log.Logger, topic string, brokers []string) *Producer {
 	sarama.Logger = logger
 
@@ -32,6 +34,7 @@ func NewProducer(config *sarama.Config, logger *log.Logger, topic string, broker
 	}
 }
 
+//Publish push消息
 func (p *Producer) Publish(message string) {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt)

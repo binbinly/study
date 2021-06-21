@@ -19,10 +19,10 @@ import (
 // @Produce  json
 // @Param Token header string true "用户令牌"
 // @Param p query int false "页码"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6Ik"}}"
+// @success 0 {object} app.Response{data=[]model.Moment} "调用成功结构"
 // @Router /moment/timeline [get]
 func Timeline(c *gin.Context) {
-	list, err := service.Svc.MomentTimeline(c, app.GetUInt32UserId(c), app.GetPageOffset(c))
+	list, err := service.Svc.MomentTimeline(c.Request.Context(), app.GetUInt32UserID(c), app.GetPageOffset(c))
 	if errors.Is(err, service.ErrUserNotFound) {
 		app.Error(c, ecode.ErrUserNotFound)
 		return

@@ -39,11 +39,11 @@ func NewMongoDBConn(ctx context.Context, cfg *Config) (*mongo.Client, error) {
 		return nil, err
 	}
 
-	if err := client.Connect(ctx); err != nil {
+	if err = client.Connect(ctx); err != nil {
 		return nil, err
 	}
 
-	if err := client.Ping(ctx, nil); err != nil {
+	if err = client.Ping(ctx, nil); err != nil {
 		return nil, err
 	}
 

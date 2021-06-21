@@ -3,22 +3,24 @@ package log
 import (
 	"context"
 	"fmt"
+
+	"github.com/opentracing/opentracing-go"
+	"github.com/uber/jaeger-client-go"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 // log is A global variable so that log functions can be directly accessed
 var log Logger
-
-// logger is A global variable with trace log
-var logger Factory
+var zl *zap.Logger
 
 // Fields Type to pass when we want to call WithFields for structured logging
 type Fields map[string]interface{}
 
-// Logger config
+//Config logger
 type Config struct {
 	Development       bool
 	DisableCaller     bool
-	DisableStacktrace bool
 	Encoding          string
 	Level             string
 	Name              string
@@ -33,11 +35,11 @@ type Config struct {
 	LogBackupCount    uint
 }
 
+//NewConfig 实例化默认配置
 func NewConfig() *Config {
 	return &Config{
 		Development:       false,
 		DisableCaller:     false,
-		DisableStacktrace: false,
 		Encoding:          "json",
 		Level:             "info",
 		Name:              "app",
@@ -55,20 +57,19 @@ func NewConfig() *Config {
 
 // InitLog init log
 func InitLog(cfg *Config) Logger {
-	zapLogger, err := newZapLogger(cfg)
+	var err error
+	// new zap logger
+	zl, err = newZapLogger(cfg)
 	if err != nil {
-		fmt.Errorf("Init newZapLogger err: %v", err)
+		fmt.Errorf("init newZapLogger err: %v", err)
 	}
-	l, err := newLogger(cfg)
+	_ = zl
+
+	// new sugar logger
+	log, err = newLogger(cfg)
 	if err != nil {
-		fmt.Errorf("Init newLogger err: %v", err)
+		fmt.Errorf("init newLogger err: %v", err)
 	}
-
-	// init logger with trace log
-	logger = NewFactory(zapLogger, l)
-
-	// normal log
-	log = l
 
 	return log
 }
@@ -77,25 +78,45 @@ func InitLog(cfg *Config) Logger {
 type Logger interface {
 	Debug(args ...interface{})
 	Debugf(format string, args ...interface{})
+
 	Info(args ...interface{})
 	Infof(format string, args ...interface{})
+
 	Warn(args ...interface{})
 	Warnf(format string, args ...interface{})
+
 	Error(args ...interface{})
 	Errorf(format string, args ...interface{})
+
 	Fatal(args ...interface{})
 	Fatalf(format string, args ...interface{})
+
 	Panicf(format string, args ...interface{})
+
 	WithFields(keyValues Fields) Logger
 }
 
+//GetLogger 获取log对象
 func GetLogger() Logger {
 	return log
 }
 
-// Trace is a logger that can log msg and log span for trace
-func Trace(ctx context.Context) Logger {
-	return logger.For(ctx)
+//WithContext Trace is a logger that can log msg and log span for trace
+func WithContext(ctx context.Context) Logger {
+	//return logger.For(ctx)
+	if span := opentracing.SpanFromContext(ctx); span != nil {
+		logger := spanLogger{span: span, logger: zl}
+
+		if jaegerCtx, ok := span.Context().(jaeger.SpanContext); ok {
+			logger.spanFields = []zapcore.Field{
+				zap.String("trace_id", jaegerCtx.TraceID().String()),
+				zap.String("span_id", jaegerCtx.SpanID().String()),
+			}
+		}
+
+		return logger
+	}
+	return log
 }
 
 // Debug logger

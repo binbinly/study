@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 导航栏 -->
-    <van-nav-bar left-text="聊天信息" left-arrow @click-left="onClickLeft" />
+    <van-nav-bar left-text="聊天信息" fixed placeholder left-arrow @click-left="onClickLeft" />
 
     <div class="flex flex-wrap py-1 bg-white">
       <div v-if="isUser" class="flex flex-column align-center justify-center mb-1 ml-1">
@@ -171,6 +171,12 @@ export default {
       this.id = parseInt(id)
       this.initData()
     }
+  },
+  mounted() {
+    event.$on('refreshGroupInfo', this.initData)
+  },
+  destroyed() {
+    event.$off('refreshGroupInfo', this.initData)
   },
   methods: {
     creatQrCode() {

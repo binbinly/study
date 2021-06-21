@@ -1,2 +1,17 @@
 variables:
   PROJECT_NAME: chat
+
+stages:
+  - dev
+  - test
+  - prod
+
+build-job:
+  stage: dev
+  only:
+    - dev
+  script:
+    - go build -o chat main.go
+    - ./chat connect -c ./config/connect.yaml
+    - ./chat logic -c ./config/logic.yaml
+    - ./chat task -c ./config/task.yaml

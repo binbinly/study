@@ -20,20 +20,20 @@ import (
 // @Produce  json
 // @Param Token header string true "用户令牌"
 // @Param user body UpdateParams true "The group info"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":null}"
+// @Success 0 {string} json "{"code":0,"msg":"OK","data":{}}"
 // @Router /group/edit [post]
 func Update(c *gin.Context) {
 	var req UpdateParams
-	v := app.BindJson(c, &req)
+	v := app.BindJSON(c, &req)
 	if !v {
 		app.Error(c, errno.ErrBind)
 		return
 	}
 	var err error
 	if req.Remark != "" {
-		err = service.Svc.GroupEditRemark(c, app.GetUInt32UserId(c), req.Id, req.Remark)
+		err = service.Svc.GroupEditRemark(c.Request.Context(), app.GetUInt32UserID(c), req.ID, req.Remark)
 	} else if req.Name != "" {
-		err = service.Svc.GroupEditName(c, app.GetUInt32UserId(c), req.Id, req.Name)
+		err = service.Svc.GroupEditName(c.Request.Context(), app.GetUInt32UserID(c), req.ID, req.Name)
 	} else {
 		app.Error(c, errno.ErrParamsEmpty)
 		return
@@ -55,24 +55,24 @@ func Update(c *gin.Context) {
 	app.SuccessNil(c)
 }
 
-// Update 更新群昵称
+// UpdateNickname 更新群昵称
 // @Summary 更新群昵称
 // @Description 更新群昵称
 // @Tags 群组
 // @Accept  json
 // @Produce  json
 // @Param user body NicknameParams true "The group info"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":null}"
+// @Success 0 {string} json "{"code":0,"msg":"OK","data":{}}"
 // @Router /group/nickname [post]
 func UpdateNickname(c *gin.Context) {
 	// Binding the user data.
 	var req NicknameParams
-	v := app.BindJson(c, &req)
+	v := app.BindJSON(c, &req)
 	if !v {
 		app.Error(c, errno.ErrBind)
 		return
 	}
-	err := service.Svc.GroupEditUserNickname(c, app.GetUInt32UserId(c), req.Id, req.Nickname)
+	err := service.Svc.GroupEditUserNickname(c.Request.Context(), app.GetUInt32UserID(c), req.ID, req.Nickname)
 	if errors.Is(err, service.ErrGroupNotFound) {
 		app.Error(c, ecode.ErrGroupNotFound)
 		return

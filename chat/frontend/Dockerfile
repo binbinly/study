@@ -4,7 +4,7 @@ FROM node:lts-alpine as build-stage
 
 # 进入容器的app目录, 然后拷贝当前目录(根目录)的所有文件到容器的当前目录中(/app)
 WORKDIR /app
-COPY vant-chat .
+COPY . .
 
 #在容器内build  --unsafe-perm 用高权限用户运行npm
 RUN npm i --unsafe-perm --allow-root && npm run build

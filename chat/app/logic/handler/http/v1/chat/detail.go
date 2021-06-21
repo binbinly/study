@@ -21,17 +21,17 @@ import (
 // @Param Token header string true "用户令牌"
 // @Param id body int true "用户/群组id"
 // @Param type body int true "类型，1=用户，2=群组"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":null}"
+// @success 0 {object} app.Response{data=message.From} "调用成功结构"
 // @Router /chat/detail [post]
 func Detail(c *gin.Context) {
 	var req DetailParams
 
-	valid := app.BindJson(c, &req)
+	valid := app.BindJSON(c, &req)
 	if !valid {
 		app.Error(c, errno.ErrBind)
 		return
 	}
-	info, err := service.Svc.ChatDetail(c, app.GetUInt32UserId(c), req.Id, req.Type)
+	info, err := service.Svc.ChatDetail(c.Request.Context(), app.GetUInt32UserID(c), req.ID, req.Type)
 	if errors.Is(err, service.ErrFriendNotFound) {
 		app.Error(c, ecode.ErrChatNotFound)
 		return

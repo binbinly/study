@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 导航栏 -->
-    <van-nav-bar left-text="选择" left-arrow @click-left="onClickLeft" :fixed="true" :placeholder="true" :z-index="2">
+    <van-nav-bar left-text="选择" left-arrow @click-left="onClickLeft" fixed placeholder>
       <template #right>
         <van-button type="primary" size="small" @click="submit">{{buttonText}}</van-button>
       </template>
@@ -174,6 +174,7 @@ export default {
             user_id: this.selectList[0].id
           }).then(() => {
             Toast.success('邀请成功')
+            event.$emit('refreshGroupInfo')
             this.$router.back()
           })
           break;

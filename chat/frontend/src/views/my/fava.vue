@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 导航栏 -->
-    <van-nav-bar title="我的收藏" left-arrow @click-left="onClickLeft" />
+    <van-nav-bar title="我的收藏" fixed placeholder left-arrow @click-left="onClickLeft" />
 
     <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
       <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">

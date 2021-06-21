@@ -2,6 +2,8 @@ package sign
 
 import (
 	"chat/pkg/crypt"
+	"chat/pkg/crypt/aes"
+	"chat/pkg/log"
 	"fmt"
 	"net/url"
 	"sort"
@@ -41,7 +43,9 @@ func NewSigner(cryptoFunc CryptoFunc) *Signer {
 
 // NewSignerMd5 md5加密算法
 func NewSignerMd5() *Signer {
-	return NewSigner(crypt.Md5)
+	return NewSigner(func(secretKey string, args string) []byte {
+		return crypt.Md5(args)
+	})
 }
 
 // NewSignerHmac hmac加密算法
@@ -51,7 +55,14 @@ func NewSignerHmac() *Signer {
 
 // NewSignerAes aes对称加密算法
 func NewSignerAes() *Signer {
-	return NewSigner(crypt.AesCBC)
+	return NewSigner(func(secretKey string, args string) []byte {
+		ret, err := aes.CBCEncrypt([]byte(args), []byte(secretKey), []byte(secretKey), false)
+		if err != nil {
+			log.Warnf("aes cbc signer err:%v", err)
+			return nil
+		}
+		return ret
+	})
 }
 
 // SetBody 设置整个参数体Body对象。

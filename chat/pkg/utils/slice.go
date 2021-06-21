@@ -86,7 +86,7 @@ func IsInSlice(value interface{}, sli interface{}) bool {
 	return false
 }
 
-// 判断整型值是否在slice中
+// InIntSlice 判断整型值是否在slice中
 func InIntSlice(v int, sli []int) bool {
 	for _, s := range sli {
 		if s == v {
@@ -96,6 +96,7 @@ func InIntSlice(v int, sli []int) bool {
 	return false
 }
 
+// InuInt32Slice 判断是否在切片中存在
 func InuInt32Slice(v uint32, sli []uint32) bool {
 	for _, s := range sli {
 		if s == v {
@@ -105,7 +106,7 @@ func InuInt32Slice(v uint32, sli []uint32) bool {
 	return false
 }
 
-// 判断字符串值是否在slice中
+// InStringSlice 判断字符串值是否在slice中
 func InStringSlice(v string, sli []string) bool {
 	for _, s := range sli {
 		if s == v {
@@ -229,6 +230,7 @@ func SliceToInt(ss []string) (ii []int) {
 	return ii
 }
 
+// SliceTouInt32 切换转int32
 func SliceTouInt32(ss []string) (ii []uint32) {
 	for _, s := range ss {
 		i, _ := strconv.Atoi(s)
@@ -259,6 +261,7 @@ func FilterSmallIntSlice(a []int, f func(v int) bool) []int {
 	return ret
 }
 
+// FilterSmallUInt32Slice 过滤切片
 func FilterSmallUInt32Slice(a []uint32, f func(v uint32) bool) []uint32 {
 	ret := make([]uint32, 0, len(a))
 	for _, val := range a {

@@ -16,6 +16,8 @@ maxIdle设置高点，可以保证突发流量情况下，能够有足够的连�
 
 **go-redis参数优化**
 
+- [文档](https://redis.uptrace.dev)
+
 ```yaml
   min_idle_conn: 30               
   dial_timeout: "1s"

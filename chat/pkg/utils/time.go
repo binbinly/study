@@ -41,7 +41,7 @@ func GetTodayDateInt() int {
 	return date
 }
 
-//格式化指定时间
+// TimeUnixFormat 格式化指定时间
 func TimeUnixFormat(ux int64, layout string) string {
 	return time.Unix(ux, 0).Format(layout)
 }

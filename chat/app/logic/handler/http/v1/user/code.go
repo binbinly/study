@@ -6,7 +6,7 @@ import (
 	"chat/pkg/app"
 	"chat/pkg/errno"
 	"chat/pkg/log"
-	"chat/pkg/valid"
+	"chat/pkg/utils"
 	"errors"
 	"github.com/gin-gonic/gin"
 )
@@ -18,22 +18,22 @@ import (
 // @Accept  json
 // @Produce  json
 // @Param body body SendCodeParams true "手机号"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":null}"
+// @Success 0 {string} json "{"code":0,"msg":"OK","data":{}}"
 // @Router /send_code [get]
 func SendCode(c *gin.Context) {
 	var req SendCodeParams
-	v := app.BindJson(c, &req)
+	v := app.BindJSON(c, &req)
 	if !v {
 		app.Error(c, errno.ErrBind)
 		return
 	}
-	is := valid.ValidateMobile(req.Phone)
+	is := utils.ValidateMobile(req.Phone)
 	if !is {
 		app.Error(c, ecode.ErrPhoneValid)
 		return
 	}
 
-	code, err := service.Svc.SendSMS(req.Phone)
+	code, err := service.Svc.SendSMS(c.Request.Context(), req.Phone)
 	if errors.Is(err, service.ErrVerifyCodeRuleMinute) {
 		app.Error(c, ecode.ErrSendSMSMinute)
 		return

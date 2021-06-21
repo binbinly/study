@@ -1,27 +1,28 @@
 package conf
 
 import (
-	"log"
+	"strings"
 
 	"github.com/spf13/viper"
 
 	"chat/internal/conf"
+	"chat/pkg/app"
 	"chat/pkg/net/ip"
-	"chat/pkg/utils"
 )
 
 func defaultConf(v *viper.Viper) {
 	conf.DefaultConf(v)
-	id, err := utils.GenShortID()
-	if err != nil {
-		log.Panicf("gen short id err:%v", err)
-	}
-	v.SetDefault("host", ip.GetLocalIP())
-	v.SetDefault("name", "logic")
-	v.SetDefault("serverId", id)
-	v.SetDefault("LogicName",  "logic")
+	localIP := ip.GetLocalIP()
+	v.SetDefault("app", map[string]interface{}{
+		"Name":     "chat_connect",
+		"Host":     localIP,
+		"ServerID": strings.ReplaceAll(localIP, ".", ""),
+		"Debug":    true,
+		"Env":      app.EnvDev,
+	})
 	v.SetDefault("tcp", map[string]interface{}{
 		"Port":             9060,
+		"MaxIpLimit":       0,
 		"Keepalive":        false,
 		"HandshakeTimeout": "5s",
 		"SendBuf":          4096,
@@ -35,6 +36,7 @@ func defaultConf(v *viper.Viper) {
 	})
 	v.SetDefault("ws", map[string]interface{}{
 		"Port":             9070,
+		"MaxIpLimit":       0,
 		"WriteWait":        "10s",
 		"PongWait":         "60s",
 		"PingPeriod":       "54s",
@@ -48,6 +50,8 @@ func defaultConf(v *viper.Viper) {
 		"BucketSize":       16,
 	})
 	v.SetDefault("grpcClient", map[string]interface{}{
+		"ServiceName":      "chat_logic",
+		"QPSLimit":         100,
 		"Timeout":          "5s",
 		"KeepAliveTime":    "15s",
 		"KeepAliveTimeout": "1s",
@@ -55,6 +59,7 @@ func defaultConf(v *viper.Viper) {
 	v.SetDefault("grpcServer", map[string]interface{}{
 		"Network":           "tcp",
 		"Port":              20005,
+		"QPSLimit":          100,
 		"Timeout":           "5s",
 		"IdleTimeout":       "15s",
 		"MaxLifeTime":       "30s",

@@ -17,16 +17,16 @@ import (
 // @Produce  json
 // @Param Token header string true "用户令牌"
 // @Param req body DestroyParams true "destroy"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":{}}"
+// @Success 0 {string} json "{"code":0,"msg":"OK","data":{}}"
 // @Router /collect/destroy [post]
 func Destroy(c *gin.Context) {
 	var req DestroyParams
-	v := app.BindJson(c, &req)
+	v := app.BindJSON(c, &req)
 	if !v {
 		app.Error(c, errno.ErrBind)
 		return
 	}
-	err := service.Svc.CollectDestroy(c, app.GetUInt32UserId(c), req.Id)
+	err := service.Svc.CollectDestroy(c.Request.Context(), app.GetUInt32UserID(c), req.ID)
 	if err != nil {
 		log.Warnf("[http.collect] destroy err: %v", err)
 		app.Error(c, ecode.ErrCollectDestroy)

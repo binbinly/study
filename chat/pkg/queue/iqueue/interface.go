@@ -1,10 +1,13 @@
 package iqueue
 
 import (
+	"context"
+
 	"chat/pkg/queue/nsq"
 	"chat/pkg/queue/rabbitmq"
 )
 
+//Config 队列配置
 type Config struct {
 	Plugin   string
 	Channel  string
@@ -14,8 +17,8 @@ type Config struct {
 
 // Producer queue producer
 type Producer interface {
-	Publish(msg []byte) error
-	MultiPublish(msg ...[]byte) error
+	Publish(ctx context.Context, msg []byte) error
+	MultiPublish(ctx context.Context, msg ...[]byte) error
 	Stop()
 }
 

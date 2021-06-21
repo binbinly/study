@@ -11,7 +11,7 @@ import (
 	"chat/pkg/log"
 )
 
-//返回一个resolver.Builder的实例
+//Init 返回一个resolver.Builder的实例
 func Init() {
 	resolver.Register(NewBuilder())
 }
@@ -31,7 +31,7 @@ func (cr *consulResolver) watcher() {
 	for {
 		services, metaInfo, err := consul.client.Health().Service(cr.name, "", true, &api.QueryOptions{WaitIndex: cr.lastIndex})
 		if err != nil {
-			log.Errorf("[registry.consul] watcher services name:%v, err:%v", cr.name, err)
+			log.Warnf("[registry.consul] watcher services name:%v, err:%v", cr.name, err)
 			time.Sleep(time.Second)
 			continue
 		}
@@ -40,7 +40,6 @@ func (cr *consulResolver) watcher() {
 			time.Sleep(time.Second)
 			continue
 		}
-		log.Infof("[registry.consul] services info:%v", services)
 		var adds []resolver.Address
 
 		for _, v := range services {

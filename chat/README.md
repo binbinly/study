@@ -4,14 +4,15 @@
 
 ## 项目介绍
 
-`chat` 是一套仿微信ui的即时通讯学习项目，项目出自 [uni-app实战仿微信app开发](https://study.163.com/course/introduction/1209487898.htm)
-，学习中，用 `golang + vue` 微服务思想，重写了整个项目，功能点如下
+`chat` 是一套仿微信ui的即时通讯全栈学习项目，项目出自 [uni-app实战仿微信app开发](https://study.163.com/course/introduction/1209487898.htm)
+，已购买学习，于是用 `golang + vue` 微服务思想，重写了整个项目，主要功能点已实现
 ![功能点](./deploy/img/app.png)
 
 ## 系统架构图
 
+系统架构思想来源：goim 
+- [项目地址](https://github.com/Terry-Mao/goim) [文章地址](https://zhuanlan.zhihu.com/p/128941542)
 ![系统架构图](./deploy/img/system.jpeg)
-参考：goim [项目地址](https://github.com/Terry-Mao/goim) [文章地址](https://zhuanlan.zhihu.com/p/128941542)
 
 ## 📗 目录结构
 
@@ -19,9 +20,10 @@
 ├── Makefile                     # 项目管理文件
 ├── admin                        # 管理后台
 ├── app                          # 业务目录
-│   ├── chat                     # chat核心逻辑业务层
+│   ├── logic                    # chat核心逻辑业务层
 │   ├── connect                  # 连接层，管理http,ws,tcp连接
 │   ├── constvar                 # 常量定义
+│   ├── message                  # 消息队列消息定义
 │   ├── task                     # 任务层,处理消息队列消息
 ├── cmd                          # 支持的命令
 ├── config                       # 配置文件统一存放目录
@@ -44,9 +46,10 @@
 - 轻量级并发服务器框架 [zinx](https://github.com/aceld/zinx)
 - http框架路由使用 [Gin](https://github.com/gin-gonic/gin) 路由
 - grpc框架 [grpc](https://google.golang.org/grpc)
-  consul服务注册中心 [consul](https://github.com/hashicorp/consul)
+- consul服务注册中心 [consul](https://github.com/hashicorp/consul)
 - websocket使用 [Websocket](https://github.com/gorilla/websocket)
 - 中间件使用 [Gin](https://github.com/gin-gonic/gin) 框架的中间件
+- 熔断器 [hystrix](github.com/afex/hystrix-go/hystrix)  
 - 数据库组件 [GORM](https://gorm.io)
 - 命令行工具 [Cobra](https://github.com/spf13/cobra)
 - 文档使用 [Swagger](https://swagger.io/) 生成
@@ -59,7 +62,6 @@
 - CI/CD [GitHub Actions](https://github.com/actions)
 - 使用 [GolangCI-lint](https://golangci.com/) 进行代码检测
 - 使用 make 来管理 Go 工程
-- 使用 YAML 文件进行多环境配置
 
 ### 管理后台
 - laravel框架(5.5.*) [laravel文档](https://learnku.com/docs/laravel/5.5/installation/1282)
@@ -109,7 +111,7 @@ make run
 ### docker
 
 [docker安装文档](https://docs.docker.com/engine/install/)
-```
+```shell
 cd chat
 # 1. build image: 
 docker build -t chat:latest -f Dockerfile .
@@ -120,28 +122,74 @@ docker run --rm -it -p 9050:9050 -p 9070:9070 chat:latest
 
 ### docker-compose
 [docker-compose安装文档](https://docs.docker.com/compose/install/)
-```
+安装组件:
+- chat_frontend 前端UI
+- chat_connect 连接层，处理websocket,tcp连接
+- chat_logic 核心逻辑业务层
+- chat_task 任务层
+- consul 服务注册中心
+- db mysql数据库
+- redis 缓存
+- elasticsearch 全文搜索引擎  
+- prometheus 服务监控
+- node_exporter 本机监控指标收集至 prometheus
+- grafana prometheus，loki数据展示
+- loki 日志收集
+- promtail loki agent
+- jaeger 链路追踪
+- fastdfs 资源服务器
+- minio 私有对象存储
+
+日志收集使用 loki + grafana + promtail [install](https://grafana.com/docs/loki/latest/installation/docker/)
+- 安装loki的docker plugin
+```shell
+docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
+#当有新版本时, 更新plugins
+docker plugin disable loki --force
+docker plugin upgrade loki grafana/loki-docker-driver:latest --grant-all-permissions
+docker plugin enable loki
+systemctl restart docker
+
+# 部署
 cd chat
-部署前端，记得修改frontend/src/config/env.production.js下的配置，默认本机127.0.0.1
+# 前端项目默认api host：127.0.0.1，如需修改，请 vim frontend/src/config/env.production.js
 docker-compose up -d
 ```
+
 访问 [http://127.0.0.1](http://127.0.0.1)
 
-### 连接层多开动态负载部署使用 nginx + consul-template
+### 应用多开动态负载部署使用 nginx + consul-template
 [文档地址](https://learn.hashicorp.com/tutorials/consul/load-balancing-nginx?in=consul/load-balancing)
+- 注：chat-task任务层，默认使用redis发布订阅模式作为消息队列，如需多开请使用其他消息队列
 
 ## 常用命令
 
 - make help 查看帮助
 - make build 编译项目
-- make gen-docs 生成接口文档
 - make run 运行项目
+- make test 运行测试用例
+- make clean 清除编译文件
+- make doc 生成接口文档  
+- make lint 代码检查
+- make graph 生成交互式的可视化Go程序调用图
+- make docker 生成docker镜像，确保已安装docker
 
 ## 📝 接口文档
 
 - [chat接口文档](http://127.0.0.1:9050/swagger/index.html)
-- [Protobuf学习](https://colobu.com/2019/10/03/protobuf-ultimate-tutorial-in-go/)
+- [前端界面](http://127.0.0.1)
+- [prometheus](http://127.0.0.1:9090)
+- [grafana](http://127.0.0.1:3000)
+- [jaeger](http://127.0.0.1:16686)
+- [consul](http://127.0.0.1:8500)
 
-## 开发规范
+## 其他
 
-遵循: [Uber Go 语言编码规范](https://github.com/xxjwxc/uber_go_guide_cn)
+- 开发规范: [Uber Go 语言编码规范](https://github.com/xxjwxc/uber_go_guide_cn)
+- Protobuf学习 [Protobuf学习](https://colobu.com/2019/10/03/protobuf-ultimate-tutorial-in-go/)
+- Go微服务学习 [koala](https://github.com/ibinarytree/koala)
+- Prometheus学习 [实战 Prometheus 搭建监控系统](https://www.aneasystone.com/archives/2018/11/prometheus-in-action.html)
+- PromQL [初识 PromQL](https://fuckcloudnative.io/prometheus/3-prometheus/functions.html)
+- ELK [ELK docker-compose install](https://github.com/deviantony/docker-elk)
+- LOKI [loki](https://wsgzao.github.io/post/loki/)
+- grafana dashboard [Linux主机详情](https://grafana.com/grafana/dashboards/12633)

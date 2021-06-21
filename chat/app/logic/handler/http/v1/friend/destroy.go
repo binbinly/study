@@ -20,21 +20,21 @@ import (
 // @Produce  json
 // @Param Token header string true "用户令牌"
 // @Param req body DestroyParams true "destroy"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":null}"
+// @Success 0 {string} json "{"code":0,"msg":"OK","data":{}}"
 // @Router /friend/auth [post]
 func Destroy(c *gin.Context) {
 	var req DestroyParams
-	v := app.BindJson(c, &req)
+	v := app.BindJSON(c, &req)
 	if !v {
 		app.Error(c, errno.ErrBind)
 		return
 	}
-	userId := app.GetUInt32UserId(c)
-	if userId == req.UserId {
+	userID := app.GetUInt32UserID(c)
+	if userID == req.UserID {
 		app.Error(c, ecode.ErrUserNoSelf)
 		return
 	}
-	err := service.Svc.FriendDestroy(c, userId, req.UserId)
+	err := service.Svc.FriendDestroy(c.Request.Context(), userID, req.UserID)
 	if errors.Is(err, service.ErrFriendNotRecord) {
 		app.Error(c, ecode.ErrFriendNotFound)
 		return

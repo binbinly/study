@@ -6,17 +6,19 @@ import (
 	"io"
 )
 
-// Md5 md5加密
-func Md5(_, value string) []byte {
+//Md5 实现了MD5哈希算法
+func Md5(value string) []byte {
+	// 返回一个新的使用MD5校验的hash.Hash
 	m := md5.New()
+	// 写入
 	m.Write([]byte(value))
-
+	// 返回添加b到当前的hash值后的新切片，不会改变底层的hash状态
 	return m.Sum(nil)
 }
 
-//Md5ToString md5加密返回字符串
+//Md5ToString 返回md5字符串
 func Md5ToString(value string) string {
-	return hex.EncodeToString(Md5("", value))
+	return hex.EncodeToString(Md5(value))
 }
 
 //Md5ByReader md5加密

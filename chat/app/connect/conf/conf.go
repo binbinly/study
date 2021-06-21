@@ -4,31 +4,27 @@ import (
 	"log"
 
 	"chat/internal/conf"
+	"chat/pkg/connect/tcp"
+	"chat/pkg/connect/ws"
 	logger "chat/pkg/log"
-	"chat/pkg/net/tracing"
+	"chat/pkg/net/grpc"
 	"chat/pkg/registry"
-	"chat/pkg/server/grpc"
-	"chat/pkg/server/tcp"
-	"chat/pkg/server/ws"
+	"chat/pkg/trace"
 )
 
+//Conf 全局配置
 var Conf = &Config{}
 
 // Config global config
 type Config struct {
-	Name       string
-	Host       string
-	ServerId   string
-	LogicName  string
-	Tcp        tcp.Config
+	App        AppConfig
+	TCP        tcp.Config
 	Ws         ws.Config
 	GrpcClient grpc.ClientConfig
 	GrpcServer grpc.ServerConfig
 	Registry   registry.Config
 	Logger     logger.Config
-	Jaeger     tracing.Config
-	Prometheus conf.PrometheusConfig
-	Sentry     conf.SentryConfig
+	Trace      trace.Config
 }
 
 // Init init config
@@ -44,4 +40,13 @@ func Init(cfg string) {
 		log.Fatalf("init config err:%v", err)
 	}
 	conf.WatchConfig(v)
+}
+
+// AppConfig app config
+type AppConfig struct {
+	Name     string
+	Host     string
+	ServerID string
+	Env      string
+	Debug    bool
 }

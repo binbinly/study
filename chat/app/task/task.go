@@ -1,8 +1,6 @@
 package task
 
 import (
-	"chat/pkg/queue"
-	"chat/pkg/queue/iqueue"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -13,9 +11,12 @@ import (
 
 	"chat/app/task/conf"
 	"chat/pkg/log"
+	"chat/pkg/queue"
+	"chat/pkg/queue/iqueue"
 	"chat/proto/logic"
 )
 
+//Task 任务层结构
 type Task struct {
 	c         *conf.Config
 	consumer  iqueue.Consumer
@@ -23,6 +24,7 @@ type Task struct {
 	connects  map[string]*Connect
 }
 
+//New 实例化任务层
 func New(c *conf.Config) *Task {
 	t := &Task{
 		c:        c,
@@ -41,7 +43,7 @@ func (t *Task) Start() {
 
 // handlerMessage 处理消息
 func (t *Task) handlerMessage(body []byte) (err error) {
-	log.Infof("[task.message] begin body:%v", string(body))
+	log.Debugf("[task.message] begin body:%v", string(body))
 	msg := &logic.SendMsg{}
 	err = json.Unmarshal(body, msg)
 	if err != nil {
@@ -72,9 +74,9 @@ func (t *Task) watchConnect() {
 	}
 	go func() {
 		for {
-			services, metaInfo, err := consul.Health().Service(t.c.Connect.ServiceName, "", true, &api.QueryOptions{WaitIndex: t.lastIndex})
+			services, metaInfo, err := consul.Health().Service(t.c.GrpcClient.ServiceName, "", true, &api.QueryOptions{WaitIndex: t.lastIndex})
 			if err != nil {
-				log.Errorf("[task.watcher] get services err:%v", err)
+				log.Warnf("[task.watcher] get services err:%v", err)
 				time.Sleep(time.Second)
 				continue
 			}
@@ -83,7 +85,7 @@ func (t *Task) watchConnect() {
 				time.Sleep(time.Second)
 				continue
 			}
-			log.Infof("[task.watch] services size:%v", len(services))
+			log.Debugf("[task.watch] services size:%v", len(services))
 
 			adds := map[string]string{}
 
@@ -91,7 +93,7 @@ func (t *Task) watchConnect() {
 				adds[v.Service.ID] = fmt.Sprintf("%v:%v", v.Service.Address, v.Service.Port)
 			}
 			if err = t.updateConnects(adds); err != nil {
-				log.Errorf("[task.watcher] update connects err:%v", err)
+				log.Warnf("[task.watcher] update connects err:%v", err)
 				time.Sleep(time.Second)
 				continue
 			}
@@ -112,19 +114,19 @@ func (t *Task) updateConnects(adds map[string]string) error {
 			return errors.Wrapf(err, "[task.newAddress] NewConnect id:%v, addr:%v", id, addr)
 		}
 		connects[id] = c
-		log.Infof("watchConnect add connect id:%v, addr:%v", id, addr)
+		log.Debugf("watchConnect add connect id:%v, addr:%v", id, addr)
 	}
 	for id, old := range t.connects {
 		if _, ok := connects[id]; !ok {
 			old.cancel()
-			log.Infof("watchConnect del connect id:%v", id)
+			log.Debugf("watchConnect del connect id:%v", id)
 		}
 	}
 	t.connects = connects
 	return nil
 }
 
-//Stop 关闭服务
+//Close 关闭服务
 func (t *Task) Close() {
 	for _, connect := range t.connects {
 		connect.cancel()

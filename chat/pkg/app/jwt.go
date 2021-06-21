@@ -19,7 +19,7 @@ var (
 
 // Payload is the data of the JSON web token.
 type Payload struct {
-	UserId   int
+	UserID   int
 }
 
 // secretFunc validates the secret format.
@@ -45,7 +45,7 @@ func Parse(tokenString string, secret string) (*Payload, error) {
 	// Read the token if it's valid.
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		payloads := &Payload{}
-		payloads.UserId = int(claims["user_id"].(float64))
+		payloads.UserID = int(claims["user_id"].(float64))
 		return payloads, nil
 	}
 

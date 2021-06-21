@@ -2,6 +2,7 @@ package idl
 
 import "chat/app/logic/model"
 
+//TransferUserInput 用户模型对外转化结构
 type TransferUserInput struct {
 	User  *model.UserModel
 	Token string
@@ -72,7 +73,7 @@ func TransferCollect(input *model.CollectModel) *model.Collect {
 	}
 
 	return &model.Collect{
-		Id:      input.ID,
+		ID:      input.ID,
 		Type:    input.Type,
 		Content: input.Content,
 		Options: input.Options,

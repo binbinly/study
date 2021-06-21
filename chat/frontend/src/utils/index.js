@@ -99,24 +99,33 @@ export function param2Obj(url) {
 
 // 获取存储列表数据
 export function getStorage(key) {
-  return sessionStorage.getItem(key)
+  if (process.env.VUE_APP_ENV == 'development') {
+    return sessionStorage.getItem(key)
+  }
+  return localStorage.getItem(key)
 }
 
 // 设置存储
 export function setStorage(key, data) {
-  return sessionStorage.setItem(key, data)
+  if (process.env.VUE_APP_ENV == 'development') {
+    return sessionStorage.setItem(key, data)
+  }
+  return localStorage.setItem(key, data)
 }
 
 // 删除存储
 export function removeStorage(key) {
-  return sessionStorage.removeItem(key)
+  if (process.env.VUE_APP_ENV == 'development') {
+    return sessionStorage.removeItem(key)
+  }
+  return localStorage.removeItem(key)
 }
 
 /**
  *Base64字符串转二进制
  */
-export function dataURLtoBlob(dataurl) {
-  var arr = dataurl.split(','),
+export function dataURLtoBlob(url) {
+  var arr = url.split(','),
     mime = arr[0].match(/:(.*?);/)[1],
     bstr = atob(arr[1]),
     n = bstr.length,

@@ -21,15 +21,15 @@ import (
 // @Param Token header string true "用户令牌"
 // @Param user_id query int false "用户id"
 // @Param p query int false "页码"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":{}"
+// @success 0 {object} app.Response{data=[]model.Moment} "调用成功结构"
 // @Router /moment/list [get]
 func List(c *gin.Context) {
-	myId := app.GetUInt32UserId(c)
-	userId := cast.ToUint32(c.Query("user_id"))
-	if userId == 0 { // 默认查看自己的动态
-		userId = myId
+	myID := app.GetUInt32UserID(c)
+	userID := cast.ToUint32(c.Query("user_id"))
+	if userID == 0 { // 默认查看自己的动态
+		userID = myID
 	}
-	list, err := service.Svc.MomentList(c, myId, userId, app.GetPageOffset(c))
+	list, err := service.Svc.MomentList(c.Request.Context(), myID, userID, app.GetPageOffset(c))
 	if errors.Is(err, service.ErrUserNotFound) {
 		app.Error(c, ecode.ErrUserNotFound)
 		return

@@ -2,14 +2,31 @@ package main
 
 import (
 	"chat/pkg/app"
+	"chat/pkg/log"
 	"encoding/json"
 	"fmt"
+	"io"
+	"os"
+	"path/filepath"
 )
 
 func main() {
-	adds := map[string]string{}
-	adds["a"] = "aaa"
+	file()
+}
 
+func file() io.Writer {
+	filename := "./a/b/c/info.log"
+	dirname := filepath.Dir(filename)
+	if err := os.MkdirAll(dirname, 0755); err != nil {
+		log.Fatal(err)
+	}
+	// if we got here, then we need to create a file
+	fh, err := os.OpenFile(filename, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fh.WriteString("aaaaaa")
+	return fh
 }
 
 func token()  {

@@ -1,14 +1,12 @@
 package log
 
 import (
-	"io"
-	"os"
-	"strings"
-	"time"
-
-	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"io"
+	"os"
+	"path/filepath"
+	"strings"
 
 	"chat/pkg/net/ip"
 )
@@ -176,27 +174,18 @@ func getErrorCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Optio
 	return zapcore.NewCore(encoder, zapcore.AddSync(errorWrite), errorLevel), stacktrace
 }
 
-// getLogWriterWithTime 按时间(小时)进行切割
+// getLogWriterWithTime 打开获取文件句柄
 func getLogWriterWithTime(cfg *Config, filename string) io.Writer {
-	logFullPath := filename
-	rotationPolicy := cfg.LogRollingPolicy
-	backupCount := cfg.LogBackupCount
-	// 默认
-	rotateDuration := time.Hour * 24
-	if rotationPolicy == RotateTimeHourly {
-		rotateDuration = time.Hour
+	dirname := filepath.Dir(filename)
+	if err := os.MkdirAll(dirname, 0755); err != nil {
+		log.Fatal(err)
 	}
-	hook, err := rotatelogs.New(
-		logFullPath+".%Y%m%d%H",                     // 时间格式使用shell的date时间格式
-		rotatelogs.WithLinkName(logFullPath),        // 生成软链，指向最新日志文件
-		rotatelogs.WithRotationCount(backupCount),   // 文件最大保存份数
-		rotatelogs.WithRotationTime(rotateDuration), // 日志切割时间间隔
-	)
-
+	// if we got here, then we need to create a file
+	fh, err := os.OpenFile(filename, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	return hook
+	return fh
 }
 
 // Debug logger
@@ -253,6 +242,6 @@ func (l *zapLogger) WithFields(fields Fields) Logger {
 		f = append(f, k)
 		f = append(f, v)
 	}
-	newLogger := l.sugarLogger.With(f...)
-	return &zapLogger{newLogger}
+	logger := l.sugarLogger.With(f...)
+	return &zapLogger{logger}
 }

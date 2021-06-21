@@ -1,7 +1,6 @@
 package cache
 
 import (
-	"context"
 	"time"
 
 	"chat/pkg/cache"
@@ -12,31 +11,26 @@ const (
 	// defaultExpireTime 默认过期时间
 	defaultExpireTime = time.Hour * 24
 	// prefixKey 缓存前缀
-	prefixKey = "cache:"
+	prefixKey = "cache"
 
-	UserCacheKey = "user:%d"
-	ApplyListCacheKey  = "apply:list:%d"
-	TagAllCacheKey  = "tag:all:%d"
-	MomentTimelineCacheKey  = "moment:timeline:count:%d_%d"
-	MomentLikeCacheKey  = "moment:like:%d"
-	MomentCommentCacheKey = "moment:comment:%d"
-	GroupUserCacheKey = "group_user:%d_%d"
-	GroupUserAllCacheKey = "group_user:all:%d"
-	GroupCacheKey = "group:%d"
-	GroupAllCacheKey = "group:all:%d"
-	FriendCacheKey = "friend:%d_%d"
-	FriendAllCacheKey = "friend:all:%d"
-	CollectListCacheKey  = "collect:list:%d"
+	userCacheKey           = "user:%d"
+	applyListCacheKey      = "apply:list:%d"
+	tagAllCacheKey         = "tag:all:%d"
+	momentCacheKey         = "moment:%d"
+	momentTimelineCacheKey = "moment:timeline:count:%d_%d"
+	momentLikeCacheKey     = "moment:like:%d"
+	momentCommentCacheKey  = "moment:comment:%d"
+	groupUserCacheKey      = "group_user:%d_%d"
+	groupUserAllCacheKey   = "group_user:all:%d"
+	groupCacheKey          = "group:%d"
+	groupAllCacheKey       = "group:all:%d"
+	friendCacheKey         = "friend:%d_%d"
+	friendAllCacheKey      = "friend:all:%d"
+	collectListCacheKey    = "collect:list:%d"
 )
 
 // newCache new一个cache
 func newCache(obj func() interface{}) cache.Driver {
 	encoding := cache.JSONEncoding{}
 	return cache.NewRedisCache(redis.Client, prefixKey, encoding, obj)
-}
-
-// newCtxCache new一个上下文cache
-func newCtxCache(ctx context.Context, obj func() interface{}) cache.Driver {
-	encoding := cache.JSONEncoding{}
-	return cache.NewRedisCache(redis.WrapRedisClient(ctx, redis.Client), prefixKey, encoding, obj)
 }

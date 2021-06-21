@@ -60,9 +60,8 @@ export default {
     const t = this.$route.query.type
     if (t != this.type) {
       this.init()
-    } else {
-      this.type = t
     }
+    this.type = t
   },
   mounted() {
     event.$on('sendResult', this.sendResult)
@@ -84,7 +83,7 @@ export default {
     init() {
       this.content = ""
       this.imageList = []
-      this.video = []
+      this.video = ''
       this.remindList = []
       this.seeType = 'all' //可见类型
       this.seeList = []  //可见用户id列表
@@ -104,7 +103,7 @@ export default {
       if (this.type === 'text' && this.content == '') {
         return Toast('内容不能为空')
       } else if (this.type === 'image' && this.imageList.length == 0) {
-        return Toast('请删除图片')
+        return Toast('请选择图片')
       } else if (this.type === 'video' && this.video == '') {
         return Toast('请上传短视频')
       }
@@ -121,6 +120,7 @@ export default {
       }).then(() => {
         this.init()
         Toast.success('发布成功')
+        event.$emit('refreshMoment')
         this.$router.back()
       })
     },

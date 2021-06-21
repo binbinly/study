@@ -1,12 +1,13 @@
 package routers
 
 import (
-	tcp2 "chat/app/connect/handler/tcp"
-	"chat/pkg/server/tcp"
+	"chat/app/connect/handler/tcp/v1"
+	"chat/pkg/connect"
 )
 
-func NewTcpEngine() *tcp.Engine {
-	r := tcp.NewEngine()
-	r.AddRoute(1, tcp2.Ping)
+//NewTCPEngine 实例化tcp路由
+func NewTCPEngine() *connect.Engine {
+	r := connect.NewEngine()
+	r.AddIntRoute(1, v1.Ping)
 	return r
 }

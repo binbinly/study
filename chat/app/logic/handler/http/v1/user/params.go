@@ -39,7 +39,7 @@ type UpdateParams struct {
 
 // ReportParams 好友举报
 type ReportParams struct {
-	UserId   uint32 `json:"user_id" binding:"required,numeric" example:"1"` //用户ID
+	UserID   uint32 `json:"user_id" binding:"required,numeric" example:"1"` //用户ID
 	Type     int8   `json:"type" binding:"oneof=1 2" example:"1"`           // 1=用户，2=群组
 	Content  string `json:"content" binding:"required" example:"test"`      // 举报内容
 	Category string `json:"category" binding:"required" example:"分类"`       // 举报分类

@@ -19,16 +19,16 @@ import (
 // @Produce  json
 // @Param Token header string true "用户令牌"
 // @Param ids body string true "用户id列表"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":{}}"
+// @Success 0 {string} json "{"code":0,"msg":"OK","data":{}}"
 // @Router /group/create [post]
 func Create(c *gin.Context) {
 	var req IdsParams
-	valid := app.BindJson(c, &req)
+	valid := app.BindJSON(c, &req)
 	if !valid {
 		app.Error(c, errno.ErrBind)
 		return
 	}
-	err := service.Svc.GroupCreate(c, app.GetUInt32UserId(c), req.Ids)
+	err := service.Svc.GroupCreate(c.Request.Context(), app.GetUInt32UserID(c), req.Ids)
 	if errors.Is(err, service.ErrFriendNotRecord) {
 		app.Error(c, ecode.ErrFriendNotFound)
 		return

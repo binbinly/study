@@ -2,6 +2,7 @@ package idl
 
 import "chat/app/logic/model"
 
+//TransferGroupInput 群组对外转化结构
 type TransferGroupInput struct {
 	Group     *model.GroupModel
 	GroupUser []*model.GroupUserModel
@@ -14,8 +15,8 @@ type TransferGroupInput struct {
 func TransferGroupInfo(input *TransferGroupInput) *model.GroupInfo {
 	info := &model.GroupInfo{
 		Info: &model.Info{
-			Id:            input.Group.ID,
-			UserId:        input.Group.UserId,
+			ID:            input.Group.ID,
+			UserID:        input.Group.UserID,
 			InviteConfirm: input.Group.InviteConfirm,
 			Name:          input.Group.Name,
 			Avatar:        input.Group.Avatar,
@@ -72,7 +73,7 @@ func groupUserToMap(gUsers []*model.GroupUserModel) (m map[uint32]string) {
 	m = make(map[uint32]string)
 	for _, user := range gUsers {
 		if user.Nickname != "" {
-			m[user.UserId] = user.Nickname
+			m[user.UserID] = user.Nickname
 		}
 	}
 	return

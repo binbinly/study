@@ -4,15 +4,13 @@ import (
 	"context"
 	"fmt"
 	"sync"
-
-	"chat/pkg/log"
 )
 
 var manager = &PluginsManager{
 	plugins: make(map[string]Registry),
 }
 
-//插件管理器
+//PluginsManager 插件管理器
 type PluginsManager struct {
 	plugins map[string]Registry
 	lock    sync.Mutex
@@ -25,7 +23,6 @@ func (p *PluginsManager) registerPlugin(plugin Registry) {
 
 	_, ok := p.plugins[plugin.Name()]
 	if ok {
-		log.Infof("plugin already register:%v", plugin.Name())
 		return
 	}
 
@@ -48,12 +45,12 @@ func (p *PluginsManager) initRegistry(ctx context.Context, name string, opts ...
 	return
 }
 
-// 注册插件
+//RegisterPlugin 注册插件
 func RegisterPlugin(registry Registry) {
 	manager.registerPlugin(registry)
 }
 
-// 初始化注册中心
+//InitRegistry 初始化注册中心
 func InitRegistry(ctx context.Context, name string, opts ...Option) (registry Registry, err error) {
 	return manager.initRegistry(ctx, name, opts...)
 }

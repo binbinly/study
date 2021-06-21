@@ -2,6 +2,7 @@ package idl
 
 import "chat/app/logic/model"
 
+//TransferMomentInput 朋友圈对外转化结构
 type TransferMomentInput struct {
 	Moments     []*model.MomentModel
 	Users       []*model.UserModel
@@ -17,9 +18,9 @@ func TransferMomentList(input *TransferMomentInput) []*model.MomentList {
 	comments := commentsToMap(input.CommentList, um)
 	list := make([]*model.MomentList, 0)
 	for _, moment := range input.Moments {
-		if user, ok := um[moment.UserId]; ok {
+		if user, ok := um[moment.UserID]; ok {
 			m := &model.MomentList{
-				Id:        moment.ID,
+				ID:        moment.ID,
 				Content:   moment.Content,
 				Image:     moment.Image,
 				Video:     moment.Video,
@@ -52,7 +53,7 @@ func likesToMap(likes map[uint32]*[]uint32, users map[uint32]*model.UserBase) ma
 		for _, uid := range *like {
 			if user, ok := users[uid]; ok {
 				u := &model.User{
-					Id:   user.ID,
+					ID:   user.ID,
 					Name: user.Name,
 				}
 				if _, o := ml[mid]; o {
@@ -74,26 +75,26 @@ func commentsToMap(mComments map[uint32]*[]*model.MomentCommentModel, users map[
 	}
 	for _, comments := range mComments {
 		for _, comment := range *comments {
-			if user, ok := users[comment.UserId]; ok {
+			if user, ok := users[comment.UserID]; ok {
 				ct := &model.Comment{
 					Content: comment.Content,
 					User: &model.User{
-						Id:   user.ID,
+						ID:   user.ID,
 						Name: user.Name,
 					},
 				}
-				if comment.ReplyId > 0 { // 格式化回复者
-					if u, o := users[comment.ReplyId]; o {
+				if comment.ReplyID > 0 { // 格式化回复者
+					if u, o := users[comment.ReplyID]; o {
 						ct.Reply = &model.User{
-							Id:   u.ID,
+							ID:   u.ID,
 							Name: u.Name,
 						}
 					}
 				}
-				if _, o := ml[comment.MomentId]; o {
-					ml[comment.MomentId] = append(ml[comment.MomentId], ct)
+				if _, o := ml[comment.MomentID]; o {
+					ml[comment.MomentID] = append(ml[comment.MomentID], ct)
 				} else {
-					ml[comment.MomentId] = []*model.Comment{ct}
+					ml[comment.MomentID] = []*model.Comment{ct}
 				}
 			}
 		}

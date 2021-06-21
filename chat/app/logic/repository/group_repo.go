@@ -15,6 +15,7 @@ import (
 	"chat/pkg/redis"
 )
 
+//IGroup 群组接口
 type IGroup interface {
 	// 创建群组
 	GroupCreate(ctx context.Context, tx *gorm.DB, group *model.GroupModel) (id uint32, err error)
@@ -23,19 +24,19 @@ type IGroup interface {
 	// 删除群组
 	GroupDelete(ctx context.Context, tx *gorm.DB, group *model.GroupModel) (err error)
 	// 获取群组信息
-	GetGroupById(ctx context.Context, id uint32) (info *model.GroupModel, err error)
+	GetGroupByID(ctx context.Context, id uint32) (info *model.GroupModel, err error)
 	// 获取我的群组列表
-	GetGroupsByUserId(ctx context.Context, userId uint32) (list []*model.GroupList, err error)
+	GetGroupsByUserID(ctx context.Context, userID uint32) (list []*model.GroupList, err error)
 }
 
 // GroupCreate 创建群组
 func (r *Repo) GroupCreate(ctx context.Context, tx *gorm.DB, group *model.GroupModel) (id uint32, err error) {
-	err = tx.Create(&group).Error
+	err = tx.WithContext(ctx).Create(&group).Error
 	if err != nil {
 		return 0, errors.Wrapf(err, "[repo.group] create err")
 	}
 	// 删除缓存
-	err = r.groupCache.DelCacheAll(ctx, group.UserId)
+	err = r.groupCache.DelCacheAll(ctx, group.UserID)
 	if err != nil {
 		return 0, errors.Wrap(err, "[repo.group] delete all cache")
 	}
@@ -44,12 +45,12 @@ func (r *Repo) GroupCreate(ctx context.Context, tx *gorm.DB, group *model.GroupM
 
 // GroupSave 保存群组信息
 func (r *Repo) GroupSave(ctx context.Context, group *model.GroupModel) (err error) {
-	err = r.db.Save(group).Error
+	err = r.db.WithContext(ctx).Save(group).Error
 	if err != nil {
 		return errors.Wrapf(err, "[repo.group] save err")
 	}
 	// 删除缓存
-	err = r.groupCache.DelCacheAll(ctx, group.UserId)
+	err = r.groupCache.DelCacheAll(ctx, group.UserID)
 	if err != nil {
 		return errors.Wrap(err, "[repo.group] delete all cache")
 	}
@@ -62,12 +63,12 @@ func (r *Repo) GroupSave(ctx context.Context, group *model.GroupModel) (err erro
 
 // GroupDelete 删除群
 func (r *Repo) GroupDelete(ctx context.Context, tx *gorm.DB, group *model.GroupModel) (err error) {
-	err = tx.Delete(group).Error
+	err = tx.WithContext(ctx).Delete(group).Error
 	if err != nil {
 		return errors.Wrapf(err, "[repo.group] delete err")
 	}
 	// 删除缓存
-	err = r.groupCache.DelCacheAll(ctx, group.UserId)
+	err = r.groupCache.DelCacheAll(ctx, group.UserID)
 	if err != nil {
 		return errors.Wrap(err, "[repo.group] delete all cache")
 	}
@@ -78,11 +79,11 @@ func (r *Repo) GroupDelete(ctx context.Context, tx *gorm.DB, group *model.GroupM
 	return err
 }
 
-// GetGroupById 获取群组信息
-func (r *Repo) GetGroupById(ctx context.Context, id uint32) (info *model.GroupModel, err error) {
+// GetGroupByID 获取群组信息
+func (r *Repo) GetGroupByID(ctx context.Context, id uint32) (info *model.GroupModel, err error) {
 	start := time.Now()
 	defer func() {
-		log.Infof("[repo.group] id: %d cost: %d μs", id, time.Since(start).Microseconds())
+		log.Debugf("[repo.group] id: %d cost: %d μs", id, time.Since(start).Microseconds())
 	}()
 	// 从cache获取
 	info, err = r.groupCache.GetCache(ctx, id)
@@ -96,14 +97,14 @@ func (r *Repo) GetGroupById(ctx context.Context, id uint32) (info *model.GroupMo
 	}
 	// hit cache
 	if info != nil {
-		log.Infof("[repo.group] get data from cache, id: %d", id)
+		log.Debugf("[repo.group] get data from cache, id: %d", id)
 		return
 	}
 
 	getDataFn := func() (interface{}, error) {
 		data := new(model.GroupModel)
 		// 从数据库中获取
-		err = r.db.First(data, id).Error
+		err = r.db.WithContext(ctx).First(data, id).Error
 		// if data is empty, set not found cache to prevent cache penetration(缓存穿透)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = r.groupCache.SetCacheWithNotFound(ctx, id)
@@ -134,37 +135,37 @@ func (r *Repo) GetGroupById(ctx context.Context, id uint32) (info *model.GroupMo
 	return data, nil
 }
 
-// GetGroupsByUserId 群组列表
-func (r *Repo) GetGroupsByUserId(ctx context.Context, userId uint32) (list []*model.GroupList, err error) {
+// GetGroupsByUserID 群组列表
+func (r *Repo) GetGroupsByUserID(ctx context.Context, userID uint32) (list []*model.GroupList, err error) {
 	start := time.Now()
 	defer func() {
-		log.Infof("[repo.group] uid: %d cost: %d μs", userId, time.Since(start).Microseconds())
+		log.Debugf("[repo.group] uid: %d cost: %d μs", userID, time.Since(start).Microseconds())
 	}()
 	// 从cache获取
-	list, err = r.groupCache.GetCacheAll(ctx, userId)
+	list, err = r.groupCache.GetCacheAll(ctx, userID)
 	if err != nil {
 		if err == cache.ErrPlaceholder {
 			return make([]*model.GroupList, 0), nil
 		} else if err != redis.Nil {
-			return nil, errors.Wrapf(err, "[repo.group] get list by uid: %d", userId)
+			return nil, errors.Wrapf(err, "[repo.group] get list by uid: %d", userID)
 		}
 	}
 	if len(list) > 0 {
-		log.Infof("[repo.group] get from cache, uid: %d", userId)
+		log.Debugf("[repo.group] get from cache, uid: %d", userID)
 		return
 	}
 
 	getDataFn := func() (interface{}, error) {
 		data := make([]*model.GroupList, 0)
-		err = r.db.Model(&model.GroupUserModel{}).Distinct().Select("`group`.id, `group`.name, `group`.avatar").
+		err = r.db.WithContext(ctx).Model(&model.GroupUserModel{}).Distinct().Select("`group`.id, `group`.name, `group`.avatar").
 			Joins("left join `group` on `group`.id = group_user.group_id").
-			Where("group_user.user_id=?", userId).Scan(&data).Error
+			Where("group_user.user_id=?", userID).Scan(&data).Error
 		if err != nil {
 			return nil, errors.Wrapf(err, "[repo.group] query db err")
 		}
 
 		// set cache
-		err = r.groupCache.SetCacheAll(ctx, userId, data)
+		err = r.groupCache.SetCacheAll(ctx, userID, data)
 		if err != nil {
 			return data, errors.Wrap(err, "[repo.group] set cache all err")
 		}
@@ -172,7 +173,7 @@ func (r *Repo) GetGroupsByUserId(ctx context.Context, userId uint32) (list []*mo
 	}
 
 	gr := singleflight.Group{}
-	doKey := fmt.Sprintf("get_group_all_%d", userId)
+	doKey := fmt.Sprintf("get_group_all_%d", userID)
 	val, err, _ := gr.Do(doKey, getDataFn)
 	if err != nil {
 		return nil, errors.Wrap(err, "[repo.group] get all err via single flight do")

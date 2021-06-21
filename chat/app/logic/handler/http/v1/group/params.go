@@ -7,19 +7,19 @@ type IdsParams struct {
 
 // UpdateParams 修噶群组信息
 type UpdateParams struct {
-	Id     uint32    `json:"id" binding:"required,numeric" example:"1"`           // 群ID
+	ID     uint32 `json:"id" binding:"required,numeric" example:"1"`           // 群ID
 	Name   string `json:"name" binding:"omitempty,max=60" example:"name"`      // 群名
 	Remark string `json:"remark" binding:"omitempty,max=500" example:"remark"` // 群公告
 }
 
 // NicknameParams 修改群昵称
 type NicknameParams struct {
-	Id       uint32    `json:"id" binding:"required,numeric" example:"1"`         // 群ID
+	ID       uint32 `json:"id" binding:"required,numeric" example:"1"`         // 群ID
 	Nickname string `json:"nickname" binding:"required,max=60" example:"name"` // 群名
 }
 
 // ActionParams 操作群用户
 type ActionParams struct {
-	Id     uint32 `json:"id" binding:"required,numeric" example:"1"`      // 群ID
-	UserId uint32 `json:"user_id" binding:"required,numeric" example:"1"` // 用户ID
+	ID     uint32 `json:"id" binding:"required,numeric" example:"1"`      // 群ID
+	UserID uint32 `json:"user_id" binding:"required,numeric" example:"1"` // 用户ID
 }

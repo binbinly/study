@@ -5,6 +5,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
+//NewQueue 创建队列
 func NewQueue(channel *amqp.Channel, name string) (q amqp.Queue, err error) {
 	q, err = channel.QueueDeclare(
 		name,

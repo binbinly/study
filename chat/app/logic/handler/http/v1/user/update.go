@@ -17,11 +17,11 @@ import (
 // @Produce  json
 // @Param Token header string true "用户令牌"
 // @Param user body UpdateParams true "The user info"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":null}"
+// @Success 0 {string} json "{"code":0,"msg":"OK","data":{}}"
 // @Router /user/edit [post]
 func Update(c *gin.Context) {
 	var req UpdateParams
-	v := app.BindJson(c, &req)
+	v := app.BindJSON(c, &req)
 	if !v {
 		app.Error(c, errno.ErrBind)
 		return
@@ -41,7 +41,7 @@ func Update(c *gin.Context) {
 		app.Error(c, errno.ErrParamsEmpty)
 		return
 	}
-	err := service.Svc.UserEdit(c, app.GetUInt32UserId(c), userMap)
+	err := service.Svc.UserEdit(c.Request.Context(), app.GetUInt32UserID(c), userMap)
 	if err != nil {
 		log.Warnf("[http.user] update err, %v", err)
 		app.Error(c, errno.InternalServerError)

@@ -23,19 +23,22 @@ func NewCommentCache() *CommentCache {
 	}
 }
 
+//GetCacheKey 获取缓存键
 func (u *CommentCache) GetCacheKey(id uint32) string {
-	return fmt.Sprintf(MomentCommentCacheKey, id)
+	return fmt.Sprintf(momentCommentCacheKey, id)
 }
 
+//SetCache 设置缓存
 func (u *CommentCache) SetCache(ctx context.Context, id uint32, comments []*model.MomentCommentModel) error {
 	if len(comments) == 0 {
-		return u.cache.SetCacheWithNotFound(u.GetCacheKey(id))
+		return u.cache.SetCacheWithNotFound(ctx, u.GetCacheKey(id))
 	}
-	return u.cache.Set(u.GetCacheKey(id), comments, defaultExpireTime)
+	return u.cache.Set(ctx, u.GetCacheKey(id), comments, defaultExpireTime)
 }
 
+//GetCache 获取缓存
 func (u *CommentCache) GetCache(ctx context.Context, id uint32) (comments *[]*model.MomentCommentModel, err error) {
-	err = u.cache.Get(u.GetCacheKey(id), &comments)
+	err = u.cache.Get(ctx, u.GetCacheKey(id), &comments)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +55,7 @@ func (u *CommentCache) MultiGetCache(ctx context.Context, ids []uint32) (map[str
 
 	// 需要在这里make实例化，如果在返回参数里直接定义会报 nil map
 	commentMap := make(map[string]*[]*model.MomentCommentModel)
-	err := u.cache.MultiGet(keys, commentMap)
+	err := u.cache.MultiGet(ctx, keys, commentMap)
 	if err != nil {
 		return nil, err
 	}
@@ -61,5 +64,5 @@ func (u *CommentCache) MultiGetCache(ctx context.Context, ids []uint32) (map[str
 
 // DelCache 删除列表缓存
 func (u *CommentCache) DelCache(ctx context.Context, id uint32) error {
-	return u.cache.Del(u.GetCacheKey(id))
+	return u.cache.Del(ctx, u.GetCacheKey(id))
 }

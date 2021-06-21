@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-//获取分页起始偏移量
+//GetPageOffset 获取分页起始偏移量
 func GetPageOffset(c *gin.Context) int {
 	offset := 0
 	page := cast.ToInt(c.Query("p"))

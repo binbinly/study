@@ -5,45 +5,46 @@ import (
 
 	"github.com/pkg/errors"
 
-	"chat/app/logic/idl"
-	"chat/app/logic/message"
-	"chat/app/logic/model"
 	"chat/app/constvar"
+	"chat/app/logic/idl"
+	"chat/app/logic/model"
+	"chat/app/message"
 	"chat/pkg/app"
 	"chat/pkg/utils"
 )
 
+//IMoment 朋友圈接口
 type IMoment interface {
-	// 发布朋友圈
-	MomentPush(ctx context.Context, userId uint32, content, image, video, location string, t, sType int8, remind, see []uint32) (err error)
-	// 我的朋友圈
-	MomentTimeline(ctx context.Context, userId uint32, offset int) (*model.Moment, error)
-	// 好友朋友圈
-	MomentList(ctx context.Context, myId, userId uint32, offset int) (*model.Moment, error)
-	// 点赞
-	MomentLike(ctx context.Context, userId, momentId uint32) error
-	// 评论
-	MomentComment(ctx context.Context, userId, replyId, momentId uint32, content string) error
+	//MomentPush 发布朋友圈
+	MomentPush(ctx context.Context, userID uint32, content, image, video, location string, t, sType int8, remind, see []uint32) (err error)
+	//MomentTimeline 我的朋友圈
+	MomentTimeline(ctx context.Context, userID uint32, offset int) (*model.Moment, error)
+	//MomentList 好友朋友圈
+	MomentList(ctx context.Context, myID, userID uint32, offset int) (*model.Moment, error)
+	//MomentLike 点赞
+	MomentLike(ctx context.Context, userID, momentID uint32) error
+	//MomentComment 评论
+	MomentComment(ctx context.Context, userID, replyID, momentID uint32, content string) error
 }
 
 // MomentPush 发布朋友圈
-func (s *Service) MomentPush(ctx context.Context, userId uint32, content, image, video, location string, t, sType int8, remind, see []uint32) (err error) {
+func (s *Service) MomentPush(ctx context.Context, userID uint32, content, image, video, location string, t, sType int8, remind, see []uint32) (err error) {
 	// 我的好友列表
-	friends, err := s.repo.GetFriendAll(ctx, userId)
+	friends, err := s.repo.GetFriendAll(ctx, userID)
 	if err != nil {
 		return errors.Wrapf(err, "[service.moment] friends err")
 	}
 	// 好友id列表
 	friendIds := make([]uint32, 0)
 	for _, f := range friends {
-		friendIds = append(friendIds, f.FriendId)
+		friendIds = append(friendIds, f.FriendID)
 	}
 	// 过滤非好友元素
 	newRemind := utils.FilterSmallUInt32Slice(friendIds, func(v uint32) bool {
 		return utils.InuInt32Slice(v, remind)
 	})
 	m := &model.MomentModel{
-		Uid:      model.Uid{UserId: userId},
+		UID:      model.UID{UserID: userID},
 		Content:  content,
 		Image:    image,
 		Video:    video,
@@ -61,28 +62,33 @@ func (s *Service) MomentPush(ctx context.Context, userId uint32, content, image,
 		tx.Rollback()
 		return errors.Wrapf(err, "[service.moment] create err")
 	}
+	//异步同步至es
+	s.ec.PushMoment(m)
 	// 时间线
 	lines := make([]*model.MomentTimelineModel, 0)
 	// 自己
 	lines = append(lines, &model.MomentTimelineModel{
-		Uid:      model.Uid{UserId: userId},
-		MomentId: id,
+		UID:      model.UID{UserID: userID},
+		MomentID: id,
 		IsOwn:    1,
 	})
 	for _, f := range friends {
+		if sType == model.MomentSeeTypeNone {
+			continue
+		}
 		line := &model.MomentTimelineModel{
-			Uid:      model.Uid{UserId: f.FriendId},
-			MomentId: id,
+			UID:      model.UID{UserID: f.FriendID},
+			MomentID: id,
 			IsOwn:    0,
 		}
 		if sType == model.MomentSeeTypeAll {
 			lines = append(lines, line)
 		} else if sType == model.MomentSeeTypeOnly {
-			if utils.InuInt32Slice(f.FriendId, see) {
+			if utils.InuInt32Slice(f.FriendID, see) {
 				lines = append(lines, line)
 			}
 		} else if sType == model.MomentSeeTypeExcept {
-			if !utils.InuInt32Slice(f.FriendId, see) {
+			if !utils.InuInt32Slice(f.FriendID, see) {
 				lines = append(lines, line)
 			}
 		}
@@ -98,22 +104,22 @@ func (s *Service) MomentPush(ctx context.Context, userId uint32, content, image,
 		tx.Rollback()
 		return errors.Wrap(err, "[service.moment] tx commit err")
 	}
-	return s.pushMessage(ctx, userId, lines, newRemind)
+	return s.pushMessage(ctx, userID, lines, newRemind)
 }
 
 // MomentTimeline 我的朋友圈动态
-func (s *Service) MomentTimeline(ctx context.Context, userId uint32, offset int) (*model.Moment, error) {
-	u, err := s.repo.GetUserById(ctx, userId)
+func (s *Service) MomentTimeline(ctx context.Context, userID uint32, offset int) (*model.Moment, error) {
+	u, err := s.repo.GetUserByID(ctx, userID)
 	if err != nil {
-		return nil, errors.Wrapf(err, "[service.moment] user err id:%d", userId)
+		return nil, errors.Wrapf(err, "[service.moment] user err id:%d", userID)
 	}
 	if u.ID == 0 {
 		return nil, ErrUserNotFound
 	}
 	// 朋友圈动态
-	mList, err := s.repo.GetMyMoments(ctx, userId, offset, constvar.DefaultLimit)
+	mList, err := s.repo.GetMyMoments(ctx, userID, offset, constvar.DefaultLimit)
 	if err != nil {
-		return nil, errors.Wrapf(err, "[service.moment] list err uid:%d", userId)
+		return nil, errors.Wrapf(err, "[service.moment] list err uid:%d", userID)
 	}
 	if len(mList) == 0 {
 		return &model.Moment{
@@ -126,7 +132,7 @@ func (s *Service) MomentTimeline(ctx context.Context, userId uint32, offset int)
 	mapUserIds := make(map[uint32]bool, 0)
 	for _, momentModel := range mList {
 		mIds = append(mIds, momentModel.ID)
-		mapUserIds[momentModel.UserId] = true
+		mapUserIds[momentModel.UserID] = true
 	}
 	// 点赞信息
 	likeList, err := s.repo.GetLikesByMomentIds(ctx, mIds)
@@ -145,9 +151,9 @@ func (s *Service) MomentTimeline(ctx context.Context, userId uint32, offset int)
 	}
 	for _, list := range commentList {
 		for _, commentModel := range *list {
-			mapUserIds[commentModel.UserId] = true
-			if commentModel.ReplyId > 0 {
-				mapUserIds[commentModel.ReplyId] = true
+			mapUserIds[commentModel.UserID] = true
+			if commentModel.ReplyID > 0 {
+				mapUserIds[commentModel.ReplyID] = true
 			}
 		}
 	}
@@ -174,18 +180,18 @@ func (s *Service) MomentTimeline(ctx context.Context, userId uint32, offset int)
 }
 
 // MomentList 指定好友的动态
-func (s *Service) MomentList(ctx context.Context, myId, userId uint32, offset int) (*model.Moment, error) {
-	u, err := s.repo.GetUserById(ctx, userId)
+func (s *Service) MomentList(ctx context.Context, myID, userID uint32, offset int) (*model.Moment, error) {
+	u, err := s.repo.GetUserByID(ctx, userID)
 	if err != nil {
-		return nil, errors.Wrapf(err, "[service.moment] user err id:%d", userId)
+		return nil, errors.Wrapf(err, "[service.moment] user err id:%d", userID)
 	}
 	if u.ID == 0 {
 		return nil, ErrUserNotFound
 	}
 	// 朋友圈动态
-	mList, err := s.repo.GetMomentsByUserId(ctx, myId, userId, offset, constvar.DefaultLimit)
+	mList, err := s.repo.GetMomentsByUserID(ctx, myID, userID, offset, constvar.DefaultLimit)
 	if err != nil {
-		return nil, errors.Wrapf(err, "[service.moment] list err uid:%d", userId)
+		return nil, errors.Wrapf(err, "[service.moment] list err uid:%d", userID)
 	}
 	if len(mList) == 0 {
 		return &model.Moment{
@@ -194,21 +200,21 @@ func (s *Service) MomentList(ctx context.Context, myId, userId uint32, offset in
 		}, nil
 	}
 	// 我的好友列表
-	friends, err := s.repo.GetFriendAll(ctx, myId)
+	friends, err := s.repo.GetFriendAll(ctx, myID)
 	if err != nil {
 		return nil, errors.Wrapf(err, "[service.moment] friends err")
 	}
 	// 好友id列表
 	friendIds := make([]uint32, 0)
 	for _, f := range friends {
-		friendIds = append(friendIds, f.FriendId)
+		friendIds = append(friendIds, f.FriendID)
 	}
 	mIds := make([]uint32, 0)
 	// 先用map存放，为去重用户id
 	mapUserIds := make(map[uint32]bool, 0)
 	for _, momentModel := range mList {
 		mIds = append(mIds, momentModel.ID)
-		mapUserIds[momentModel.UserId] = true
+		mapUserIds[momentModel.UserID] = true
 	}
 	// 点赞信息
 	likeList, err := s.repo.GetLikesByMomentIds(ctx, mIds)
@@ -229,11 +235,11 @@ func (s *Service) MomentList(ctx context.Context, myId, userId uint32, offset in
 	}
 	for _, list := range commentList {
 		for _, commentModel := range *list {
-			if utils.InuInt32Slice(commentModel.UserId, friendIds) { // 过滤非我的好友的评论
-				mapUserIds[commentModel.UserId] = true
-				if commentModel.ReplyId > 0 {
-					if utils.InuInt32Slice(commentModel.ReplyId, friendIds) {
-						mapUserIds[commentModel.ReplyId] = true
+			if utils.InuInt32Slice(commentModel.UserID, friendIds) { // 过滤非我的好友的评论
+				mapUserIds[commentModel.UserID] = true
+				if commentModel.ReplyID > 0 {
+					if utils.InuInt32Slice(commentModel.ReplyID, friendIds) {
+						mapUserIds[commentModel.ReplyID] = true
 					}
 				}
 			}
@@ -262,47 +268,47 @@ func (s *Service) MomentList(ctx context.Context, myId, userId uint32, offset in
 }
 
 // MomentLike 点赞
-func (s *Service) MomentLike(ctx context.Context, userId, momentId uint32) error {
-	u, authorId, err := s.momentCheck(ctx, userId, momentId)
+func (s *Service) MomentLike(ctx context.Context, userID, momentID uint32) error {
+	u, authorID, err := s.momentCheck(ctx, userID, momentID)
 	if err != nil {
 		return err
 	}
 	// 已经点赞的用户列表
-	likeIds, err := s.repo.GetLikeUserIdsByMomentId(ctx, momentId)
+	likeIds, err := s.repo.GetLikeUserIdsByMomentID(ctx, momentID)
 	if err != nil {
-		return errors.Wrapf(err, "[service.moment] userIds err mid:%d", momentId)
+		return errors.Wrapf(err, "[service.moment] userIds err mid:%d", momentID)
 	}
 	// 是否已点赞
-	isLike, err := s.repo.LikeExist(ctx, userId, momentId)
+	isLike, err := s.repo.LikeExist(ctx, userID, momentID)
 	if err != nil {
-		return errors.Wrapf(err, "[service.moment] exist like err uid:%d mid:%d", userId, momentId)
+		return errors.Wrapf(err, "[service.moment] exist like err uid:%d mid:%d", userID, momentID)
 	}
 	if isLike { // 已点赞，即取消
-		err = s.repo.LikeDelete(ctx, userId, momentId)
+		err = s.repo.LikeDelete(ctx, userID, momentID)
 		if err != nil {
-			return errors.Wrapf(err, "[service.moment] delete err uid:%d mid:%d", userId, momentId)
+			return errors.Wrapf(err, "[service.moment] delete err uid:%d mid:%d", userID, momentID)
 		}
 		return nil
 	}
 	// 创建点赞记录
 	mLike := &model.MomentLikeModel{
-		UserId:   userId,
-		MomentId: momentId,
+		UserID:   userID,
+		MomentID: momentID,
 	}
 	_, err = s.repo.LikeCreate(ctx, mLike)
 	if err != nil {
-		return errors.Wrapf(err, "[service.moment] create like err uid:%d mid:%d", userId, momentId)
+		return errors.Wrapf(err, "[service.moment] create like err uid:%d mid:%d", userID, momentID)
 	}
 	// 通知作者
 	msg, err := app.NewMessagePack(message.EventMoment, &message.Moment{
-		UserId: userId,
+		UserID: userID,
 		Avatar: u.Avatar,
 		Type:   "like",
 	})
 	if err != nil {
 		return err
 	}
-	userIds := []uint32{authorId}
+	userIds := []uint32{authorID}
 	// 发送其他点赞好友
 	for _, id := range *likeIds {
 		userIds = append(userIds, id)
@@ -311,20 +317,20 @@ func (s *Service) MomentLike(ctx context.Context, userId, momentId uint32) error
 }
 
 // MomentComment 评论
-func (s *Service) MomentComment(ctx context.Context, userId, replyId, momentId uint32, content string) error {
-	u, authorId, err := s.momentCheck(ctx, userId, momentId)
+func (s *Service) MomentComment(ctx context.Context, userID, replyID, momentID uint32, content string) error {
+	u, authorID, err := s.momentCheck(ctx, userID, momentID)
 	if err != nil {
 		return err
 	}
 	// 已评论用户列表
-	comments, err := s.repo.GetCommentsByMomentId(ctx, momentId)
+	comments, err := s.repo.GetCommentsByMomentID(ctx, momentID)
 	if err != nil {
-		return errors.Wrapf(err, "[service.moment] comment userIds err mid:%d", momentId)
+		return errors.Wrapf(err, "[service.moment] comment userIds err mid:%d", momentID)
 	}
 	comment := &model.MomentCommentModel{
-		Uid:      model.Uid{UserId: userId},
-		ReplyId:  replyId,
-		MomentId: momentId,
+		UID:      model.UID{UserID: userID},
+		ReplyID:  replyID,
+		MomentID: momentID,
 		Content:  content,
 	}
 	_, err = s.repo.CommentCreate(ctx, comment)
@@ -333,56 +339,56 @@ func (s *Service) MomentComment(ctx context.Context, userId, replyId, momentId u
 	}
 	// 通知作者
 	msg, err := app.NewMessagePack(message.EventMoment, &message.Moment{
-		UserId: userId,
+		UserID: userID,
 		Avatar: u.Avatar,
 		Type:   "comment",
 	})
 	if err != nil {
 		return err
 	}
-	userIds := []uint32{authorId}
+	userIds := []uint32{authorID}
 	// 发送其他点赞好友
 	for _, commentModel := range *comments {
-		userIds = append(userIds, commentModel.UserId)
+		userIds = append(userIds, commentModel.UserID)
 	}
 	return s.PushUserIds(ctx, userIds, message.EventMoment, msg)
 }
 
 // momentCheck 验证动态id是否合法
-func (s *Service) momentCheck(ctx context.Context, userId, momentId uint32) (user *model.UserModel, authorId uint32, err error) {
-	user, err = s.repo.GetUserById(ctx, userId)
+func (s *Service) momentCheck(ctx context.Context, userID, momentID uint32) (user *model.UserModel, authorID uint32, err error) {
+	user, err = s.repo.GetUserByID(ctx, userID)
 	if err != nil {
-		return nil, 0, errors.Wrapf(err, "[service.moment] user err id:%d", userId)
+		return nil, 0, errors.Wrapf(err, "[service.moment] user err id:%d", userID)
 	}
 	// 此条动态发布者
-	moment, err := s.repo.GetMomentById(ctx, momentId)
+	moment, err := s.repo.GetMomentByID(ctx, momentID)
 	if err != nil {
-		return nil, 0, errors.Wrapf(err, "[service.moment] auther err mid:%d", momentId)
+		return nil, 0, errors.Wrapf(err, "[service.moment] auther err mid:%d", momentID)
 	}
 	if moment.ID == 0 {
 		return nil, 0, ErrMomentNotFound
 	}
 	if moment.SeeType != model.MomentSeeTypeAll { //非公开动态进一步判断权限
 		// 是否存在或是否有权限
-		exist, err := s.repo.TimelineExist(ctx, userId, momentId)
+		exist, err := s.repo.TimelineExist(ctx, userID, momentID)
 		if err != nil {
-			return nil, 0, errors.Wrapf(err, "[service.moment] exist err uid:%d mid:%d", userId, momentId)
+			return nil, 0, errors.Wrapf(err, "[service.moment] exist err uid:%d mid:%d", userID, momentID)
 		}
 		if !exist {
 			return nil, 0, ErrMomentNotFound
 		}
 	}
-	return user, moment.UserId, nil
+	return user, moment.UserID, nil
 }
 
-// pushMessage 推送消息
-func (s *Service) pushMessage(ctx context.Context, userId uint32, lines []*model.MomentTimelineModel, remind []uint32) (err error) {
-	u, err := s.repo.GetUserById(ctx, userId)
+// pushMessage 推送 朋友圈新动态消息
+func (s *Service) pushMessage(ctx context.Context, userID uint32, lines []*model.MomentTimelineModel, remind []uint32) (err error) {
+	u, err := s.repo.GetUserByID(ctx, userID)
 	if err != nil {
 		return errors.Wrapf(err, "[service.moment] user err")
 	}
 	m := &message.Moment{
-		UserId: userId,
+		UserID: userID,
 		Avatar: u.Avatar,
 		Type:   "new",
 	}
@@ -391,8 +397,11 @@ func (s *Service) pushMessage(ctx context.Context, userId uint32, lines []*model
 		return err
 	}
 	userIds := make([]uint32, len(lines))
-	for _, line := range lines {
-		userIds = append(userIds, line.UserId)
+	for i, line := range lines {
+		if line.UserID == userID { //不需要给自己发送 新动态通知
+			continue
+		}
+		userIds[i] = line.UserID
 	}
 	// 推送消息
 	if err = s.PushUserIds(ctx, userIds, message.EventMoment, msg); err != nil {
@@ -400,7 +409,7 @@ func (s *Service) pushMessage(ctx context.Context, userId uint32, lines []*model
 	}
 	if len(remind) > 0 { // 是否需要提醒好友
 		msg, err := app.NewMessagePack(message.EventMoment, &message.Moment{
-			UserId: userId,
+			UserID: userID,
 			Avatar: u.Avatar,
 			Type:   "remind",
 		})

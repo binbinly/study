@@ -2,6 +2,7 @@ package idl
 
 import "chat/app/logic/model"
 
+//TransferApplyInput 申请对外转化结构
 type TransferApplyInput struct {
 	Apply []*model.ApplyModel
 	Users []*model.UserModel
@@ -13,7 +14,7 @@ func TransferApplyList(input *TransferApplyInput) []*model.ApplyList {
 	um := usersToMap(input.Users)
 	list := make([]*model.ApplyList, 0)
 	for _, apply := range input.Apply {
-		if user, ok := um[apply.UserId]; ok {
+		if user, ok := um[apply.UserID]; ok {
 			list = append(list, &model.ApplyList{
 				User:   user,
 				Status: apply.Status,

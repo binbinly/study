@@ -8,6 +8,7 @@ import (
 	"chat/pkg/log"
 )
 
+//Consumer 消费者结构
 type Consumer struct {
 	addr          string
 	conn          *amqp.Connection
@@ -25,6 +26,7 @@ type Consumer struct {
 	quit          chan struct{}
 }
 
+//NewConsumer 创建消费者
 func NewConsumer(c *Config, handler func(body []byte) error) *Consumer {
 	return &Consumer{
 		addr:         c.Addr,
@@ -39,6 +41,7 @@ func NewConsumer(c *Config, handler func(body []byte) error) *Consumer {
 	}
 }
 
+//Start 开启消费者
 func (c *Consumer) Start() error {
 	if err := c.Run(); err != nil {
 		return err
@@ -49,6 +52,7 @@ func (c *Consumer) Start() error {
 	return nil
 }
 
+//Stop 停止
 func (c *Consumer) Stop() {
 	close(c.quit)
 
@@ -64,6 +68,7 @@ func (c *Consumer) Stop() {
 	}
 }
 
+//Run 运行消费者
 func (c *Consumer) Run() error {
 	var err error
 	if c.conn, err = OpenConnection(c.addr); err != nil {
@@ -112,6 +117,7 @@ func (c *Consumer) Run() error {
 	return nil
 }
 
+//Handle 处理消息
 func (c *Consumer) Handle(delivery <-chan amqp.Delivery) {
 	for d := range delivery {
 		log.Infof("Consumer received a message: %s in queue: %s", d.Body, c.queueName)
@@ -132,6 +138,7 @@ func (c *Consumer) Handle(delivery <-chan amqp.Delivery) {
 	log.Info("handle: async deliveries channel closed")
 }
 
+//ReConnect 断线重连
 func (c *Consumer) ReConnect() {
 	for {
 		select {

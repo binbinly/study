@@ -41,8 +41,8 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Authentication header",
-                        "name": "Authorization",
+                        "description": "用户令牌",
+                        "name": "Token",
                         "in": "header",
                         "required": true
                     }
@@ -113,8 +113,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":{\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6Ik\"}}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -178,8 +178,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":{\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6Ik\"}}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -213,10 +213,25 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":{\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6Ik\"}}",
+                    "0": {
+                        "description": "调用成功结构",
                         "schema": {
-                            "type": "string"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.ApplyList"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -296,7 +311,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/chat.RecallParams"
+                            "$ref": "#/definitions/chat_app_connect_handler_ws_v1_chat.RecallParams"
                         }
                     }
                 ],
@@ -435,8 +450,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -473,8 +488,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":{}}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -508,10 +523,25 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":{}",
+                    "0": {
+                        "description": "调用成功结构",
                         "schema": {
-                            "type": "string"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Collect"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -549,8 +579,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":null}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -590,8 +620,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":null}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -629,10 +659,22 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":null}",
+                    "0": {
+                        "description": "调用成功结构",
                         "schema": {
-                            "type": "string"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.FriendInfo"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -661,10 +703,25 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":null}",
+                    "0": {
+                        "description": "调用成功结构",
                         "schema": {
-                            "type": "string"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.UserBase"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -702,8 +759,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":null}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -743,8 +800,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":null}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -782,10 +839,25 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":null}",
+                    "0": {
+                        "description": "调用成功结构",
                         "schema": {
-                            "type": "string"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.UserBase"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -820,8 +892,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":{}}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -861,8 +933,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":null}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -900,10 +972,22 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":null}",
+                    "0": {
+                        "description": "调用成功结构",
                         "schema": {
-                            "type": "string"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.GroupInfo"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -938,8 +1022,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":{}}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -977,8 +1061,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":null}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -1015,8 +1099,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":{}}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -1047,10 +1131,25 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":null}",
+                    "0": {
+                        "description": "调用成功结构",
                         "schema": {
-                            "type": "string"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.GroupList"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -1081,8 +1180,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":null}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -1120,8 +1219,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":null}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -1159,10 +1258,25 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":null}",
+                    "0": {
+                        "description": "调用成功结构",
                         "schema": {
-                            "type": "string"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.UserBase"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -1199,10 +1313,22 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":{\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6Ik\"}}",
+                    "0": {
+                        "description": "调用成功结构",
                         "schema": {
-                            "type": "string"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.UserToken"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -1230,10 +1356,22 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":{\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6Ik\"}}",
+                    "0": {
+                        "description": "调用成功结构",
                         "schema": {
-                            "type": "string"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.UserToken"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -1259,8 +1397,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":{\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6Ik\"}}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -1297,8 +1435,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":{}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -1335,8 +1473,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":{}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -1373,8 +1511,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":{}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -1414,10 +1552,25 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":{}",
+                    "0": {
+                        "description": "调用成功结构",
                         "schema": {
-                            "type": "string"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Moment"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -1449,10 +1602,25 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":{\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6Ik\"}}",
+                    "0": {
+                        "description": "调用成功结构",
                         "schema": {
-                            "type": "string"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Moment"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -1507,8 +1675,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":{\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6Ik\"}}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -1548,8 +1716,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":null}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -1582,8 +1750,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":null}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -1623,8 +1791,8 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":null}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -1655,10 +1823,22 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":null}",
+                    "0": {
+                        "description": "调用成功结构",
                         "schema": {
-                            "type": "string"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.UserInfo"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -1696,10 +1876,25 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
+                    "0": {
+                        "description": "调用成功结构",
                         "schema": {
-                            "type": "string"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.UserEs"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -1728,10 +1923,25 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":null}",
+                    "0": {
+                        "description": "调用成功结构",
                         "schema": {
-                            "type": "string"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.UserTag"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -1739,7 +1949,46 @@ var doc = `{
         }
     },
     "definitions": {
-        "chat.RecallParams": {
+        "app.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "object"
+                },
+                "msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "chat_app_connect_handler_ws_v1_chat.RecallParams": {
+            "type": "object",
+            "required": [
+                "chat_type",
+                "id",
+                "to_id"
+            ],
+            "properties": {
+                "chat_type": {
+                    "description": "聊天类型，1=用户，2=群组",
+                    "type": "integer",
+                    "example": 1
+                },
+                "id": {
+                    "description": "消息id",
+                    "type": "string",
+                    "example": "1111"
+                },
+                "to_id": {
+                    "description": "用户/群组ID",
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "chat_app_logic_handler_http_v1_chat.RecallParams": {
             "type": "object",
             "required": [
                 "chat_type",
@@ -1937,6 +2186,304 @@ var doc = `{
                     "description": "群公告",
                     "type": "string",
                     "example": "remark"
+                }
+            }
+        },
+        "message.From": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "description": "用户/群组头像",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "用户/群组ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "用户/群组昵称",
+                    "type": "string"
+                }
+            }
+        },
+        "model.ApplyList": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "integer"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.UserBase"
+                }
+            }
+        },
+        "model.Collect": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "options": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.Comment": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "reply": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.User"
+                }
+            }
+        },
+        "model.FriendBase": {
+            "type": "object",
+            "properties": {
+                "is_black": {
+                    "type": "integer"
+                },
+                "is_star": {
+                    "type": "integer"
+                },
+                "look_him": {
+                    "type": "integer"
+                },
+                "look_me": {
+                    "type": "integer"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "model.FriendInfo": {
+            "type": "object",
+            "properties": {
+                "friend": {
+                    "$ref": "#/definitions/model.FriendBase"
+                },
+                "is_friend": {
+                    "type": "boolean"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.UserInfo"
+                }
+            }
+        },
+        "model.GroupInfo": {
+            "type": "object",
+            "properties": {
+                "info": {
+                    "$ref": "#/definitions/model.Info"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "users": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.UserBase"
+                    }
+                }
+            }
+        },
+        "model.GroupList": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Info": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "invite_confirm": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.Moment": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.MomentList"
+                    }
+                },
+                "user": {
+                    "$ref": "#/definitions/model.UserBase"
+                }
+            }
+        },
+        "model.MomentList": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Comment"
+                    }
+                },
+                "content": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "likes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.User"
+                    }
+                },
+                "location": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "integer"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.UserBase"
+                },
+                "video": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.User": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserBase": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserEs": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserInfo": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "sign": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserTag": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserToken": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.UserInfo"
                 }
             }
         },

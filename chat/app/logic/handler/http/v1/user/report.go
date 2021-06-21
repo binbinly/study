@@ -20,21 +20,21 @@ import (
 // @Produce  json
 // @Param Token header string true "用户令牌"
 // @Param req body ReportParams true "report"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":null}"
+// @Success 0 {string} json "{"code":0,"msg":"OK","data":{}}"
 // @Router /report [post]
 func Report(c *gin.Context) {
 	var req ReportParams
-	v := app.BindJson(c, &req)
+	v := app.BindJSON(c, &req)
 	if !v {
 		app.Error(c, errno.ErrBind)
 		return
 	}
-	userId := app.GetUInt32UserId(c)
-	if userId == req.UserId {
+	UserID := app.GetUInt32UserID(c)
+	if UserID == req.UserID {
 		app.Error(c, ecode.ErrUserNoSelf)
 		return
 	}
-	err := service.Svc.ReportCreate(c, userId, req.UserId, req.Type, req.Category, req.Content)
+	err := service.Svc.ReportCreate(c.Request.Context(), UserID, req.UserID, req.Type, req.Category, req.Content)
 	if errors.Is(err, service.ErrReportExisted) {
 		app.Error(c, ecode.ErrReportHanding)
 		return

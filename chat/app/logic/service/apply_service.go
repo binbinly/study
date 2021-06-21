@@ -6,29 +6,30 @@ import (
 
 	"github.com/pkg/errors"
 
-	"chat/app/logic/idl"
-	"chat/app/logic/message"
-	"chat/app/logic/model"
 	"chat/app/constvar"
+	"chat/app/logic/idl"
+	"chat/app/logic/model"
+	"chat/app/message"
 	"chat/pkg/app"
 )
 
-const MsgFriendCreate = "你们已经是好友，可以开始聊天啦"
+const msgFriendCreate = "你们已经是好友，可以开始聊天啦"
 
+//IApply 申请好友接口
 type IApply interface {
 	// 申请好友
-	ApplyFriend(ctx context.Context, userId, friendId uint32, nickname string, lookMe, lookHim int8) (err error)
+	ApplyFriend(ctx context.Context, userID, friendID uint32, nickname string, lookMe, lookHim int8) (err error)
 	// 我的申请列表
-	ApplyMyList(ctx context.Context, userId uint32, offset int) (list []*model.ApplyList, err error)
+	ApplyMyList(ctx context.Context, userID uint32, offset int) (list []*model.ApplyList, err error)
 	// 待处理申请数
-	ApplyPendingCount(ctx context.Context, userId uint32) (c int64, err error)
+	ApplyPendingCount(ctx context.Context, userID uint32) (c int64, err error)
 	// 申请处理
-	ApplyHandle(ctx context.Context, userId, friendId uint32, nickname string, lookMe, lookHim int8) (err error)
+	ApplyHandle(ctx context.Context, userID, friendID uint32, nickname string, lookMe, lookHim int8) (err error)
 }
 
 // ApplyFriend 添加好友
-func (s *Service) ApplyFriend(ctx context.Context, userId, friendId uint32, nickname string, lookMe, lookHim int8) error {
-	info, err := s.applyInfo(ctx, userId, friendId)
+func (s *Service) ApplyFriend(ctx context.Context, userID, friendID uint32, nickname string, lookMe, lookHim int8) error {
+	info, err := s.applyInfo(ctx, userID, friendID)
 	if err != nil {
 		return errors.Wrapf(err, "[service.apply] info err")
 	}
@@ -36,8 +37,8 @@ func (s *Service) ApplyFriend(ctx context.Context, userId, friendId uint32, nick
 		return ErrApplyExisted
 	}
 	apply := model.ApplyModel{
-		Uid:      model.Uid{UserId: userId},
-		FriendId: friendId,
+		UID:      model.UID{UserID: userID},
+		FriendID: friendID,
 		Nickname: nickname,
 		LookMe:   lookMe,
 		LookHim:  lookHim,
@@ -53,7 +54,7 @@ func (s *Service) ApplyFriend(ctx context.Context, userId, friendId uint32, nick
 	if err != nil {
 		return err
 	}
-	err = s.PushUserIds(ctx, []uint32{friendId}, message.EventNotify, msg)
+	err = s.PushUserIds(ctx, []uint32{friendID}, message.EventNotify, msg)
 	if err != nil {
 		return errors.Wrapf(err, "[service.apply] push notify err")
 	}
@@ -61,15 +62,15 @@ func (s *Service) ApplyFriend(ctx context.Context, userId, friendId uint32, nick
 }
 
 // ApplyMyList 用户申请列表
-func (s *Service) ApplyMyList(ctx context.Context, userId uint32, offset int) (list []*model.ApplyList, err error) {
-	applyList, err := s.repo.GetApplysByUserId(ctx, userId, offset, constvar.DefaultLimit)
+func (s *Service) ApplyMyList(ctx context.Context, userID uint32, offset int) (list []*model.ApplyList, err error) {
+	applyList, err := s.repo.GetApplysByUserID(ctx, userID, offset, constvar.DefaultLimit)
 	if err != nil {
-		return nil, errors.Wrapf(err, "[service.apply] MyApplyList id:%d", userId)
+		return nil, errors.Wrapf(err, "[service.apply] MyApplyList id:%d", userID)
 	}
 	// 用户id列表
 	userIds := make([]uint32, 0)
 	for _, apply := range applyList {
-		userIds = append(userIds, apply.UserId)
+		userIds = append(userIds, apply.UserID)
 	}
 	if len(userIds) == 0 {
 		return make([]*model.ApplyList, 0), nil
@@ -87,17 +88,17 @@ func (s *Service) ApplyMyList(ctx context.Context, userId uint32, offset int) (l
 }
 
 // ApplyPendingCount 待处理申请数量
-func (s *Service) ApplyPendingCount(ctx context.Context, userId uint32) (c int64, err error) {
-	c, err = s.repo.ApplyPendingCount(ctx, userId)
+func (s *Service) ApplyPendingCount(ctx context.Context, userID uint32) (c int64, err error) {
+	c, err = s.repo.ApplyPendingCount(ctx, userID)
 	if err != nil {
-		return 0, errors.Wrapf(err, "[service.apply] pending count id:%d", userId)
+		return 0, errors.Wrapf(err, "[service.apply] pending count id:%d", userID)
 	}
 	return
 }
 
 // ApplyHandle 处理好友申请通过
-func (s *Service) ApplyHandle(ctx context.Context, userId, friendId uint32, nickname string, lookMe, lookHim int8) (err error) {
-	info, err := s.applyInfo(ctx, friendId, userId)
+func (s *Service) ApplyHandle(ctx context.Context, userID, friendID uint32, nickname string, lookMe, lookHim int8) (err error) {
+	info, err := s.applyInfo(ctx, friendID, userID)
 	if err != nil {
 		return errors.Wrapf(err, "[service.apply] info err")
 	}
@@ -109,8 +110,8 @@ func (s *Service) ApplyHandle(ctx context.Context, userId, friendId uint32, nick
 	tx := db.Begin()
 	// 我对好友的模型
 	u := &model.FriendModel{
-		UserId:   userId,
-		FriendId: friendId,
+		UserID:   userID,
+		FriendID: friendID,
 		Nickname: nickname,
 		LookMe:   lookMe,
 		LookHim:  lookHim,
@@ -122,8 +123,8 @@ func (s *Service) ApplyHandle(ctx context.Context, userId, friendId uint32, nick
 	}
 	// 好友对我的模型
 	f := &model.FriendModel{
-		UserId:   info.UserId,
-		FriendId: userId,
+		UserID:   info.UserID,
+		FriendID: userID,
 		Nickname: info.Nickname,
 		LookMe:   info.LookMe,
 		LookHim:  info.LookHim,
@@ -134,20 +135,20 @@ func (s *Service) ApplyHandle(ctx context.Context, userId, friendId uint32, nick
 		return errors.Wrap(err, "[service.apply] insert into friend to friend err")
 	}
 	// 修改申请状态
-	err = s.repo.ApplyUpdateStatus(ctx, tx, info.ID, info.UserId, info.FriendId)
+	err = s.repo.ApplyUpdateStatus(ctx, tx, info.ID, info.UserID, info.FriendID)
 	if err != nil {
 		tx.Rollback()
 		return errors.Wrap(err, "[service.apply] update apply status err")
 	}
-	auth, err := s.repo.GetUserById(ctx, userId)
+	auth, err := s.repo.GetUserByID(ctx, userID)
 	if err != nil {
 		tx.Rollback()
-		return errors.Wrapf(err, "[service.apply] auth user id:%d", userId)
+		return errors.Wrapf(err, "[service.apply] auth user id:%d", userID)
 	}
-	fAuth, err := s.repo.GetUserById(ctx, friendId)
+	fAuth, err := s.repo.GetUserByID(ctx, friendID)
 	if err != nil {
 		tx.Rollback()
-		return errors.Wrapf(err, "[service.apply] auth user id:%d", friendId)
+		return errors.Wrapf(err, "[service.apply] auth user id:%d", friendID)
 	}
 	// 提交事务
 	err = tx.Commit().Error
@@ -158,13 +159,13 @@ func (s *Service) ApplyHandle(ctx context.Context, userId, friendId uint32, nick
 	// 推送消息
 	// 好友
 	from := &message.From{
-		Id:     friendId,
+		ID:     friendID,
 		Name:   nickname,
 		Avatar: fAuth.Avatar,
 	}
 	// 我
 	my := &message.From{
-		Id:     userId,
+		ID:     userID,
 		Name:   info.Nickname,
 		Avatar: auth.Avatar,
 	}
@@ -173,7 +174,7 @@ func (s *Service) ApplyHandle(ctx context.Context, userId, friendId uint32, nick
 		From:     my,
 		ChatType: model.MessageChatTypeUser,
 		Type:     model.MessageTypeSystem,
-		Content:  MsgFriendCreate,
+		Content:  msgFriendCreate,
 		T:        time.Now().Unix(),
 	})
 	if err != nil {
@@ -184,7 +185,7 @@ func (s *Service) ApplyHandle(ctx context.Context, userId, friendId uint32, nick
 		From:     from,
 		ChatType: model.MessageChatTypeUser,
 		Type:     model.MessageTypeSystem,
-		Content:  MsgFriendCreate,
+		Content:  msgFriendCreate,
 		T:        time.Now().Unix(),
 	})
 	if err != nil {
@@ -192,12 +193,12 @@ func (s *Service) ApplyHandle(ctx context.Context, userId, friendId uint32, nick
 	}
 	req := make([]*PushReq, 0)
 	req = append(req, &PushReq{
-		UserId: friendId,
+		UserID: friendID,
 		Event:  message.EventChat,
 		Data:   friendMsg,
 	})
 	req = append(req, &PushReq{
-		UserId: userId,
+		UserID: userID,
 		Event:  message.EventChat,
 		Data:   myMsg,
 	})
@@ -209,10 +210,10 @@ func (s *Service) ApplyHandle(ctx context.Context, userId, friendId uint32, nick
 }
 
 // applyInfo 申请详情
-func (s *Service) applyInfo(ctx context.Context, userId, friendId uint32) (apply *model.ApplyModel, err error) {
-	apply, err = s.repo.GetApplyByFriendId(ctx, userId, friendId)
+func (s *Service) applyInfo(ctx context.Context, userID, friendID uint32) (apply *model.ApplyModel, err error) {
+	apply, err = s.repo.GetApplyByFriendID(ctx, userID, friendID)
 	if err != nil {
-		return nil, errors.Wrapf(err, "[service.apply] info id:%d,fid:%d", userId, friendId)
+		return nil, errors.Wrapf(err, "[service.apply] info id:%d,fid:%d", userID, friendID)
 	}
 	return
 }

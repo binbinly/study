@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 导航栏 -->
-    <van-nav-bar title="个人资料" left-arrow @click-left="onClickLeft" />
+    <van-nav-bar title="个人资料" fixed placeholder left-arrow @click-left="onClickLeft" />
 
     <van-cell is-link center @click="openAvatar" title="头像">
       <!-- 使用 title 插槽来自定义标题 -->

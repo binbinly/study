@@ -38,7 +38,7 @@
         <span slot="icon" class="iconfont font-lg pr-1">&#xe608;</span>
       </template>
     </van-cell>
-    <van-cell title="表情" is-link>
+    <van-cell title="表情" is-link to="/emoticon_cat">
       <template #icon>
         <span slot="icon" class="iconfont font-lg pr-1">&#xe605;</span>
       </template>

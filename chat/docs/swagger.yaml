@@ -214,6 +214,17 @@ definitions:
       user:
         $ref: '#/definitions/model.User'
     type: object
+  model.Emoticon:
+    properties:
+      category:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      url:
+        type: string
+    type: object
   model.FriendBase:
     properties:
       is_black:
@@ -674,10 +685,15 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: '{"code":0,"message":"OK","data":null}'
+        "0":
+          description: 调用成功结构
           schema:
-            type: string
+            allOf:
+            - $ref: '#/definitions/app.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/message.From'
+              type: object
       summary: 获取聊天信息
       tags:
       - 聊天
@@ -695,12 +711,12 @@ paths:
         name: req
         required: true
         schema:
-          $ref: '#/definitions/chat_app_connect_handler_ws_v1_chat.RecallParams'
+          $ref: '#/definitions/chat_app_logic_handler_http_v1_chat.RecallParams'
       produces:
       - application/json
       responses:
-        "200":
-          description: '{"code":0,"message":"OK","data":{}'
+        "0":
+          description: '{"code":0,"msg":"OK","data":{}}'
           schema:
             type: string
       summary: 消息撤回
@@ -849,23 +865,51 @@ paths:
       summary: 收藏列表
       tags:
       - 用户收藏
-  /friend/auth:
-    post:
+  /emoticon/list:
+    get:
       consumes:
       - application/json
-      description: 删除好友
+      description: 表情包
       parameters:
       - description: 用户令牌
         in: header
         name: Token
         required: true
         type: string
-      - description: destroy
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 调用成功结构
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Emoticon'
+                  type: array
+              type: object
+      summary: 表情包
+      tags:
+      - 表情包
+  /friend/auth:
+    post:
+      consumes:
+      - application/json
+      description: 设置朋友圈权限
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: auth
         in: body
         name: req
         required: true
         schema:
-          $ref: '#/definitions/friend.DestroyParams'
+          $ref: '#/definitions/friend.AuthParams'
       produces:
       - application/json
       responses:
@@ -873,7 +917,7 @@ paths:
           description: '{"code":0,"msg":"OK","data":{}}'
           schema:
             type: string
-      summary: 删除好友
+      summary: 设置朋友圈权限
       tags:
       - 好友
   /friend/black:

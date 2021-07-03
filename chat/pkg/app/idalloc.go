@@ -1,8 +1,9 @@
 package app
 
 import (
-	"chat/pkg/redis"
 	"context"
+
+	"chat/pkg/redis"
 )
 
 // IDAlloc define struct ID生成器

@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"chat/app/logic/routers"
 	"context"
 	"log"
 	"os"
@@ -13,6 +12,7 @@ import (
 
 	"chat/app/logic/conf"
 	"chat/app/logic/model"
+	"chat/app/logic/routers"
 	"chat/app/logic/server"
 	"chat/app/logic/service"
 	"chat/pkg/database/orm"

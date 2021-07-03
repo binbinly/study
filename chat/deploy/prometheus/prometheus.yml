@@ -20,10 +20,10 @@ scrape_configs:
     consul_sd_configs:
       - server: consul:8500
         services:
-          - chat-logic-http
+          - chat_logic-http
   - job_name: chat_connect_ws
     metrics_path: /metrics
     consul_sd_configs:
       - server: consul:8500
         services:
-          - chat-connect-ws
+          - chat_connect-ws

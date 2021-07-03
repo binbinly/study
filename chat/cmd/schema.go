@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/spf13/cobra"
@@ -10,10 +11,12 @@ import (
 )
 
 var reset bool
+var emo bool
 
 func init() {
 	migrateCmd.Flags().StringVarP(&cfg, "config", "c", "", "config file (default is $ROOT/config/logic.yaml)")
-	migrateCmd.Flags().BoolVar(&reset,"reset", false, "db migrate reset all")
+	migrateCmd.Flags().BoolVar(&reset, "reset", false, "db migrate reset all")
+	migrateCmd.Flags().BoolVar(&emo, "emo", false, "sync emoticon to db")
 }
 
 // 运行数据库迁移
@@ -33,9 +36,16 @@ func schema() {
 	model.Init(&conf.Conf.MySQL)
 	if reset {
 		down()
+	} else if emo {
+		fmt.Println("sync emoticon start")
+		err := SyncBQB()
+		if err != nil {
+			fmt.Printf("err:%v\n", err)
+		}
 	} else {
 		up()
 	}
+	fmt.Println("schema success")
 }
 
 // 运行迁移
@@ -119,6 +129,12 @@ func up() {
 			log.Panicf("create table moment timeline err:%v", err)
 		}
 	}
+	if !model.DB.Migrator().HasTable(&model.EmoticonModel{}) {
+		err = model.DB.Migrator().CreateTable(&model.EmoticonModel{})
+		if err != nil {
+			log.Panicf("create table emoticon err:%v", err)
+		}
+	}
 }
 
 // 回滚数据库迁移
@@ -200,6 +216,12 @@ func down() {
 		err = model.DB.Migrator().DropTable(&model.MomentTimelineModel{})
 		if err != nil {
 			log.Panicf("drop table moment timeline err:%v", err)
+		}
+	}
+	if !model.DB.Migrator().HasTable(&model.EmoticonModel{}) {
+		err = model.DB.Migrator().DropTable(&model.EmoticonModel{})
+		if err != nil {
+			log.Panicf("drop table emoticon err:%v", err)
 		}
 	}
 }

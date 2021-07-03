@@ -37,7 +37,7 @@ func defaultConf(v *viper.Viper) {
 		"UserName":        "root",
 		"Password":        "123456",
 		"TablePrefix":     "",
-		"ShowLog":         true,
+		"Debug":           true,
 		"MaxIdleConn":     10,
 		"MaxOpenConn":     100,
 		"ConnMaxLifeTime": "60m",

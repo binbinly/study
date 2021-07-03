@@ -25,6 +25,16 @@ services:
       - 80:80
     command: nginx -g 'daemon off';
 
+  admin:
+    container_name: chat_admin
+    build: admin/.
+    restart: on-failure
+    ports:
+      - 8000:8000
+    networks:
+      - chat
+    command: --host 0.0.0.0 -q
+
   app:
     container_name: chat_connect
     build: .
@@ -119,7 +129,7 @@ services:
         '--default-authentication-plugin=mysql_native_password'
     ]
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]   # 用于健康检查的指令
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1" ]   # 用于健康检查的指令
       timeout: 20s  # 超时时间
       retries: 10   # 重试次数
       start_period: 40s # 启动多久后开始检查

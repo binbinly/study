@@ -9,6 +9,10 @@ const api = {
   Logout: '/user/logout',
   //搜索用户
   SearchUser: '/user/search',
+  //表情包分类
+  EmoticonCat: '/emoticon/cat',
+  //表情
+  Emoticon: '/emoticon/list',
   Apply: {
     //申请添加好友
     Friend: '/apply/friend',

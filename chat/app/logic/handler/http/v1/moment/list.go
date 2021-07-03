@@ -1,6 +1,7 @@
 package moment
 
 import (
+	"chat/app/logic/handler/http"
 	"errors"
 
 	"github.com/gin-gonic/gin"
@@ -29,7 +30,7 @@ func List(c *gin.Context) {
 	if userID == 0 { // 默认查看自己的动态
 		userID = myID
 	}
-	list, err := service.Svc.MomentList(c.Request.Context(), myID, userID, app.GetPageOffset(c))
+	list, err := service.Svc.MomentList(c.Request.Context(), myID, userID, http.GetPageOffset(c))
 	if errors.Is(err, service.ErrUserNotFound) {
 		app.Error(c, ecode.ErrUserNotFound)
 		return

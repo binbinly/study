@@ -7,7 +7,7 @@ mysql:
   Addr: db:3306            # 如果是 docker,可以替换为 对应的服务名称，eg: db:3306
   UserName: root
   Password: 123456
-  ShowLog: true                   # 是否打印SQL日志
+  Debug: false                   # 是否打印SQL日志
 redis:
   Addr: redis:6379
   Password: ""

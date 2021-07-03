@@ -26,6 +26,7 @@ type IRepo interface {
 	IUser
 	IUserTag
 	IReport
+	IEmoticon
 }
 
 // Repo mysql struct
@@ -35,6 +36,7 @@ type Repo struct {
 	userCache    *cache.UserCache
 	collectCache *cache.CollectCache
 	tagCache     *cache.TagCache
+	emoCache     *cache.EmoticonCache
 
 	momentCache   *cache.MomentCache
 	likeCache     *cache.LikeCache
@@ -55,6 +57,7 @@ func New(db *gorm.DB) IRepo {
 		userCache:    cache.NewUserCache(),
 		collectCache: cache.NewCollectCache(),
 		tagCache:     cache.NewTagCache(),
+		emoCache:     cache.NewEmoticonCache(),
 
 		momentCache:   cache.NewMomentCache(),
 		likeCache:     cache.NewLikeCache(),

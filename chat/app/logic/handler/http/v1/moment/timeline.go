@@ -1,6 +1,7 @@
 package moment
 
 import (
+	"chat/app/logic/handler/http"
 	"errors"
 
 	"github.com/gin-gonic/gin"
@@ -22,7 +23,7 @@ import (
 // @success 0 {object} app.Response{data=[]model.Moment} "调用成功结构"
 // @Router /moment/timeline [get]
 func Timeline(c *gin.Context) {
-	list, err := service.Svc.MomentTimeline(c.Request.Context(), app.GetUInt32UserID(c), app.GetPageOffset(c))
+	list, err := service.Svc.MomentTimeline(c.Request.Context(), app.GetUInt32UserID(c), http.GetPageOffset(c))
 	if errors.Is(err, service.ErrUserNotFound) {
 		app.Error(c, ecode.ErrUserNotFound)
 		return

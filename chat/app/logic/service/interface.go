@@ -14,8 +14,8 @@ type IService interface {
 	ICollect
 	// user moment
 	IMoment
-	// user report
-	IReport
+	// emoticon
+	IEmoticon
 	// apply
 	IApply
 	// friend

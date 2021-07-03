@@ -278,10 +278,22 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":null}",
+                    "0": {
+                        "description": "调用成功结构",
                         "schema": {
-                            "type": "string"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/message.From"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -311,13 +323,13 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/chat_app_connect_handler_ws_v1_chat.RecallParams"
+                            "$ref": "#/definitions/chat_app_logic_handler_http_v1_chat.RecallParams"
                         }
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "{\"code\":0,\"message\":\"OK\",\"data\":{}",
+                    "0": {
+                        "description": "{\"code\":0,\"msg\":\"OK\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }
@@ -547,9 +559,56 @@ var doc = `{
                 }
             }
         },
+        "/emoticon/list": {
+            "get": {
+                "description": "表情包",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "表情包"
+                ],
+                "summary": "表情包",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户令牌",
+                        "name": "Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "0": {
+                        "description": "调用成功结构",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/app.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Emoticon"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/friend/auth": {
             "post": {
-                "description": "删除好友",
+                "description": "设置朋友圈权限",
                 "consumes": [
                     "application/json"
                 ],
@@ -559,22 +618,22 @@ var doc = `{
                 "tags": [
                     "好友"
                 ],
-                "summary": "删除好友",
+                "summary": "设置朋友圈权限",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "用户令牌",
-                        "name": "Token",
+                        "description": "Authentication header",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
                     {
-                        "description": "destroy",
+                        "description": "auth",
                         "name": "req",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/friend.DestroyParams"
+                            "$ref": "#/definitions/friend.AuthParams"
                         }
                     }
                 ],
@@ -2245,6 +2304,23 @@ var doc = `{
                 },
                 "user": {
                     "$ref": "#/definitions/model.User"
+                }
+            }
+        },
+        "model.Emoticon": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
                 }
             }
         },

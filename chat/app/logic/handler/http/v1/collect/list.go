@@ -1,6 +1,7 @@
 package collect
 
 import (
+	"chat/app/logic/handler/http"
 	"github.com/gin-gonic/gin"
 
 	"chat/app/logic/service"
@@ -19,7 +20,7 @@ import (
 // @success 0 {object} app.Response{data=[]model.Collect} "调用成功结构"
 // @Router /collect/list [get]
 func List(c *gin.Context) {
-	list, err := service.Svc.CollectGetList(c.Request.Context(), app.GetUInt32UserID(c), app.GetPageOffset(c))
+	list, err := service.Svc.CollectGetList(c.Request.Context(), app.GetUInt32UserID(c), http.GetPageOffset(c))
 	if err != nil {
 		log.Warnf("[http.collect] list err: %v", err)
 		app.Error(c, errno.ErrEmpty)

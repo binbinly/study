@@ -16,6 +16,7 @@ import (
 var clear bool
 var n int
 
+//添加测试数据
 func init() {
 	seedCmd.Flags().StringVarP(&cfg, "config", "c", "", "config file (default is $ROOT/config/logic.yaml)")
 	seedCmd.Flags().BoolVar(&clear, "clear", false, "clear db table data")

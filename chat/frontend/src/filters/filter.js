@@ -31,6 +31,11 @@ export function formatDate(time, fmt) {
 function padLeftZero(str) {
   return ('00' + str).substr(str.length)
 }
+
+export function substr(str){
+  return str.slice(0, 3)
+}
+
 /*
  * 隐藏用户手机号中间四位
  */

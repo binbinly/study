@@ -8,9 +8,11 @@ import (
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 
 	"chat/app/logic/conf"
+	"chat/app/logic/handler/http"
 	"chat/app/logic/handler/http/v1/apply"
 	"chat/app/logic/handler/http/v1/chat"
 	"chat/app/logic/handler/http/v1/collect"
+	"chat/app/logic/handler/http/v1/emoticon"
 	"chat/app/logic/handler/http/v1/friend"
 	"chat/app/logic/handler/http/v1/group"
 	"chat/app/logic/handler/http/v1/moment"
@@ -28,7 +30,7 @@ func NewRouter(c *conf.AppConfig) *gin.Engine {
 	g.Use(middleware.NoCache)
 	g.Use(middleware.Cors)
 	g.Use(middleware.Secure)
-	g.Use(middleware.HandleErrors)
+	//g.Use(middleware.HandleErrors)
 
 	g.NoRoute(app.RouteNotFound)
 	g.NoMethod(app.RouteNotFound)
@@ -39,7 +41,7 @@ func NewRouter(c *conf.AppConfig) *gin.Engine {
 	// 通过 grafana 可视化查看 prometheus 的监控数据，使用插件6671查看
 	g.GET("/metrics", gin.WrapH(promhttp.Handler()))
 	// HealthCheck 健康检查路由
-	g.GET("/health", app.HealthCheck)
+	g.GET("/health", http.HealthCheck)
 	// 静态资源，主要是图片
 	//g.Static("/static", "./static")
 
@@ -158,5 +160,12 @@ func chatV1(v1 *gin.RouterGroup) {
 		mom.GET("/timeline", moment.Timeline)
 		mom.POST("/like", moment.Like)
 		mom.POST("/comment", moment.Comment)
+	}
+
+	emo := v1.Group("/emoticon")
+	emo.Use(mw.JWT())
+	{
+		emo.GET("/list", emoticon.List)
+		emo.GET("/cat", emoticon.Cat)
 	}
 }

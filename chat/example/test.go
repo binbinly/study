@@ -8,10 +8,17 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func main() {
-	file()
+	str()
+}
+
+func str() {
+	s := "可爱男孩纸00008-你讲话的语气好冷漠-我的心好痛.gif"
+	fmt.Println(strings.LastIndex(s, "-"))
+	fmt.Println(s[strings.LastIndex(s, "-")+1 : strings.LastIndex(s, ".")])
 }
 
 func file() io.Writer {
@@ -29,18 +36,18 @@ func file() io.Writer {
 	return fh
 }
 
-func token()  {
-	fmt.Printf("max:%v\n", 1 << 10)
+func token() {
+	fmt.Printf("max:%v\n", 1<<10)
 	p := map[string]interface{}{"user_id": 1, "username": "test"}
 	t, _ := app.Sign(nil, p, "UCAYyw9S5Q9oS2Bh1GhXZZmOawfiGSZXbuYR6KcYvidfhoGOcwsk8zb7vwpsd37o", 86400)
 	fmt.Printf("token:%v\n", t)
 }
 
-func j()  {
+func j() {
 	str := `{"id":1,"name":"san","data":{"a":1}}`
 	type msg struct {
-		Id int `json:"id"`
-		Name string `json:"name"`
+		Id   int             `json:"id"`
+		Name string          `json:"name"`
 		Data json.RawMessage `json:"data"`
 	}
 	m := &msg{}

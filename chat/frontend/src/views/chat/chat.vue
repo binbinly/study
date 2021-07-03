@@ -58,10 +58,21 @@
           </van-swipe>
         </template>
         <template v-else>
-          <div style="width: 45px;height: 45px;" class="flex align-center justify-center" hover-class="bg-white"
-               v-for="(item,index) in emoticonOrActionList" @click="addFace(item)">
-            <span style="font-size:24px;">{{item}}</span>
-          </div>
+          <van-tabs class="w-100" @change="beforeChange" animated swipeable sticky>
+            <van-tab title="经典">
+              <template v-for="(item,index) in emoticonList">
+                <span style="font-size:24px;margin:5px;" @click="addFace(item)">{{item}}</span>
+              </template>
+            </van-tab>
+            <van-tab v-for="(item,index) in emoCat" :title="item.name|substr" style="height:160px;overflow: auto;">
+              <template v-for="(item2,index2) in item['list']">
+                <van-image class="ml-1 mt-1" :src="item2" fit="center" width="80" height="80" @click="sendEmoticon(item2)" />
+              </template>
+            </van-tab>
+            <van-tab title="更多" style="text-align:center;margin-top:60px;">
+              <van-button type="primary" to="/emoticon_cat">添加表情</van-button>
+            </van-tab>
+          </van-tabs>
         </template>
       </div>
     </van-popup>
@@ -107,6 +118,7 @@ import { uploadFile } from '@/api/common.js'
 import { mapState, mapMutations } from 'vuex'
 import auth from '@/mixin/auth.js';
 import { Dialog, Toast, ImagePreview } from 'vant';
+import { emoticon } from '@/api/common.js'
 import $const from '@/const/index.js'
 export default {
   mixins: [auth],
@@ -151,6 +163,7 @@ export default {
           event: ""
         }]
       ],
+      emoCat: [],
       emoticonList: ["😀", "😁", "😂", "😃", "😄", "😅", "😆", "😉", "😊", "😋", "😎", "😍", "😘", "😗", "😙", "😚", "😇", "😐", "😑", "😶", "😏", "😣", "😥", "😮", "😯", "😪", "😫", "😴", "😌", "😛", "😜", "😝", "😒", "😓", "😔", "😕", "😲", "😷", "😖", "😞", "😟", "😤", "😢", "😭", "😦", "😧", "😨", "😬", "😰", "😱", "😳", "😵", "😡", "😠"],
       // 键盘高度
       KeyboardHeight: 0,
@@ -194,7 +207,7 @@ export default {
       RecordTime: state => state.audio.RecordTime,
       chat: state => state.user.chat,
       totalunread: state => state.user.totalunread,
-      user: state => state.user.user
+      user: state => state.user.user,
     }),
     // 当前会话配置信息
     currentChatItem() {
@@ -267,6 +280,9 @@ export default {
     event.$on('updateHistory', this.updateHistory)
     // 监听发送收藏和名片
     event.$on('sendItem', this.onSendItem)
+    event.$on('onEmoticon', function(cat) {
+      this.emoCat.push({ name: cat, list: [] })
+    })
   },
   destroyed() {
     // 销毁聊天对象
@@ -279,9 +295,25 @@ export default {
     event.$off('updateHistory', this.updateHistory)
 
     event.$off('sendItem', this.onSendItem)
+    event.$off('onEmoticon')
   },
   methods: {
     ...mapMutations(['regSendVoiceEvent']),
+    beforeChange(index) {
+      console.log('index', index)
+      if (index == 0 || this.emoCat.length == 0) {
+        return true
+      }
+      index--;
+      if (this.emoCat[index].list.length == 0) {
+        emoticon(this.emoCat[index].name).then(res => {
+          this.emoCat[index].list = res.map(item => {
+            return item.url
+          })
+        })
+      }
+      return true
+    },
     textFocus() {
       this.mode = 'text'
       this.hidePopup()
@@ -325,6 +357,11 @@ export default {
       }
     },
     initData() {
+      if (this.emoCat.length == 0 && this.$store.state.user.emoCat) {
+        this.emoCat = this.$store.state.user.emoCat.map(item => {
+          return { name: item, list: [] }
+        })
+      }
       chatDetail({
         id: this.detail.id,
         type: this.detail.chat_type
@@ -489,6 +526,9 @@ export default {
       // 关闭菜单
       this.$refs.extend.hide()
     },
+    sendEmoticon(url) {
+      this.send('emoticon', url)
+    },
     // 扩展菜单
     actionEvent(e) {
       switch (e.event) {
@@ -497,9 +537,6 @@ export default {
           break;
         case 'uploadVideo': // 发送短视频
           this.$refs.uploadVideo.chooseFile()
-          break;
-        case 'sendEmoticon': // 发送表情包
-          this.send('emoticon', e.icon)
           break;
         case 'openFava': // 打开收藏
           this.$router.push({ path: '/fava', query: { type: 'send' } })

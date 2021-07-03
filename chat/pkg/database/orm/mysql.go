@@ -23,7 +23,7 @@ type Config struct {
 	UserName        string
 	Password        string
 	TablePrefix     string
-	ShowLog         bool
+	Debug           bool
 	MaxIdleConn     int
 	MaxOpenConn     int
 	ConnMaxLifeTime time.Duration
@@ -40,11 +40,15 @@ func NewMySQL(c *Config) (db *gorm.DB) {
 		//"Asia/Shanghai"),
 		"Local")
 
+	lvl := logger.Warn
+	if c.Debug {
+		lvl = logger.Info
+	}
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
 			SlowThreshold: 2 * time.Second, // 慢 SQL 阈值
-			LogLevel:      logger.Warn,     // Log level
+			LogLevel:      lvl,             // Log level
 			Colorful:      false,           // 禁用彩色打印
 		},
 	)

@@ -8,7 +8,6 @@ import (
 	"chat/pkg/cache"
 )
 
-
 // CollectCache 用户收藏
 type CollectCache struct {
 	cache cache.Driver
@@ -22,7 +21,7 @@ func NewCollectCache() *CollectCache {
 	}
 }
 
-//GetCacheListKey 获取缓存
+//GetCacheListKey 获取缓存键
 func (u *CollectCache) GetCacheListKey(id uint32) string {
 	return fmt.Sprintf(collectListCacheKey, id)
 }

@@ -167,6 +167,18 @@ export const constantRouterMap = [
         name: 'AddMoment',
         component: () => import('@/views/moments/add'),
         meta: { title: '心情发布', keepAlive: true }
+      },
+      {
+        path: '/emoticon_cat',
+        name: 'EmoticonCat',
+        component: () => import('@/views/common/emo-cat'),
+        meta: { title: '表情包', keepAlive: true }
+      },
+      {
+        path: '/emoticon',
+        name: 'Emoticon',
+        component: () => import('@/views/common/emo'),
+        meta: { title: '表情', keepAlive: true }
       }
     ]
   }

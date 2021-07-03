@@ -1,8 +1,9 @@
 package app
 
 import (
-	"chat/pkg/registry"
 	"fmt"
+
+	"chat/pkg/registry"
 )
 
 //Options 选项结构

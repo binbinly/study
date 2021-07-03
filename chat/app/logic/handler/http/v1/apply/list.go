@@ -1,6 +1,7 @@
 package apply
 
 import (
+	"chat/app/logic/handler/http"
 	"github.com/gin-gonic/gin"
 
 	"chat/app/logic/service"
@@ -21,7 +22,7 @@ import (
 func List(c *gin.Context) {
 	userID := app.GetUInt32UserID(c)
 
-	list, err := service.Svc.ApplyMyList(c.Request.Context(), userID, app.GetPageOffset(c))
+	list, err := service.Svc.ApplyMyList(c.Request.Context(), userID, http.GetPageOffset(c))
 	if err != nil {
 		log.Warnf("[http.apply] list err: %v", err)
 		app.Error(c, errno.ErrEmpty)

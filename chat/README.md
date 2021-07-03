@@ -5,7 +5,8 @@
 ## 项目介绍
 
 `chat` 是一套仿微信ui的即时通讯全栈学习项目，项目出自 [uni-app实战仿微信app开发](https://study.163.com/course/introduction/1209487898.htm)
-，已购买学习，于是用 `golang + vue` 微服务思想，重写了整个项目，主要功能点已实现
+，已购买学习(`uni-app+nodejs`)，于是用 `golang + vue` 微服务思想，重写了整个项目，
+- 主要功能点已实现
 ![功能点](./deploy/img/app.png)
 
 ## 系统架构图
@@ -64,12 +65,15 @@
 - 使用 make 来管理 Go 工程
 
 ### 管理后台
+- [入口](./admin)
 - laravel框架(5.5.*) [laravel文档](https://learnku.com/docs/laravel/5.5/installation/1282)
 - laravel-admin后台框架 [laravel-admin文档](https://laravel-admin.org/)
 
 ### 前端技术
+- [入口](./frontend)
 - 移动端 Vue 组件库 [vant](https://youzan.github.io/vant/#/zh-CN/)
 - 脚手架 [vue-cli4 vant rem 移动端框架方案](https://github.com/sunniejs/vue-h5-template)
+- 表情包 [ChineseBQB](https://github.com/zhaoolee/ChineseBQB)
 
 ### 开发环境
 
@@ -85,6 +89,7 @@
 | protobuf      | 3.14   | https://github.com/protocolbuffers/protobuf                  |
 | minio         | latest | http://docs.minio.org.cn/docs/                  |
 | go-fastdfs    | latest | https://github.com/sjqzhang/go-fastdfs                  |
+| elasticsearch | 7.13.2 | https://www.elastic.co/cn/downloads/elasticsearch                  |
 
 ### 项目部署
 
@@ -122,8 +127,9 @@ docker run --rm -it -p 9050:9050 -p 9070:9070 chat:latest
 
 ### docker-compose
 [docker-compose安装文档](https://docs.docker.com/compose/install/)
-安装组件:
+组件清单:
 - chat_frontend 前端UI
+- chat_admin 管理后台  
 - chat_connect 连接层，处理websocket,tcp连接
 - chat_logic 核心逻辑业务层
 - chat_task 任务层
@@ -177,6 +183,7 @@ docker-compose up -d
 ## 📝 接口文档
 
 - [chat接口文档](http://127.0.0.1:9050/swagger/index.html)
+- [管理后台](http://127.0.0.1:8000)  
 - [前端界面](http://127.0.0.1)
 - [prometheus](http://127.0.0.1:9090)
 - [grafana](http://127.0.0.1:3000)

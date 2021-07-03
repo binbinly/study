@@ -13,6 +13,14 @@ export function searchUser(data) {
   return api.post(api.SearchUser, data)
 }
 
+export function emoticonCat() {
+  return api.get(api.EmoticonCat)
+}
+
+export function emoticon(cat) {
+  return api.get(api.Emoticon, {cat}, true)
+}
+
 export function httpGet(url) {
   return api.get(url)
 }

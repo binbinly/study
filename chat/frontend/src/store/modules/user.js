@@ -16,7 +16,11 @@ export default {
       count: 0
     },
 
+    //我的好友
     mailList: [],
+
+    //我的表情
+    emoCat:[],
 
     chat: null,
 
@@ -41,6 +45,14 @@ export default {
         console.log('end:', state.user)
         setStorage('user', JSON.stringify(state.user))
       }
+    },
+    addEmo(state, name) {//添加表情包
+      state.emoCat.push(name)
+      setStorage('emoticon_cat', JSON.stringify(state.emoCat))
+    },
+    delEmo(state, name) {//删除表情包
+      state.emoCat.splice(state.emoCat.findIndex(item => item === name), 1)
+      setStorage('emoticon_cat', JSON.stringify(state.emoCat))
     }
   },
   actions: {
@@ -98,6 +110,7 @@ export default {
         state.chat = new Chat({
           url: $config.socketUrl
         })
+        state.emoCat = getStorage('emoticon_cat') ? JSON.parse(getStorage('emoticon_cat')) : []
         // 获取会话列表
         dispatch('getChatList')
         // 获取离线信息

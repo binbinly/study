@@ -32,6 +32,8 @@ type IUser interface {
 	UserCheck(ctx context.Context, id uint32) (bool, error)
 	// 用户登出
 	UserLogout(ctx context.Context, UserID uint32) error
+	// 用户举报
+	ReportCreate(ctx context.Context, UserID, friendID uint32, cType int8, cat, content string) error
 }
 
 // UserRegister 注册用户
@@ -153,6 +155,30 @@ func (s *Service) UserLogout(ctx context.Context, UserID uint32) error {
 	pipe.Del(ctx, s.getOnlineKey(UserID))
 	_, err := pipe.Exec(ctx)
 	return err
+}
+
+// ReportCreate 举报好友/群
+func (s *Service) ReportCreate(ctx context.Context, UserID, friendID uint32, cType int8, cat, content string) error {
+	is, err := s.repo.ReportExistPending(ctx, friendID)
+	if err != nil {
+		return errors.Wrapf(err, "[service.report] exist id:%d", friendID)
+	}
+	if is { // 已举报过
+		return ErrReportExisted
+	}
+	report := &model.ReportModel{
+		UID:        model.UID{UserID: UserID},
+		TargetID:   friendID,
+		TargetType: cType,
+		Content:    content,
+		Category:   cat,
+		Status:     model.ReportStatusPending,
+	}
+	_, err = s.repo.ReportCreate(ctx, report)
+	if err != nil {
+		return errors.Wrapf(err, "[service.report] create report err")
+	}
+	return nil
 }
 
 // transUserToken 转换输出用户登录后信息

@@ -1,4 +1,4 @@
-# vant-chat
+# chat_frontend
 
 ## Project setup
 ```

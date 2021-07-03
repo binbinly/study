@@ -4,7 +4,7 @@ package errno
 var (
 	// 预定义错误
 	// Common errors
-	Success               = NewError(0, "Success")
+	Success               = NewError(0, "OK")
 	InternalServerError   = NewError(10001, "Internal server error")
 	ErrBind               = NewError(10002, "Bind request error")
 	ErrInvalidParam       = NewError(10003, "Invalid params")

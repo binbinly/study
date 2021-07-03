@@ -27,6 +27,8 @@ const (
 	friendCacheKey         = "friend:%d_%d"
 	friendAllCacheKey      = "friend:all:%d"
 	collectListCacheKey    = "collect:list:%d"
+	emoticonCatAllCacheKey = "emoticon:cat:all"
+	emoticonListCacheKey   = "emoticon:%s"
 )
 
 // newCache new一个cache

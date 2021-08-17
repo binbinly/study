@@ -21,7 +21,8 @@
 ├── Makefile                     # 项目管理文件
 ├── admin                        # 管理后台
 ├── app                          # 业务目录
-│   ├── logic                    # chat核心逻辑业务层
+│   ├── center                   # 中心服务
+│   ├── chat                     # chat核心逻辑业务层
 │   ├── connect                  # 连接层，管理http,ws,tcp连接
 │   ├── constvar                 # 常量定义
 │   ├── message                  # 消息队列消息定义

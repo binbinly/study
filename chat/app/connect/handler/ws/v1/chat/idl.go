@@ -3,7 +3,7 @@ package chat
 import (
 	"encoding/json"
 
-	"chat/proto/logic"
+	"chat/proto/chat"
 )
 
 //TransferChatInput 会话对外转化结构

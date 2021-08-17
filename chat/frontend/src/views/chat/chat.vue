@@ -280,9 +280,7 @@ export default {
     event.$on('updateHistory', this.updateHistory)
     // 监听发送收藏和名片
     event.$on('sendItem', this.onSendItem)
-    event.$on('onEmoticon', function(cat) {
-      this.emoCat.push({ name: cat, list: [] })
-    })
+    event.$on('onEmoticon', this.onEmoticon)
   },
   destroyed() {
     // 销毁聊天对象
@@ -295,13 +293,13 @@ export default {
     event.$off('updateHistory', this.updateHistory)
 
     event.$off('sendItem', this.onSendItem)
-    event.$off('onEmoticon')
+    event.$off('onEmoticon', this.onEmoticon)
   },
   methods: {
     ...mapMutations(['regSendVoiceEvent']),
     beforeChange(index) {
-      console.log('index', index)
-      if (index == 0 || this.emoCat.length == 0) {
+      const len = this.emoCat.length
+      if (index == 0 || len == 0 || len + 1 == index) {
         return true
       }
       index--;
@@ -322,6 +320,9 @@ export default {
       this.show = false
       this.KeyboardHeight = 0
       this.chatHeight = 575
+    },
+    onEmoticon(cat) {
+      this.emoCat.push({ name: cat, list: [] })
     },
     onSendItem(e) {
       console.log('e', e)
@@ -361,6 +362,7 @@ export default {
         this.emoCat = this.$store.state.user.emoCat.map(item => {
           return { name: item, list: [] }
         })
+        console.log('emoCat', this.emoCat)
       }
       chatDetail({
         id: this.detail.id,

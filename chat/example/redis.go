@@ -5,23 +5,23 @@ import (
 	"fmt"
 	"time"
 
-	"chat/app/logic/conf"
+	"chat/app/chat/conf"
 	"chat/pkg/redis"
 	"os"
 )
 
-func init()  {
+func init() {
 	dir, _ := os.Getwd()
 	conf.Init(dir + "/config/logic.local.yaml")
 	redis.Init(&conf.Conf.Redis)
 }
 
-func main()  {
+func main() {
 	//Subscribe()
 	Pipe()
 }
 
-func Pipe()  {
+func Pipe() {
 	pipe := redis.Client.Pipeline()
 	c := context.Background()
 	key := "test"
@@ -34,7 +34,7 @@ func Pipe()  {
 
 }
 
-func Subscribe(){
+func Subscribe() {
 	//参数1 频道名 字符串类型
 	sub := redis.Client.Subscribe(context.Background(), "message")
 	_, err := sub.Receive(context.Background())
@@ -43,6 +43,6 @@ func Subscribe(){
 	}
 	ch := sub.Channel()
 	for msg := range ch {
-		fmt.Println( msg.Channel, msg.Payload)
+		fmt.Println(msg.Channel, msg.Payload)
 	}
 }

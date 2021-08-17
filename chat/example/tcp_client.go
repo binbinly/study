@@ -1,7 +1,7 @@
 package main
 
 import (
-	"chat/app/logic/conf"
+	"chat/app/chat/conf"
 	"chat/pkg/connect"
 	"chat/pkg/connect/tcp"
 	logger "chat/pkg/log"
@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func init()  {
+func init() {
 	dir, _ := os.Getwd()
 	conf.Init(dir + "/config/config.local.yaml")
 	// init log
@@ -32,7 +32,7 @@ func main() {
 	for {
 		//发封包message消息
 		dp := tcp.NewDataPack()
-		msg, _ := dp.Pack(connect.NewMsgPackage(tcp.MsgIdAuth, []byte("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTk0MjQwNjAsImlhdCI6MTYxOTMzNzY2MCwibmJmIjoxNjE5MzM3NjYwLCJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6InRlc3QifQ.rHtuRf4tDSh6SprvkDwJ9FIMZ-iM0hGMeovF9cR_JKc")))
+		msg, _ := dp.Pack(connect.NewMsgPackage(1, []byte("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTk0MjQwNjAsImlhdCI6MTYxOTMzNzY2MCwibmJmIjoxNjE5MzM3NjYwLCJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6InRlc3QifQ.rHtuRf4tDSh6SprvkDwJ9FIMZ-iM0hGMeovF9cR_JKc")))
 		_, err = conn.Write(msg)
 		if err != nil {
 			fmt.Println("write error err ", err)

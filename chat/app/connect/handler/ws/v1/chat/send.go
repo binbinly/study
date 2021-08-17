@@ -5,13 +5,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"chat/app/chat/ecode"
 	"chat/app/connect"
-	"chat/app/logic/ecode"
 	"chat/pkg/app"
 	"chat/pkg/errno"
 	"chat/pkg/log"
 	"chat/proto"
-	"chat/proto/logic"
+	"chat/proto/chat"
 )
 
 // Send 发送消息

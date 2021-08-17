@@ -1,0 +1,123 @@
+syntax = "proto3";
+
+package center;
+
+import "google/protobuf/empty.proto";
+import  "base/base.proto";
+
+service Center {
+  // 用户注册
+  rpc UserRegister(RegisterReq) returns (RegisterReply);
+  // 用户名密码登录
+  rpc UsernameLogin(UsernameReq) returns (UserToken);
+  // 手机号登录
+  rpc PhoneLogin(PhoneReq) returns (UserToken);
+  // 修改用户信息
+  rpc UserEdit(EditReq) returns (google.protobuf.Empty);
+  // 修改密码
+  rpc UserEditPwd(EditPwdReq) returns (google.protobuf.Empty);
+  // 获取用户信息
+  rpc UserInfo(UIDReq) returns (base.UserInfo);
+  // 用户登出
+  rpc UserLogout(UIDReq) returns (google.protobuf.Empty);
+  // 用户上线，建立长连接
+  rpc Online(OnlineReq) returns (OnlineReply);
+  // 用户下线
+  rpc Offline(OfflineReq) returns (google.protobuf.Empty);
+  // 获取用户长连接所在的服务器ID
+  rpc ServerByUserID(UIDReq) returns(ServerIDReply);
+  // 批量获取长连接所在的服务器ID
+  rpc BatchServersByUserIDs(UIDsReq) returns(ServerIDsReply);
+  // 发送短信验证码
+  rpc SendSMS(PhoneReq) returns (CodeReply);
+  // 短信验证码验证
+  rpc CheckVCode(CheckCodeReq) returns (google.protobuf.Empty);
+  // 检测用户是否在线
+  rpc CheckOnline(UIDReq) returns (BoolReply);
+}
+
+message RegisterReq {
+  string username = 1;
+  string password = 2;
+  int64 phone = 3;
+}
+
+message RegisterReply {
+  uint32 id = 1;
+}
+
+message UsernameReq {
+  string username = 1;
+  string password = 2;
+}
+
+message UserToken{
+  base.UserInfo user = 1;
+  string token = 2;
+}
+
+message PhoneReq {
+  int64 phone = 1;
+}
+
+message UserReq {
+  uint32 id = 1;
+  int64 phone = 2;
+  string nickname = 3;
+  string avatar = 4;
+}
+
+message EditReq {
+  uint32 id = 1;
+  bytes content = 2;
+}
+
+message EditPwdReq {
+  uint32 id = 1;
+  string pwd = 2;
+}
+
+message UIDReq {
+  uint32 id = 1;
+}
+
+message UIDsReq {
+  repeated uint32 ids = 1;
+}
+
+message OnlineReq {
+  string server = 1;
+  string token = 2;
+}
+
+message OnlineReply {
+  uint32 uid = 1;
+  string key = 2;
+}
+
+message OfflineReq {
+  uint32 uid = 1;
+  string key = 2;
+  string server = 3;
+}
+
+message ServerIDReply {
+  string serverID = 1;
+}
+
+message ServerIDsReply {
+  repeated string serverIDs = 1;
+}
+
+message CheckCodeReq {
+  int64 phone = 1;
+  string code = 2;
+}
+
+message CodeReply {
+  string code = 1;
+}
+
+message BoolReply {
+  bool is = 1;
+}

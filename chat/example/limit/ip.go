@@ -1,7 +1,7 @@
 package main
 
 import (
-	"chat/app/logic/conf"
+	"chat/app/chat/conf"
 	"chat/pkg/redis"
 	"context"
 	"fmt"
@@ -11,16 +11,16 @@ import (
 	"time"
 )
 
-func Init()  {
+func Init() {
 	dir, _ := os.Getwd()
 	conf.Init(dir + "/config/logic.local.yaml")
 	redis.Init(&conf.Conf.Redis)
 }
 
-func main()  {
+func main() {
 	Init()
 	for i := 0; i < 10; i++ {
-		IpRateLimiter(5, time.Second * 2)
+		IpRateLimiter(5, time.Second*2)
 	}
 }
 

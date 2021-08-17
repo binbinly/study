@@ -2,7 +2,6 @@ package task
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/pkg/errors"
 
@@ -11,15 +10,14 @@ import (
 	"chat/pkg/redis"
 	"chat/proto/base"
 	"chat/proto/connect"
-	"chat/proto/logic"
 )
 
 //send 发送指定消息
-func (t *Task) send(ctx context.Context, msg *logic.SendMsg) (err error) {
+func (t *Task) send(ctx context.Context, msg *base.SendMsg) (err error) {
 	req := &connect.SendReq{
 		UserIds: msg.UserIds,
 		Proto: &base.Proto{
-			Data:  msg.Msg,
+			Data: msg.Msg,
 		},
 	}
 	if c, ok := t.connects[msg.Server]; ok {
@@ -31,17 +29,17 @@ func (t *Task) send(ctx context.Context, msg *logic.SendMsg) (err error) {
 }
 
 //history 发送历史消息
-func (t *Task) history(ctx context.Context, msg *logic.SendMsg) (err error) {
+func (t *Task) history(ctx context.Context, msg *base.SendMsg) (err error) {
 	go func() {
 		for {
-			val := redis.Client.LPop(ctx, fmt.Sprintf(constvar.HistoryPrefix, msg.UserIds[0])).Val()
+			val := redis.Client.LPop(ctx, constvar.BuildHistoryKey(msg.UserIds[0])).Val()
 			if val == "" {
 				break
 			}
 			req := &connect.SendReq{
 				UserIds: msg.UserIds,
 				Proto: &base.Proto{
-					Data:  []byte(val),
+					Data: []byte(val),
 				},
 			}
 			if c, ok := t.connects[msg.Server]; ok {
@@ -57,11 +55,11 @@ func (t *Task) history(ctx context.Context, msg *logic.SendMsg) (err error) {
 }
 
 //close 发送关闭连接消息
-func (t *Task) close(ctx context.Context, msg *logic.SendMsg) (err error) {
+func (t *Task) close(ctx context.Context, msg *base.SendMsg) (err error) {
 	req := &connect.CloseReq{
 		UserId: msg.UserIds[0],
 		Proto: &base.Proto{
-			Data:  msg.Msg,
+			Data: msg.Msg,
 		},
 	}
 	if c, ok := t.connects[msg.Server]; ok {
@@ -74,10 +72,10 @@ func (t *Task) close(ctx context.Context, msg *logic.SendMsg) (err error) {
 }
 
 //broadcast 广播消息
-func (t *Task) broadcast(ctx context.Context, msg *logic.SendMsg) (err error) {
+func (t *Task) broadcast(ctx context.Context, msg *base.SendMsg) (err error) {
 	req := &connect.BroadcastReq{
 		Proto: &base.Proto{
-			Data:  msg.Msg,
+			Data: msg.Msg,
 		},
 	}
 	for id, c := range t.connects {

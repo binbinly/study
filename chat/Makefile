@@ -11,9 +11,10 @@ all: test build
 build:
 	rm -rf target/
 	mkdir -p target/config
-	cp config/connect.default.yaml target/config/connect.yaml
-	cp config/task.default.yaml target/config/task.yaml
-	cp config/logic.default.yaml target/config/logic.yaml
+	cp config/connect/default.yaml target/config/connect.yaml
+	cp config/task/default.yaml target/config/task.yaml
+	cp config/chat/default.yaml target/config/logic.yaml
+	cp config/cebter/default.yaml target/config/center.yaml
 	$(GOBUILD) -o target/chat main.go
 
 test:
@@ -27,7 +28,8 @@ clean:
 run:
 	nohup target/chat connect -c target/config/connect.yaml &
 	nohup target/chat task -c target/config/task.yaml &
-	nohup target/chat logic -c target/config/logic.yaml &
+	nohup target/chat chat -c target/config/logic.yaml &
+	nohup target/chat center -c target/config/center.yaml &
 
 # 停止服务
 stop:

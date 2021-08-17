@@ -54,7 +54,25 @@ services:
       timeout: 10s  # 超时时间
       retries: 3    # 重试次数
       start_period: 40s # 启动多久后开始检查
-    command: connect -c ./config/connect.docker.yaml
+    command: connect -c ./config/connect/docker.yaml
+
+  center:
+    container_name: app_center
+    image: chat_app:latest
+    restart: on-failure
+    depends_on:
+      - db
+      - redis
+      - consul
+      - app
+    links:
+      - db
+      - redis
+      - consul
+      - jaeger
+    networks:
+      - chat
+    command: logic -c ./config/center/docker.yaml
 
   logic:
     container_name: chat_logic
@@ -76,7 +94,7 @@ services:
       - "9050:9050"
     networks:
       - chat
-    command: logic -c ./config/logic.docker.yaml
+    command: logic -c ./config/chat/docker.yaml
 
   task:
     container_name: chat_task
@@ -92,7 +110,7 @@ services:
       - jaeger
     networks:
       - chat
-    command: task -c ./config/task.docker.yaml
+    command: task -c ./config/task/docker.yaml
 
   consul:
     container_name: consul_containar

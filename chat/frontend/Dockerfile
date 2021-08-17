@@ -6,6 +6,10 @@ FROM node:lts-alpine as build-stage
 WORKDIR /app
 COPY . .
 
+ENV VUE_APP_HTTP_URL='http://127.0.0.1:9050/v1' \
+  VUE_APP_WS_URL='ws://127.0.0.1:9070/ws' \
+  VUE_APP_DFS_URL='http://127.0.0.1:22000/group1/upload'
+
 #在容器内build  --unsafe-perm 用高权限用户运行npm
 RUN npm i --unsafe-perm --allow-root && npm run build
 

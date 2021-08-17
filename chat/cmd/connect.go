@@ -24,7 +24,7 @@ var (
 )
 
 func init() {
-	connectCmd.Flags().StringVarP(&cfg, "config", "c", "", "config file (default is $ROOT/config/connect.yaml)")
+	connectCmd.Flags().StringVarP(&cfg, "config", "c", "", "config file (default is $ROOT/config/connect/connect.yaml)")
 	connectCmd.Flags().BoolVar(&ws, "ws", false, "start websocket server")
 	connectCmd.Flags().BoolVar(&tcp, "tcp", false, "start tcp server")
 }
@@ -34,19 +34,11 @@ var connectCmd = &cobra.Command{
 	Short: "chat connect server start",
 	Run: func(cmd *cobra.Command, args []string) {
 		if cfg == "" {
-			cfg = "./config/connect.yaml"
+			cfg = "./config/connect/connect.yaml"
 		}
 		conf.Init(cfg)
 		connectStart()
 	},
-}
-
-func Connect() {
-	if cfg == "" {
-		cfg = "./config/connect.yaml"
-	}
-	conf.Init(cfg)
-	connectStart()
 }
 
 func connectStart() {

@@ -12,8 +12,10 @@
     </van-cell-group>
     <van-cell-group title="标签">
       <van-button icon="plus" size="small" class="m-1" type="primary" @click="show = true">自定义标签</van-button>
-      <van-tag class="m-1" style="padding:5px;" closeable size="large" v-for="(item,index) in tagList" type="primary" @close="removeTag(item)">
-        {{item}}</van-tag>
+      <template v-for="(item,index) in tagList">
+        <van-tag class="m-1" style="padding:5px;" closeable size="large" type="primary" @close="removeTag(item)">
+          {{item}}</van-tag>
+      </template>
     </van-cell-group>
     <van-cell-group title="可选常用标签">
       <van-tag class="m-1" type="primary" size="large" v-for="(item,index) in allTagList" :type="item.type" @click="addTag(item.name)">

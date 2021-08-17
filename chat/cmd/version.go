@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"runtime"
 
 	"github.com/spf13/cobra"
 )
@@ -16,7 +17,9 @@ var versionCmd = &cobra.Command{
 		if err != nil {
 			Error(cmd, args, err)
 		}
-
-		fmt.Fprint(os.Stdout, "chat version ", output)
+		fmt.Fprintln(os.Stdout, "chat version ", output)
+		fmt.Fprintln(os.Stdout, "go version ", runtime.Version())
+		fmt.Fprintln(os.Stdout, "Compiler ", runtime.Compiler)
+		fmt.Fprintln(os.Stdout, "Platform ", fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH))
 	},
 }

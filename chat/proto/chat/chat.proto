@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package chat;
+
+import "google/protobuf/empty.proto";
+
+service Chat {
+  // Receive
+  rpc Receive(ReceiveReq) returns (ReceiveReply);
+}
+
+message ReceiveReq {
+  uint32 uid = 1;
+  string event = 2;
+  uint32 id = 3;
+  repeated uint32 ids=4;
+  uint32 offset=5;
+  bytes body=6;
+}
+
+message ReceiveReply{
+  enum ReturnCode {
+    SUCCESS = 0;
+    //json解析错误
+    ErrJsonUnmarshal = 1;
+    ErrJsonMarshal = 2;
+    //验证码错误
+    ErrVerifyCode = 3;
+    // 用户不存在
+    ErrUserNotFound = 4;
+    // 用户登录异常
+    ErrUserLogin = 5;
+    // 动态不存在
+    ErrMomentNotFound = 6;
+    // 举报已存在
+    ErrReportExisted = 7;
+    // 用户名或者手机已注册
+    ErrUserKeyExisted = 8;
+    // 申请已存在
+    ErrApplyExisted = 9;
+    // 申请不存在
+    ErrApplyNotFound = 10;
+    // 未找到匹配好友记录
+    ErrFriendNotRecord = 11;
+    // 好友不存在或已被拉黑
+    ErrFriendNotFound = 12;
+    // 群组不存在
+    ErrGroupNotFound = 13;
+    // 非群组成员
+    ErrGroupUserNotJoin = 14;
+    // 目标用户非群组成员
+    ErrGroupUserTargetNotJoin = 15;
+    // 已经是群成员
+    ErrGroupUserExisted = 16;
+    // 数据未修改
+    ErrGroupDataUnmodified = 17;
+    // 用户离线
+    ErrUserOffline = 18;
+  }
+  ReturnCode code = 1;
+  bytes data = 2;
+}

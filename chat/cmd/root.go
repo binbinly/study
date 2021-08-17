@@ -41,7 +41,8 @@ func init() {
 
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(migrateCmd)
-	rootCmd.AddCommand(logicCmd)
+	rootCmd.AddCommand(centerCmd)
+	rootCmd.AddCommand(chatCmd)
 	rootCmd.AddCommand(taskCmd)
 	rootCmd.AddCommand(connectCmd)
 	rootCmd.AddCommand(seedCmd)

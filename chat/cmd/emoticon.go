@@ -1,12 +1,13 @@
 package cmd
 
 import (
+	"chat/internal/orm"
 	"context"
 	"encoding/json"
 	"errors"
 	"strings"
 
-	"chat/app/logic/model"
+	"chat/app/chat/model"
 	"chat/pkg/net/http"
 )
 
@@ -57,13 +58,13 @@ func SyncBQB() error {
 			cat = datum.Category
 		}
 		emot = append(emot, model.EmoticonModel{
-			PriID:    model.PriID{ID: uint32(i + 1)},
+			PriID:    orm.PriID{ID: uint32(i + 1)},
 			Category: cat,
 			Name:     datum.Name[nameStart+1 : nameEnd],
 			Url:      datum.Url,
 		})
 	}
 	//先清空表
-	model.DB.Exec("truncate emoticon")
-	return model.DB.CreateInBatches(emot, 200).Error
+	orm.DB.Exec("truncate emoticon")
+	return orm.DB.CreateInBatches(emot, 200).Error
 }

@@ -1,12 +1,12 @@
 package connect
 
 import (
-	"chat/pkg/app"
 	"context"
 	"time"
 
 	"chat/app/connect/conf"
 	"chat/app/connect/routers"
+	"chat/pkg/app"
 	"chat/pkg/connect"
 	"chat/pkg/connect/ws"
 	"chat/pkg/log"

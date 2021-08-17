@@ -31,8 +31,11 @@ type ClientConfig struct {
 	KeepAliveTimeout time.Duration //假设连接中断，等待 x 秒钟以进行ping确认
 }
 
-// NewRPCClientConn 创建一个 grpc客户端连接
-func NewRPCClientConn(ctx context.Context, c *ClientConfig, target string) (*grpc.ClientConn, error) {
+// NewRPCClientConn 实例化一个 grpc客户端连接
+func NewRPCClientConn(c *ClientConfig, target string) *grpc.ClientConn {
+	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
+	defer cancel()
+
 	conn, err := grpc.DialContext(ctx, target,
 		[]grpc.DialOption{
 			grpc.WithInsecure(),
@@ -48,7 +51,7 @@ func NewRPCClientConn(ctx context.Context, c *ClientConfig, target string) (*grp
 			}),
 		}...)
 	if err != nil {
-		return nil, err
+		log.Fatalf("failed new grpc client conn: %v", err)
 	}
 	// 初始化熔断器配置
 	hystrix.ConfigureCommand(c.ServiceName, hystrix.CommandConfig{
@@ -58,7 +61,7 @@ func NewRPCClientConn(ctx context.Context, c *ClientConfig, target string) (*grp
 		RequestVolumeThreshold: 20,         // 一个统计窗口的请求数量，默认是20
 		ErrorPercentThreshold:  50,         // 失败百分比，默认是50%
 	})
-	return conn, nil
+	return conn
 }
 
 // ClientInterceptor 拦截器
@@ -93,13 +96,11 @@ func ClientInterceptor(serviceName string) grpc.UnaryClientInterceptor {
 		}
 
 		// 熔断器
+		// TODO 第二个参数熔断时触发，暂时不做任何处理
 		err = hystrix.Do(serviceName, func() (err error) {
 			err = invoker(ctx, method, req, reply, cc, opts...)
 			return err
-		}, func(err error) error {
-			// TODO 熔断时触发，暂时不做任何处理
-			return err
-		})
+		}, nil)
 		if err != nil {
 			ext.LogError(span, err)
 		}

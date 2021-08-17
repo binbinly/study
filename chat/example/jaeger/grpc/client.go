@@ -1,7 +1,7 @@
 package main
 
 import (
-	"chat/example/hello"
+	"chat/example/grpc/hello"
 	"chat/example/jaeger/grpc/cerrier"
 	"chat/example/jaeger/lib"
 	"context"
@@ -69,7 +69,7 @@ func ClientInterceptor(tracer opentracing.Tracer) grpc.UnaryClientInterceptor {
 		span, ctx := opentracing.StartSpanFromContext(ctx, method)
 		defer span.Finish()
 
-		ext.Component.Set(span,"gRPC Client")
+		ext.Component.Set(span, "gRPC Client")
 		ext.SpanKindRPCClient.Set(span)
 
 		md, ok := metadata.FromOutgoingContext(ctx)

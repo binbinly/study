@@ -1,9 +1,6 @@
 package connect
 
 import (
-	"context"
-	"log"
-
 	grpc2 "google.golang.org/grpc"
 
 	"chat/app/connect/conf"
@@ -11,7 +8,7 @@ import (
 	"chat/pkg/net/grpc"
 	"chat/pkg/registry"
 	"chat/pkg/registry/consul"
-	"chat/proto/logic"
+	"chat/proto/center"
 )
 
 //Svc 全局服务
@@ -19,20 +16,24 @@ var Svc *Server
 
 // Server is connect server.
 type Server struct {
-	Server   connect.IServer
+	Server connect.IServer
 
 	c         *conf.Config
 	rpcConn   *grpc2.ClientConn
-	rpcClient logic.LogicClient //grpc客户端
+	rpcClient center.CenterClient //grpc客户端
 }
 
 // NewServer returns a new Server.
 func NewServer(c *conf.Config) *Server {
+	// 初始化consul.resolver
+	consul.Init()
+	target := "consul://" + c.Registry.Host + "/" + c.GrpcClient.ServiceName
+	conn := grpc.NewRPCClientConn(&c.GrpcClient, target)
 	s := &Server{
-		c:       c,
-		rpcConn: newLogicClient(c),
+		c:         c,
+		rpcConn:   conn,
+		rpcClient: center.NewCenterClient(conn),
 	}
-	s.rpcClient = logic.NewLogicClient(s.rpcConn)
 	Svc = s
 	return s
 }
@@ -53,18 +54,4 @@ func (s *Server) Close() (err error) {
 		s.Server.Stop()
 	}
 	return s.rpcConn.Close()
-}
-
-//newLogicClient 创建逻辑层客户端
-func newLogicClient(c *conf.Config) *grpc2.ClientConn {
-	// 初始化consul.resolver
-	consul.Init()
-	ctx, cancel := context.WithTimeout(context.Background(), c.GrpcClient.Timeout)
-	defer cancel()
-	target := "consul://" + c.Registry.Host + "/" + c.GrpcClient.ServiceName
-	conn, err := grpc.NewRPCClientConn(ctx, &c.GrpcClient, target)
-	if err != nil {
-		log.Fatalf("new grpc client conn failed err:%v", err)
-	}
-	return conn
 }

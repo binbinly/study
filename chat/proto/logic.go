@@ -4,86 +4,86 @@ import "encoding/json"
 
 const (
 	//EventLogin 登录
-	EventLogin       = "login"
+	EventLogin = "login"
 	//EventSendCode 发送验证码
-	EventSendCode    = "send_code"
+	EventSendCode = "send_code"
 	//EventSearch 搜索
-	EventSearch      = "search"
+	EventSearch = "search"
 	//EventRegister 注册
-	EventRegister    = "register"
+	EventRegister = "register"
 	//EventPhoneLogin 手机登录
-	EventPhoneLogin  = "login_phone"
+	EventPhoneLogin = "login_phone"
 	//EventUserEdit 修改用户信息
-	EventUserEdit    = "user_edit"
+	EventUserEdit = "user_edit"
 	//EventLogout 登出
-	EventLogout      = "logout"
+	EventLogout = "logout"
 	//EventUserReport 举报
-	EventUserReport  = "user_report"
+	EventUserReport = "user_report"
 	//EventUserTags 用户标签
-	EventUserTags    = "user_tags"
+	EventUserTags = "user_tags"
 	//EventUserProfile 用户详情
 	EventUserProfile = "user_profile"
 
 	//EventMomentCreate 发布朋友圈
-	EventMomentCreate   = "moment_create"
+	EventMomentCreate = "moment_create"
 	//EventMomentComment 朋友圈评论
-	EventMomentComment  = "moment_comment"
+	EventMomentComment = "moment_comment"
 	//EventMomentLike 朋友圈点赞
-	EventMomentLike     = "moment_like"
+	EventMomentLike = "moment_like"
 	//EventMomentList 朋友圈列表
-	EventMomentList     = "moment_list"
+	EventMomentList = "moment_list"
 	//EventMomentTimeline 我的朋友圈时间线
 	EventMomentTimeline = "moment_timeline"
 
 	//EventGroupCreate 创建群组
-	EventGroupCreate       = "group_create"
+	EventGroupCreate = "group_create"
 	//EventGroupInfo 群信息
-	EventGroupInfo         = "group_info"
+	EventGroupInfo = "group_info"
 	//EventGroupInvite 邀请入群
-	EventGroupInvite       = "group_invite"
+	EventGroupInvite = "group_invite"
 	//EventGroupJoin 加入群
-	EventGroupJoin         = "group_join"
+	EventGroupJoin = "group_join"
 	//EventGroupKickoff 踢出群
-	EventGroupKickoff      = "group_kickoff"
+	EventGroupKickoff = "group_kickoff"
 	//EventGroupList 我的群列表
-	EventGroupList         = "group_list"
+	EventGroupList = "group_list"
 	//EventGroupQuit 退出群
-	EventGroupQuit         = "group_quit"
+	EventGroupQuit = "group_quit"
 	//EventGroupEdit 修改群信息
-	EventGroupEdit         = "group_edit"
+	EventGroupEdit = "group_edit"
 	//EventGroupEditNickname 修改我在群中昵称
 	EventGroupEditNickname = "group_edit_nickname"
 	//EventGroupUser 群成员
-	EventGroupUser         = "group_user"
+	EventGroupUser = "group_user"
 
 	//EventFriendInfo 好友信息
-	EventFriendInfo       = "friend_info"
+	EventFriendInfo = "friend_info"
 	//EventFriendDestroy 删除好友
-	EventFriendDestroy    = "friend_destroy"
+	EventFriendDestroy = "friend_destroy"
 	//EventFriendList 好友列表
-	EventFriendList       = "friend_list"
+	EventFriendList = "friend_list"
 	//EventFriendTagList 标签好友列表
-	EventFriendTagList    = "friend_tag_list"
+	EventFriendTagList = "friend_tag_list"
 	//EventFriendEditBlack 黑名单加入/移出
-	EventFriendEditBlack  = "friend_edit_black"
+	EventFriendEditBlack = "friend_edit_black"
 	//EventFriendEditStar 星标好友加入/移出
-	EventFriendEditStar   = "friend_edit_star"
+	EventFriendEditStar = "friend_edit_star"
 	//EventFriendEditAuth 设置好友朋友圈权限
-	EventFriendEditAuth   = "friend_edit_auth"
+	EventFriendEditAuth = "friend_edit_auth"
 	//EventFriendEditRemark 修改好友备注
 	EventFriendEditRemark = "friend_edit_remark"
 
 	//EventCollectCreate 添加收藏
-	EventCollectCreate  = "collect_create"
+	EventCollectCreate = "collect_create"
 	//EventCollectDestroy 删除收藏
 	EventCollectDestroy = "collect_destroy"
 	//EventCollectList 收藏列表
-	EventCollectList    = "collect_list"
+	EventCollectList = "collect_list"
 
 	//EventChatDetail 聊天回话详情
 	EventChatDetail = "chat_detail"
 	//EventChatSend 发送消息
-	EventChatSend   = "chat_send"
+	EventChatSend = "chat_send"
 	//EventChatRecall 聊天消息撤回
 	EventChatRecall = "chat_recall"
 
@@ -92,9 +92,9 @@ const (
 	//EventApplyHandle 好友申请处理
 	EventApplyHandle = "apply_handle"
 	//EventApplyList 申请好友列表
-	EventApplyList   = "apply_list"
+	EventApplyList = "apply_list"
 	//EventApplyCount 未处理申请数
-	EventApplyCount  = "apply_count"
+	EventApplyCount = "apply_count"
 )
 
 // ReqLogin 登录

@@ -1,7 +1,7 @@
 package main
 
 import (
-	pb "chat/example/hello"
+	pb "chat/example/grpc/hello"
 	"chat/example/jaeger/grpc/cerrier"
 	"chat/example/jaeger/lib"
 	"context"

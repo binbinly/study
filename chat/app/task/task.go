@@ -13,7 +13,7 @@ import (
 	"chat/pkg/log"
 	"chat/pkg/queue"
 	"chat/pkg/queue/iqueue"
-	"chat/proto/logic"
+	"chat/proto/base"
 )
 
 //Task 任务层结构
@@ -44,20 +44,20 @@ func (t *Task) Start() {
 // handlerMessage 处理消息
 func (t *Task) handlerMessage(body []byte) (err error) {
 	log.Debugf("[task.message] begin body:%v", string(body))
-	msg := &logic.SendMsg{}
+	msg := &base.SendMsg{}
 	err = json.Unmarshal(body, msg)
 	if err != nil {
 		return errors.Wrapf(err, "[task.message] json unmarshal")
 	}
 	ctx := context.Background()
 	switch msg.Type {
-	case logic.SendMsg_CLOSE:
+	case base.SendMsg_CLOSE:
 		err = t.close(ctx, msg)
-	case logic.SendMsg_SEND:
+	case base.SendMsg_SEND:
 		err = t.send(ctx, msg)
-	case logic.SendMsg_BROADCAST:
+	case base.SendMsg_BROADCAST:
 		err = t.broadcast(ctx, msg)
-	case logic.SendMsg_History:
+	case base.SendMsg_History:
 		err = t.history(ctx, msg)
 	default:
 		log.Warnf("nsq msg no match push type: %s", msg.Type)

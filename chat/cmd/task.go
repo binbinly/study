@@ -15,7 +15,7 @@ import (
 )
 
 func init() {
-	taskCmd.Flags().StringVarP(&cfg, "config", "c", "", "config file (default is $ROOT/config/task.yaml)")
+	taskCmd.Flags().StringVarP(&cfg, "config", "c", "", "config file (default is $ROOT/config/task/task.yaml)")
 }
 
 var taskCmd = &cobra.Command{
@@ -23,7 +23,7 @@ var taskCmd = &cobra.Command{
 	Short: "chat task server start",
 	Run: func(cmd *cobra.Command, args []string) {
 		if cfg == "" {
-			cfg = "./config/task.yaml"
+			cfg = "./config/task/task.yaml"
 		}
 		conf.Init(cfg)
 		taskStart()

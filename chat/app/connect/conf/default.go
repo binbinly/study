@@ -50,7 +50,7 @@ func defaultConf(v *viper.Viper) {
 		"BucketSize":       16,
 	})
 	v.SetDefault("grpcClient", map[string]interface{}{
-		"ServiceName":      "chat_logic",
+		"ServiceName":      "center",
 		"QPSLimit":         100,
 		"Timeout":          "5s",
 		"KeepAliveTime":    "15s",

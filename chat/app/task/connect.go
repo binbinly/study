@@ -25,15 +25,13 @@ type Connect struct {
 
 // NewConnect new a connect.
 func NewConnect(c *conf.Config, id, addr string) (*Connect, error) {
+	conn := grpc.NewRPCClientConn(&c.GrpcClient, addr)
 	ct := &Connect{
 		serverID:      id,
 		sendChan:      make([]chan *connect.SendReq, c.App.RoutineSize),
 		broadcastChan: make(chan *connect.BroadcastReq, c.App.RoutineSize),
 		routineSize:   uint64(c.App.RoutineSize),
-	}
-	var err error
-	if ct.client, err = newConnectClient(addr, &c.GrpcClient); err != nil {
-		return nil, err
+		client:        connect.NewConnectClient(conn),
 	}
 	ct.ctx, ct.cancel = context.WithCancel(context.Background())
 
@@ -83,15 +81,4 @@ func (c *Connect) run(sendChan chan *connect.SendReq, broadcastChan chan *connec
 			return
 		}
 	}
-}
-
-//newConnectClient 创建连接层客户端
-func newConnectClient(addr string, c *grpc.ClientConfig) (connect.ConnectClient, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
-	defer cancel()
-	conn, err := grpc.NewRPCClientConn(ctx, c, addr)
-	if err != nil {
-		return nil, err
-	}
-	return connect.NewConnectClient(conn), err
 }

@@ -1,0 +1,22 @@
+app:
+  JwtSecret: UCAYyw9S5Q9oS2Bh1GhXZZmOawfiGSZXbuYR6KcYvidfhoGOcwsk8zb7vwpsd37o
+mysql:
+  Name: center                     # 数据库名称
+  Addr: db:3306                    # 如果是 docker,可以替换为 对应的服务名称，eg: db:3306
+  UserName: root
+  Password: 123456
+  Debug: false                     # 是否打印SQL日志
+redis:
+  Addr: redis:6379
+  Password: ""
+registry:
+  Name: consul
+  Host: consul:8500
+logger:
+  Level: DEBUG
+  Writers: file,console
+trace:
+  Enable: true
+  Jaeger:
+    SamplingServerURL: "http://jaeger:5778/sampling"
+    LocalAgentHostPort: "jaeger:6831"

@@ -1,0 +1,86 @@
+app:
+  Name: chat_connect
+  Host: 127.0.0.1
+  ServerID: connect-1  #服务器id必须唯一，多开时，默认生成随机唯一码
+  Debug: true
+  Env: dev
+tcp:
+  Port: 9060
+  MaxIpLimit: 0
+  MaxConn: 36000
+  Keepalive: false
+  HandshakeTimeout: 5s
+  SendBuf: 4096
+  ReceiveBuf: 4096
+  MaxPacketSize: 4096
+  WorkerPoolSize: 10
+  MaxWorkerTaskLen: 256
+  MaxMsgChanLen: 256        #SendBuffMsg发送消息的缓冲最大长度
+  BucketSize: 10            #连接管理器个数
+ws:
+  Port: 9070                #当前服务器主机监听端口号
+  MaxIpLimit: 0             #单IP最大连接限制 默认 0 不限制
+  WriteWait: 10s            #写入客户端超时
+  PongWait: 60s             #读取下一个Pong消息超时
+  PingPeriod: 54s           #ping时间间隔
+  MaxPacketSize: 4096       #都需数据包的最大值
+  ReadBufferSize: 4096      #接受缓冲区
+  WriteBufferSize: 4096     #发送缓冲区
+  MaxConn: 36000            #当前服务器主机允许的最大连接数
+  WorkerPoolSize: 10        #业务工作Worker池的数量
+  MaxWorkerTaskLen: 256     #业务工作Worker对应负责的任务队列最大任务存储数量
+  MaxMsgChanLen: 256        #SendBuffMsg发送消息的缓冲最大长度
+  BucketSize: 16            #连接管理器个数
+logger:
+  Development: false
+  DisableCaller: false
+  Encoding: json                          # json or console
+  Level: INFO                             # 日志级别，DEBUG, INFO, WARN, ERROR, FATAL
+  Name: chat                              # 应用名称
+  Writers: file                           # 有2个可选项：file,console 选择file会将日志记录到logger_file指定的日志文件中，选择console会将日志输出到标准输出，当然也可以两者同时选择
+  LoggerFile: ./logs/chat.log             # 日志文件
+  LoggerWarnFile: ./logs/chat.warn.log
+  LoggerErrorFile: ./logs/chat.err.log
+grpcServer:
+  Network: tcp
+  Port: 20005
+  QPSLimit: 100
+  Timeout: 5s             #处理超时
+  IdleTimeout: 15s        #如果客户端闲置 x 秒，发送GOAWAY
+  MaxLifeTime: 30s        #如果任何连接仍然存在超过 x 秒，发送GOAWAY
+  ForceCloseWait: 5s      #在强行关闭连接之前，等待 x 秒钟，以使挂起的RPC完成
+  KeepAliveInterval: 5s   #如果客户端闲置 x 秒钟，对其进行ping操作，以确保连接仍处于活动状态
+  KeepAliveTimeout: 1s    #假设连接中断，等待 x 秒钟以进行ping确认
+grpcClient:
+  ServiceName: center
+  Timeout: 5s
+  QPSLimit: 100
+  KeepAliveTime: 15s
+  KeepAliveTimeout: 1s
+registry:
+  Name: consul
+  Host: 127.0.0.1:8500
+trace:
+  # trace config
+  TraceAgent: jaeger
+  Enable: false
+  Zipkin:
+    HTTPEndpoint: "http://127.0.0.1:9411/api/v2/spans"
+    SameSpan: false
+    ID128Bit: true
+    SampleRate: "1.0"
+  Jaeger:
+    SamplingServerURL: "http://127.0.0.1:5778/sampling"
+    SamplingType: "const"
+    SamplingParam: "1.0"
+    LocalAgentHostPort: "127.0.0.1:6831"
+    Propagation: "jaeger"
+    Gen128Bit: true
+    TraceContextHeaderName: "uber-trace-id"
+    CollectorEndpoint: ""
+    CollectorUser: ""
+    CollectorPassword: ""
+  # Elastic, only useful when TraceAgent is elastic
+  Elastic:
+    ServerURL: "http://127.0.0.1:8200"
+    SecretToken: ""

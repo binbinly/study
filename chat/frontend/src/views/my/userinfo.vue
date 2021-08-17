@@ -136,7 +136,7 @@ export default {
       }).then(() => {
         this.$store.commit('updateUser', {
           k: 'nickname',
-          v: this.confirmText
+          v: this.nickname
         })
         this.show = false
         this.user.nickname = this.nickname

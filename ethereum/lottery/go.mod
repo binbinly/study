@@ -3,6 +3,7 @@ module lottery
 go 1.15
 
 require (
-	github.com/astaxie/beego v1.12.3 // indirect
-	github.com/ethereum/go-ethereum v1.10.6
+	github.com/astaxie/beego v1.12.3
+	github.com/ethereum/go-ethereum v1.10.8
+	github.com/gorilla/websocket v1.4.2
 )

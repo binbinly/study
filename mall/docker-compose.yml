@@ -1,0 +1,117 @@
+# yaml 配置
+# 官方文档：https://docs.docker.com/compose/compose-file/
+version: "3.7"
+
+services:
+  frontend:
+    container_name: mall_frontend
+    build: frontend/.
+    restart: on-failure
+    volumes:
+      - /var/log/nginx:/var/log/nginx
+    ports:
+      - 80:80
+    command: nginx -g 'daemon off';
+
+  admin:
+    container_name: mall_admin
+    build: admin/.
+    restart: on-failure
+    ports:
+      - 8000:8000
+    networks:
+      - mall
+    command: --host 0.0.0.0 -q
+
+  app:
+    container_name: mall_api
+    build: .
+    restart: on-failure
+    depends_on:
+      - db
+      - redis
+    links:
+      - db
+      - redis
+    ports:
+      - 9052:9052
+    networks:
+      - mall
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9052/health"]   # 用于健康检查的指令
+      interval: 1m30s   # 间隔时间
+      timeout: 10s  # 超时时间
+      retries: 3    # 重试次数
+      start_period: 40s # 启动多久后开始检查
+    command: mall server -c ./config/docker.yml
+
+  db:
+    container_name: mysql_container
+    image: mysql:5.7.34
+    restart: on-failure
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    # 参考：https://hub.docker.com/_/Mysql?tab=description&page=1&ordering=last_updated
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: mall
+      MYSQL_USER: mall
+      MYSQL_PASSWORD: 123456
+      TZ: Asia/Shanghai
+    # 解决外部无法访问 for mysql
+    command: [
+        '--character-set-server=utf8',
+        '--collation-server=utf8_unicode_ci',
+        '--default-authentication-plugin=mysql_native_password'
+    ]
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1" ]   # 用于健康检查的指令
+      timeout: 20s  # 超时时间
+      retries: 10   # 重试次数
+      start_period: 40s # 启动多久后开始检查
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./deploy/mysql/my.cnf:/etc/my.cnf
+      - ./deploy/mysql/init/:/docker-entrypoint-initdb.d/
+    networks:
+      - mall
+
+  redis:
+    container_name: redis_container
+    image: redis:latest
+    restart: on-failure
+    ports:
+      - "6379:6379"
+    networks:
+      - mall
+    volumes:
+      - redis_data:/var/lib/redis
+      - ./deploy/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    # 优先使用命令行参数，期次是redis.conf中的参数
+    command: redis-server /usr/local/etc/redis/redis.conf
+
+  # 配置参考：https://docs.min.io/docs/minio-docker-quickstart-guide.html
+  minio:
+    container_name: minio_container
+    image: minio/minio
+    restart: on-failure
+    environment:
+      - MINIO_ROOT_USER=K3AVR09Y7WH8JQPG
+      - MINIO_ROOT_PASSWORD=h1LnvfuEWUqZ3GiKDAOs2SMBz9JYjVabR0N5XkQeFP6Hlc4wptTm8Igoyr7dCx
+    ports:
+      - 9000:9000
+    volumes:
+      - minio_data:/data
+    command: server /data
+
+
+networks:
+  mall:
+    driver: "bridge"
+
+volumes:
+  mysql_data:
+  redis_data:
+  minio_data:

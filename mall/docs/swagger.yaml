@@ -1,0 +1,1518 @@
+basePath: /v1
+definitions:
+  app.Response:
+    properties:
+      code:
+        type: integer
+      data:
+        type: object
+      msg:
+        type: string
+    type: object
+  cart.AddParams:
+    properties:
+      goods_id:
+        description: 商品id
+        type: integer
+      num:
+        description: 购买数量
+        type: integer
+      sku_id:
+        description: sku id
+        type: integer
+    required:
+    - goods_id
+    - num
+    type: object
+  cart.DelParams:
+    properties:
+      id:
+        description: 购物车id
+        type: string
+    required:
+    - id
+    type: object
+  cart.EditNumParams:
+    properties:
+      id:
+        description: 购物车id
+        type: string
+      num:
+        description: 商品数量
+        type: integer
+    required:
+    - id
+    - num
+    type: object
+  cart.EditParams:
+    properties:
+      id:
+        description: 购物车id
+        type: string
+      num:
+        description: 商品数量
+        type: integer
+      sku_id:
+        description: sku id
+        type: integer
+    required:
+    - id
+    - num
+    - sku_id
+    type: object
+  goods.SearchParams:
+    properties:
+      cid:
+        description: 分类ID
+        type: integer
+      field:
+        description: 排序字段
+        type: string
+      keyword:
+        description: 搜索关键词
+        type: string
+      order:
+        description: 排序方式
+        type: string
+      price:
+        description: 价格 0,100
+        type: string
+      t:
+        description: 1=最新，2=最热
+        type: integer
+    type: object
+  model.AppNoticeModel:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: integer
+      id:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: integer
+    type: object
+  model.CartModel:
+    properties:
+      cover:
+        description: 图片
+        type: string
+      goods_id:
+        description: 商品id
+        type: integer
+      goods_name:
+        description: 商品名
+        type: string
+      id:
+        description: ID
+        type: string
+      num:
+        description: 数量
+        type: integer
+      price:
+        description: 商品价格
+        type: integer
+      sku_id:
+        description: sku
+        type: integer
+      sku_name:
+        description: sku名称
+        type: string
+      u_time:
+        description: 更新时间
+        type: integer
+    type: object
+  model.ConfigPayList:
+    properties:
+      address:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.Coupon:
+    properties:
+      desc:
+        type: string
+      end_at:
+        type: integer
+      id:
+        type: integer
+      min_price:
+        type: number
+      name:
+        type: string
+      start_at:
+        type: integer
+      status:
+        type: integer
+      type:
+        type: integer
+      value:
+        type: number
+    type: object
+  model.GoodsCategory:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      pid:
+        type: integer
+    type: object
+  model.GoodsDetail:
+    properties:
+      attrs:
+        additionalProperties:
+          type: string
+        type: object
+      banner_url:
+        items:
+          type: string
+        type: array
+      cat_id:
+        type: integer
+      cover:
+        type: string
+      discount:
+        type: integer
+      id:
+        type: integer
+      intro:
+        type: string
+      main_url:
+        items:
+          type: string
+        type: array
+      original_price:
+        type: number
+      price:
+        type: number
+      review_count:
+        type: integer
+      sale_count:
+        type: integer
+      sku_attrs:
+        items:
+          $ref: '#/definitions/model.GoodsSkuAttr'
+        type: array
+      sku_many:
+        type: integer
+      skus:
+        items:
+          $ref: '#/definitions/model.GoodsSku'
+        type: array
+      stock:
+        type: integer
+      title:
+        type: string
+      unit:
+        type: string
+    type: object
+  model.GoodsList:
+    properties:
+      cover:
+        type: string
+      id:
+        type: integer
+      intro:
+        type: string
+      original_price:
+        type: number
+      price:
+        type: number
+      title:
+        type: string
+    type: object
+  model.GoodsSku:
+    properties:
+      attrs:
+        type: string
+      id:
+        type: integer
+      original_price:
+        type: number
+      price:
+        type: number
+      stock:
+        type: integer
+      values:
+        type: string
+    type: object
+  model.GoodsSkuAttr:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      values:
+        items:
+          type: integer
+        type: array
+    type: object
+  model.Order:
+    properties:
+      address:
+        $ref: '#/definitions/model.OrderAddress'
+      amount:
+        type: number
+      coupon_amount:
+        type: number
+      created_at:
+        type: integer
+      goods:
+        items:
+          $ref: '#/definitions/model.OrderGoods'
+        type: array
+      id:
+        type: integer
+      order_no:
+        type: string
+      pay_amount:
+        type: number
+      pay_at:
+        type: integer
+      pay_status:
+        type: integer
+      pay_type:
+        type: integer
+      status:
+        type: integer
+      total_price:
+        type: number
+      user_note:
+        type: string
+    type: object
+  model.OrderAddress:
+    properties:
+      area:
+        type: string
+      detail:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
+  model.OrderGoods:
+    properties:
+      cover:
+        description: 图片
+        type: string
+      goods_id:
+        description: 商品id
+        type: integer
+      goods_name:
+        description: 商品名
+        type: string
+      num:
+        description: 数量
+        type: integer
+      price:
+        description: 商品价格
+        type: number
+      sku_name:
+        description: sku名称
+        type: string
+    type: object
+  model.UserAddress:
+    properties:
+      area_code:
+        type: integer
+      city:
+        type: string
+      county:
+        type: string
+      detail:
+        type: string
+      id:
+        type: integer
+      is_default:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+      province:
+        type: string
+    type: object
+  model.UserToken:
+    properties:
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/model.Userinfo'
+    type: object
+  model.Userinfo:
+    properties:
+      avatar:
+        type: string
+      id:
+        type: integer
+      nickname:
+        type: string
+      username:
+        type: string
+    type: object
+  order.CommentParams:
+    properties:
+      content:
+        description: 退款理由
+        type: string
+      ids:
+        description: 商品id
+        items:
+          type: integer
+        type: array
+      order_no:
+        description: 订单号
+        type: string
+      rate:
+        description: 评分
+        type: integer
+    required:
+    - content
+    - ids
+    - order_no
+    - rate
+    type: object
+  order.NoParams:
+    properties:
+      order_no:
+        description: 订单号
+        type: string
+    required:
+    - order_no
+    type: object
+  order.NotifyParams:
+    properties:
+      amount:
+        description: 支付金额
+        type: integer
+      order_no:
+        description: 订单号
+        type: string
+      p_type:
+        description: 支付方式
+        type: integer
+      trade_no:
+        description: 交易号
+        type: string
+      trans_hash:
+        description: eth交易hash
+        type: string
+    required:
+    - amount
+    - order_no
+    - p_type
+    - trade_no
+    - trans_hash
+    type: object
+  order.RefundParams:
+    properties:
+      content:
+        description: 退款理由
+        type: string
+      order_no:
+        description: 订单号
+        type: string
+    required:
+    - content
+    - order_no
+    type: object
+  order.SubmitGoodsParams:
+    properties:
+      address_id:
+        description: 收货地址id
+        type: integer
+      coupon_id:
+        description: 优惠券id
+        type: integer
+      goods_id:
+        description: 商品id
+        type: integer
+      num:
+        description: 购买数量
+        type: integer
+      remark:
+        description: 订单备注
+        type: string
+      sku_id:
+        description: sku id
+        type: integer
+    required:
+    - address_id
+    - goods_id
+    - num
+    type: object
+  order.SubmitParams:
+    properties:
+      address_id:
+        description: 收货地址id
+        type: integer
+      coupon_id:
+        description: 优惠券id
+        type: integer
+      ids:
+        description: 购物车id列表
+        items:
+          type: string
+        type: array
+      remark:
+        description: 订单备注
+        type: string
+    required:
+    - address_id
+    - ids
+    type: object
+  user.AddressAddParams:
+    properties:
+      area_code:
+        type: integer
+      city:
+        type: string
+      county:
+        type: string
+      detail:
+        type: string
+      is_default:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+      province:
+        type: string
+    required:
+    - area_code
+    - city
+    - county
+    - detail
+    - name
+    - phone
+    - province
+    type: object
+  user.AddressEditParams:
+    properties:
+      area_code:
+        type: integer
+      city:
+        type: string
+      county:
+        type: string
+      detail:
+        type: string
+      id:
+        type: integer
+      is_default:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+      province:
+        type: string
+    required:
+    - area_code
+    - city
+    - county
+    - detail
+    - id
+    - name
+    - phone
+    - province
+    type: object
+  user.UpdateParams:
+    properties:
+      avatar:
+        description: 头像
+        example: http://example
+        type: string
+      nickname:
+        description: 昵称
+        example: test
+        type: string
+      sign:
+        description: 签名
+        example: test
+        type: string
+    type: object
+host: 127.0.0.1:9052
+info:
+  contact:
+    email: test@test.com
+    name: test
+    url: http://www.swagger.io/support
+  description: mall api
+  title: mall docs api
+  version: "1.0"
+paths:
+  /address/add:
+    post:
+      consumes:
+      - application/json
+      description: 添加收货地址
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      - description: sku
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/user.AddressAddParams'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":{}}'
+          schema:
+            type: string
+      summary: 添加收货地址
+      tags:
+      - 收货地址
+  /address/del:
+    post:
+      consumes:
+      - application/json
+      description: 删除收货地址
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      - description: id
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":{}}'
+          schema:
+            type: string
+      summary: 删除收货地址
+      tags:
+      - 收货地址
+  /address/edit:
+    post:
+      consumes:
+      - application/json
+      description: 修改收货地址
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      - description: sku
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/user.AddressEditParams'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":{}}'
+          schema:
+            type: string
+      summary: 修改收货地址
+      tags:
+      - 收货地址
+  /address/list:
+    get:
+      consumes:
+      - application/json
+      description: 用户收货地址
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 调用成功结构
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.UserAddress'
+                  type: array
+              type: object
+      summary: 用户收货地址
+      tags:
+      - 收货地址
+  /area:
+    get:
+      consumes:
+      - application/json
+      description: 三级省市县
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":{"province":{},"city":{},"county":{}}}'
+          schema:
+            type: string
+      summary: 三级省市县
+      tags:
+      - 公共
+  /cart/add:
+    post:
+      consumes:
+      - application/json
+      description: 添加购物车
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      - description: sku
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/cart.AddParams'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 调用成功结构
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.CartModel'
+              type: object
+      summary: 添加购物车
+      tags:
+      - 购物车
+  /cart/del:
+    post:
+      consumes:
+      - application/json
+      description: 删除购物车
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      - description: del
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/cart.DelParams'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":{}}'
+          schema:
+            type: string
+      summary: 删除购物车
+      tags:
+      - 购物车
+  /cart/edit:
+    post:
+      consumes:
+      - application/json
+      description: 更新购物车
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      - description: sku
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/cart.EditParams'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 调用成功结构
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.CartModel'
+              type: object
+      summary: 更新购物车
+      tags:
+      - 购物车
+  /cart/edit_num:
+    post:
+      consumes:
+      - application/json
+      description: 更新购物车商品数量
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      - description: num
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/cart.EditNumParams'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":{}}'
+          schema:
+            type: string
+      summary: 更新购物车商品数量
+      tags:
+      - 购物车
+  /cart/empty:
+    get:
+      consumes:
+      - application/json
+      description: 清空购物车
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":{}}'
+          schema:
+            type: string
+      summary: 清空购物车
+      tags:
+      - 购物车
+  /cart/list:
+    get:
+      consumes:
+      - application/json
+      description: 我的购物车
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 调用成功结构
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.CartModel'
+                  type: array
+              type: object
+      summary: 我的购物车
+      tags:
+      - 购物车
+  /coupon/draw:
+    get:
+      consumes:
+      - application/json
+      description: 领取优惠券
+      parameters:
+      - description: 优惠券id
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":{}}'
+          schema:
+            type: string
+      summary: 领取优惠券
+      tags:
+      - 优惠券
+  /coupon/list:
+    get:
+      consumes:
+      - application/json
+      description: 优惠券列表
+      parameters:
+      - description: 分页
+        in: body
+        name: p
+        schema:
+          type: integer
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 调用成功结构
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Coupon'
+                  type: array
+              type: object
+      summary: 优惠券列表
+      tags:
+      - 优惠券
+  /coupon/my:
+    get:
+      consumes:
+      - application/json
+      description: 我的优惠券
+      parameters:
+      - description: 分页
+        in: body
+        name: p
+        schema:
+          type: integer
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 调用成功结构
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Coupon'
+                  type: array
+              type: object
+      summary: 我的优惠券
+      tags:
+      - 优惠券
+  /goods/category:
+    get:
+      consumes:
+      - application/json
+      description: 所有商品分类 - 树形结构
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 调用成功结构
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.GoodsCategory'
+                  type: array
+              type: object
+      summary: 所有商品分类
+      tags:
+      - 商品
+  /goods/detail:
+    get:
+      consumes:
+      - application/json
+      description: 商品详情
+      parameters:
+      - description: 商品id
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 调用成功结构
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.GoodsDetail'
+                  type: array
+              type: object
+      summary: 商品详情
+      tags:
+      - 商品
+  /goods/list:
+    get:
+      consumes:
+      - application/json
+      description: 商品列表
+      parameters:
+      - description: 分页
+        in: body
+        name: p
+        schema:
+          type: integer
+      - description: search params
+        in: body
+        name: search
+        required: true
+        schema:
+          $ref: '#/definitions/goods.SearchParams'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 调用成功结构
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.GoodsList'
+                  type: array
+              type: object
+      summary: 商品列表
+      tags:
+      - 商品
+  /goods/sku:
+    get:
+      consumes:
+      - application/json
+      description: 商品sku
+      parameters:
+      - description: 商品id
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":{"id":1,"stock":"0","sku_many":1,"skus":[],"sku_attrs":[]}}'
+          schema:
+            type: string
+      summary: 商品sku
+      tags:
+      - 商品
+  /home:
+    get:
+      consumes:
+      - application/json
+      description: 首页数据
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":{"id":1,"name":"a","list":[]}}'
+          schema:
+            type: string
+      summary: 首页数据
+      tags:
+      - 公共
+  /home_setting:
+    get:
+      consumes:
+      - application/json
+      description: 首页分类数据
+      parameters:
+      - description: 分类id
+        in: body
+        name: cid
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":["type":1,"data":{}]}'
+          schema:
+            type: string
+      summary: 首页分类数据
+      tags:
+      - 公共
+  /hot_keyword:
+    get:
+      consumes:
+      - application/json
+      description: 热词
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 调用成功结构
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.Response'
+            - properties:
+                data:
+                  items:
+                    type: string
+                  type: array
+              type: object
+      summary: 热词
+      tags:
+      - 公共
+  /login:
+    post:
+      description: 通过用户名密码登录
+      parameters:
+      - description: 用户名
+        in: body
+        name: username
+        required: true
+        schema:
+          type: string
+      - description: 密码
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 调用成功结构
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.UserToken'
+              type: object
+      summary: 用户登录接口
+      tags:
+      - 用户
+  /logout:
+    get:
+      description: 用户注销登录
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":{}}'
+          schema:
+            type: string
+      summary: 用户注销登录
+      tags:
+      - 用户
+  /notice:
+    get:
+      consumes:
+      - application/json
+      description: 公告
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 调用成功结构
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.AppNoticeModel'
+                  type: array
+              type: object
+      summary: 公告
+      tags:
+      - 公共
+  /order/cancel:
+    post:
+      consumes:
+      - application/json
+      description: 取消订单
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      - description: del
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/order.NoParams'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":{}}'
+          schema:
+            type: string
+      summary: 取消订单
+      tags:
+      - 订单
+  /order/comment:
+    post:
+      consumes:
+      - application/json
+      description: 评价
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      - description: order
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/order.CommentParams'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":{}}'
+          schema:
+            type: string
+      summary: 评价
+      tags:
+      - 订单
+  /order/detail:
+    get:
+      consumes:
+      - application/json
+      description: 订单详情
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      - description: 订单id
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 调用成功结构
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Order'
+                  type: array
+              type: object
+      summary: 订单详情
+      tags:
+      - 订单
+  /order/goods_submit:
+    post:
+      consumes:
+      - application/json
+      description: 商品直接提交订单
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      - description: order
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/order.SubmitGoodsParams'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":{}}'
+          schema:
+            type: string
+      summary: 商品提交订单
+      tags:
+      - 订单
+  /order/list:
+    get:
+      consumes:
+      - application/json
+      description: 订单列表
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      - description: 分页
+        in: body
+        name: p
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 调用成功结构
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.GoodsList'
+                  type: array
+              type: object
+      summary: 订单列表
+      tags:
+      - 订单
+  /order/notify:
+    post:
+      consumes:
+      - application/json
+      description: 支付成功回调
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      - description: order
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/order.NotifyParams'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":{}}'
+          schema:
+            type: string
+      summary: 支付成功回调
+      tags:
+      - 订单
+  /order/receipt:
+    post:
+      consumes:
+      - application/json
+      description: 确认收货
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      - description: order
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/order.NoParams'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":{}}'
+          schema:
+            type: string
+      summary: 确认收货
+      tags:
+      - 订单
+  /order/refund:
+    post:
+      consumes:
+      - application/json
+      description: 退款
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      - description: order
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/order.RefundParams'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":{}}'
+          schema:
+            type: string
+      summary: 退款
+      tags:
+      - 订单
+  /order/submit:
+    post:
+      consumes:
+      - application/json
+      description: 提交订单
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      - description: order
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/order.SubmitParams'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":{}}'
+          schema:
+            type: string
+      summary: 提交订单
+      tags:
+      - 订单
+  /pay_list:
+    get:
+      consumes:
+      - application/json
+      description: 支付列表
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: 调用成功结构
+          schema:
+            allOf:
+            - $ref: '#/definitions/app.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.ConfigPayList'
+                  type: array
+              type: object
+      summary: 支付列表
+      tags:
+      - 公共
+  /register:
+    post:
+      description: 用户注册
+      parameters:
+      - description: 手机号
+        in: body
+        name: phone
+        required: true
+        schema:
+          type: string
+      - description: 用户名
+        in: body
+        name: username
+        required: true
+        schema:
+          type: string
+      - description: 密码
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      - description: 确认密码
+        in: body
+        name: confirm_password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":{}}'
+          schema:
+            type: string
+      summary: 注册
+      tags:
+      - 用户
+  /user/edit:
+    post:
+      consumes:
+      - application/json
+      description: Update a user by ID
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: Token
+        required: true
+        type: string
+      - description: The user info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.UpdateParams'
+      produces:
+      - application/json
+      responses:
+        "0":
+          description: '{"code":0,"msg":"OK","data":{}}'
+          schema:
+            type: string
+      summary: Update a user info by the user identifier
+      tags:
+      - 用户
+swagger: "2.0"

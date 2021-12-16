@@ -1,0 +1,13 @@
+seckill:
+  dfs:
+    Endpoint: http://127.0.0.1:9000
+    Bucket: group1
+  redis:
+    Addr: 127.0.0.1:6379
+    Password: ""
+    DB: 0
+    MinIdleConn: 30
+    DialTimeout: 5
+    ReadTimeout: 3
+    WriteTimeout: 3
+    PoolSize: 500

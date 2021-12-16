@@ -1,0 +1,144 @@
+/**
+ * 中心服务
+ */
+syntax = "proto3";
+
+package center;
+
+option go_package = "./proto;common";
+
+import "google/protobuf/empty.proto";
+import "global/validate/validate.proto";
+
+/**
+ * 用户中心服务接口定义
+ */
+service User {
+  /// 用户注册
+  rpc Register(RegisterReq) returns (RegisterReply);
+  /// 用户名密码登录
+  rpc UsernameLogin(UsernameReq) returns (UserToken);
+  /// 手机号登录
+  rpc PhoneLogin(PhoneReq) returns (UserToken);
+  /// 修改用户信息
+  rpc Edit(EditReq) returns (google.protobuf.Empty);
+  /// 修改密码
+  rpc EditPwd(EditPwdReq) returns (google.protobuf.Empty);
+  /// 获取用户信息
+  rpc Info(UIDReq) returns (Userinfo);
+  /// 用户登出
+  rpc Logout(UIDReq) returns (google.protobuf.Empty);
+  /// 用户上线，建立长连接
+  rpc Online(OnlineReq) returns (OnlineReply);
+  /// 用户下线，断开长连接
+  rpc Offline(OfflineReq) returns (google.protobuf.Empty);
+  /// 获取用户长连接所在的服务器ID
+  rpc ServerID(UIDReq) returns(ServerIDReply);
+  /// 批量获取长连接所在的服务器ID
+  rpc BatchServersIDs(UIDsReq) returns(ServerIDsReply);
+}
+
+// ---- 请求结构 ----
+
+// 注册请求结构
+message RegisterReq {
+  string username = 1 [(validate.rules).string = {min_len: 4, max_len: 20}]; /// 用户名
+  string password = 2 [(validate.rules).string = {min_len: 6, max_len: 20}]; /// 密码
+  int64 phone = 3 [(validate.rules).int64.gt = 0];     /// 手机号
+}
+
+// 用户名登录请求结构
+message UsernameReq {
+  string username = 1 [(validate.rules).string = {min_len: 4, max_len: 20}]; /// 用户名
+  string password = 2 [(validate.rules).string = {min_len: 6, max_len: 20}]; /// 密码
+}
+
+// 手机号登录请求结构
+message PhoneReq {
+  int64 phone = 1 [(validate.rules).int64.gt = 0];  /// 手机号
+}
+
+// 用户信息修改请求结构
+message EditReq {
+  int64 id = 1 [(validate.rules).int64.gt = 0];     /// 用户id
+  bytes content = 2 [(validate.rules).bytes.min_len = 3];  /// json信息体
+}
+
+// 用户密码修改请求结构
+message EditPwdReq {
+  int64 id = 1 [(validate.rules).int64.gt = 0];     /// 用户id
+  string old_pwd = 2 [(validate.rules).string = {min_len: 6, max_len: 20}]; /// 原密码
+  string pwd = 3 [(validate.rules).string = {min_len: 6, max_len: 20}];   /// 新密码
+}
+
+// 用户id请求结构
+message UIDReq {
+  int64 id = 1 [(validate.rules).int64.gt = 0]; /// 用户id
+}
+
+// 用户id数组结构
+message UIDsReq {
+  repeated int64 ids = 1 [(validate.rules).repeated.min_items = 1];  /// 用户id数组
+}
+
+// 用户上线请求结构
+message OnlineReq {
+  string server = 1 [(validate.rules).string.min_len = 3];  /// 服务器id
+  string token = 2 [(validate.rules).string.min_len = 3];   /// 用户令牌
+}
+
+// 用户下线请求结构
+message OfflineReq {
+  int64 uid = 1 [(validate.rules).int64.gt = 0];    /// 用户id
+  string key = 2;   /// 键
+  string server = 3;  /// 服务器id
+}
+
+// ---- 响应结构 ----
+
+// 注册响应结构
+message RegisterReply {
+  int64 id = 1; /// 用户id
+}
+
+// 用户上线响应结构
+message OnlineReply {
+  int64 uid = 1;    /// 用户id
+  string key = 2;   /// 键
+}
+
+// 获取用户所有服务器id响应结构
+message ServerIDReply {
+  string serverID = 1;
+}
+
+// 批量获取用户所有服务器id响应结构
+message ServerIDsReply {
+  repeated string serverIDs = 1;
+}
+
+// ---- 基础数据结构定义 ----
+
+// 用户令牌信息
+message UserToken{
+  Userinfo user = 1;
+  string token = 2;   /// 令牌
+}
+
+// 用户基础信息
+message Userinfo{
+  int64 id = 1;         /// 用户id
+  string username = 2;  /// 用户名
+  string nickname = 3;  /// 昵称
+  int64 phone = 4;     /// 手机号
+  string email = 5;     /// 邮箱
+  string sign = 6;      /// 用户签名
+  string avatar = 7;    /// 用户头像
+  string area = 8;      /// 地区信息
+  enum Gender {
+    MALE = 0;     /// 男
+    FEMALE = 1;   /// 女
+    SECRET = 2;   /// 保密
+  }
+  Gender gender = 9;    /// 性别
+}

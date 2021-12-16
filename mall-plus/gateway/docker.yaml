@@ -1,0 +1,14 @@
+app:
+  Name: gateway
+  Version: latest
+  JwtSecret: cMq8a95gPpjrSZ3knIlszKFhLVxfE2CmTW6Gt0DuHBoYRdyXwJ41AbOU7iQveN
+  Debug: true
+http:
+  Addr: :9520
+  ReadTimeout: 5s
+  WriteTimeout: 5s
+registry:
+  Name: consul
+  Addr: consul:8500
+trace:
+  Endpoint: http://jaeger:14268/api/traces

@@ -1,0 +1,216 @@
+/**
+ * 订单服务
+ */
+syntax = "proto3";
+
+package order;
+
+option go_package = "./proto;gateway";
+
+import "google/api/annotations.proto";
+import "global/validate/validate.proto";
+import "common/common.proto";
+
+/**
+ * 订单服务接口定义
+ */
+service Order {
+  /// 从购物车提交订单
+  rpc SubmitOrder(SubmitReq) returns (OrderIDReply){
+    option (google.api.http) = {
+      post: "/v1/order/submit"
+      body: "*"
+    };
+  };
+  /// 商品直接提交订单
+  rpc SubmitSkuOrder(SkuSubmitReq) returns (OrderIDReply){
+    option (google.api.http) = {
+      post: "/v1/order/sku_submit"
+      body: "*"
+    };
+  };
+  /// 订单详情
+  rpc OrderDetail(OrderIDReq) returns (OrderInfoReply){
+    option (google.api.http) = {
+      get: "/v1/order/detail/{order_id}"
+    };
+  };
+  /// 订单取消
+  rpc OrderCancel(OrderIDReq) returns (common.SuccessEmptyReply){
+    option (google.api.http) = {
+      post: "/v1/order/cancel"
+      body: "*"
+    };
+  };
+  /// 订单列表
+  rpc OrderList(ListReq) returns (ListReply){
+    option (google.api.http) = {
+      get: "/v1/order/list"
+      additional_bindings {
+        get: "/v1/order/list/status/{status}/p/{page}"
+      }
+    };
+  };
+  /// 订单支付成功回调
+  rpc OrderPayNotify(PayNotifyReq) returns (common.SuccessEmptyReply){
+    option (google.api.http) = {
+      post: "/v1/order/notify"
+      body: "*"
+    };
+  };
+  /// 订单退款
+  rpc OrderRefund(RefundReq) returns (common.SuccessEmptyReply){
+    option (google.api.http) = {
+      post: "/v1/order/refund"
+      body: "*"
+    };
+  };
+  /// 订单确认收货
+  rpc OrderConfirmReceipt(OrderIDReq) returns (common.SuccessEmptyReply){
+    option (google.api.http) = {
+      post: "/v1/order/receipt"
+      body: "*"
+    };
+  };
+  /// 订单评价
+  rpc OrderComment(CommentReq) returns (common.SuccessEmptyReply){
+    option (google.api.http) = {
+      post: "/v1/order/comment"
+      body: "*"
+    };
+  };
+}
+
+// ---- 请求结构 ----
+
+//购物车提交订单请求结构
+message SubmitReq {
+  repeated int64 sku_ids = 1 [(validate.rules).repeated.min_items = 1]; /// 购物车sku_id列表
+  int64 address_id = 2 [(validate.rules).int64.gt = 0]; /// 收货地址id
+  int64 coupon_id = 3;  /// 优惠券id
+  string note = 4;  /// 用户备注
+}
+
+//商品直接提交订单请求结构
+message SkuSubmitReq {
+  int64 sku_id = 1 [(validate.rules).int64.gt = 0]; /// sku_id
+  int64 address_id = 2 [(validate.rules).int64.gt = 0]; /// 收货地址id
+  int64 coupon_id = 3;  /// 优惠券id
+  string note = 4;  /// 用户备注
+  int32 num = 5 [(validate.rules).int32.gt = 0]; /// 购买数量
+}
+
+//订单列表请求结构
+message ListReq {
+  int32 status = 1; /// 订单状态
+  int32 page = 2; /// 订单页码
+}
+
+//支付回调请求结构
+message PayNotifyReq {
+  int64 pay_amount = 1 [(validate.rules).int64.gt = 0]; ///支付金额
+  int64 pay_type = 2 [(validate.rules).int64.gt = 0]; ///支付类型
+  string order_no = 3 [(validate.rules).string = {min_len: 16, max_len: 30}];  ///订单号
+  string trade_no = 4 [(validate.rules).string = {min_len: 16, max_len: 64}];  ///交易号
+  string trans_hash = 5; ///交易hash
+}
+
+//申请退款请求结构
+message RefundReq {
+  int64 order_id = 1 [(validate.rules).int64.gt = 0]; ///订单id
+  string content = 2 [(validate.rules).string = {min_len: 5, max_len: 255}]; ///理由
+}
+
+//评价请求结构
+message CommentReq {
+  int32 star = 1 [(validate.rules).int32.gt = 0]; ///评分
+  int64 order_id = 2 [(validate.rules).int64.gt = 0];  ///订单id
+  string content = 3 [(validate.rules).string = {min_len: 5, max_len: 255}]; ///评价内容
+  string resources = 4; ///评论资源
+  repeated int64 sku_ids = 5 [(validate.rules).repeated.min_items = 1]; /// 评价商品
+}
+
+//订单id结构
+message OrderIDReq {
+  int64 order_id = 1 [(validate.rules).int64.gt = 0]; ///订单id
+}
+
+// ---- 响应结构 ----
+
+//订单列表响应结构
+message ListReply {
+  int32 code = 1;     /// 状态码
+  string message = 2; /// 消息
+  repeated OrderList data = 3;
+}
+
+//订单id结构
+message OrderIDReply {
+  int32 code = 1;     /// 状态码
+  string message = 2; /// 消息
+  int64 data = 3; ///订单id
+}
+
+//订单详情响应
+message OrderInfoReply {
+  int32 code = 1;     /// 状态码
+  string message = 2; /// 消息
+  OrderInfo data = 3;
+}
+
+// ---- 基础数据结构定义 ----
+
+//此处修改 int64 => int32 int64返回时转化为字符串了
+//订单详情结构
+message OrderInfo {
+  int32 id = 1; /// 订单id
+  string order_no = 2;  /// 订单号
+  string note = 3;  /// 订单会员备注
+  double total_amount = 4; /// 订单总价
+  double amount = 5;  /// 订单金额
+  double coupon_amount = 6; /// 优惠券优惠金额
+  double freight_amount = 7;  /// 运费
+  double pay_amount = 8;  /// 支付金额
+  int32 pay_type = 9; /// 支付类型
+  int32 pay_at = 10;  /// 支付时间
+  int32 create_at = 11; /// 订单创建时间
+  int32 status = 12;  /// 订单状态
+  string trade_no = 13; /// 支付交易流水号
+  string delivery_company = 14; /// 物流公司
+  string delivery_no = 15;  /// 物流单号
+  int32 integration = 16; /// 所获积分
+  int32 growth = 17;  /// 所获得成长值
+  int32 delivery_at = 18; ///发货时间
+  int32 receive_at = 19; ///确认收货时间
+  int32 comment_at = 20; ///评价时间
+  Address address = 21; ///收货地址信息
+  repeated OrderSku items = 22; /// 订单对应的商品列表
+}
+
+//订单列表结构
+message OrderList {
+  int64 id = 1; /// 订单id
+  string order_no = 2;  /// 订单号
+  double amount = 3;  /// 订单金额
+  int32 status = 4; /// 订单状态
+  int64 time = 5; /// 创建时间
+  repeated OrderSku items = 6; /// 订单对应的商品列表
+}
+
+//订单商品信息
+message OrderSku {
+  int64 sku_id = 1; /// sku_id
+  string title = 2; /// 商品标题
+  string cover = 3; /// 封面图
+  double price = 4; /// 价格
+  int32 num = 5;  /// 数量
+  string attr_value = 6; /// 销售属性值
+}
+
+//收货地址信息
+message Address {
+  string name = 1; /// 收货人
+  string phone = 2; /// 收货人手机号
+  string area = 3;  /// 地区
+  string detail = 4;  /// 详细地址
+}

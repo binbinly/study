@@ -1,0 +1,716 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "member/member.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Member"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/address/add": {
+      "post": {
+        "summary": "/ 添加收货地址",
+        "operationId": "Member_AddressAdd",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/memberAddressIDReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/memberAddressAddReq"
+            }
+          }
+        ],
+        "tags": [
+          "Member"
+        ]
+      }
+    },
+    "/v1/address/del": {
+      "post": {
+        "summary": "/ 删除收货地址",
+        "operationId": "Member_AddressDel",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/commonSuccessEmptyReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/memberAddressIDReq"
+            }
+          }
+        ],
+        "tags": [
+          "Member"
+        ]
+      }
+    },
+    "/v1/address/edit": {
+      "post": {
+        "summary": "/ 修改收货地址",
+        "operationId": "Member_AddressEdit",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/commonSuccessEmptyReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/memberAddress"
+            }
+          }
+        ],
+        "tags": [
+          "Member"
+        ]
+      }
+    },
+    "/v1/address/list": {
+      "get": {
+        "summary": "/ 收货地址列表",
+        "operationId": "Member_GetAddressList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/memberAddressReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Member"
+        ]
+      }
+    },
+    "/v1/member/edit": {
+      "post": {
+        "summary": "/ 修改会员信息",
+        "operationId": "Member_MemberEdit",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/commonSuccessEmptyReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/memberMemberEditReq"
+            }
+          }
+        ],
+        "tags": [
+          "Member"
+        ]
+      }
+    },
+    "/v1/member/edit_pwd": {
+      "post": {
+        "summary": "/ 修改密码",
+        "operationId": "Member_MemberPwdEdit",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/commonSuccessEmptyReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/memberPwdEditReq"
+            }
+          }
+        ],
+        "tags": [
+          "Member"
+        ]
+      }
+    },
+    "/v1/member/login": {
+      "post": {
+        "summary": "/ 用户名密码登录",
+        "operationId": "Member_Login",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/memberMemberTokenReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/memberLoginReq"
+            }
+          }
+        ],
+        "tags": [
+          "Member"
+        ]
+      }
+    },
+    "/v1/member/logout": {
+      "get": {
+        "summary": "/ 登出",
+        "operationId": "Member_Logout",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/commonSuccessEmptyReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Member"
+        ]
+      }
+    },
+    "/v1/member/phone_login": {
+      "post": {
+        "summary": "/ 手机号登录",
+        "operationId": "Member_PhoneLogin",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/memberMemberTokenReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/memberPhoneLoginReq"
+            }
+          }
+        ],
+        "tags": [
+          "Member"
+        ]
+      }
+    },
+    "/v1/member/profile": {
+      "get": {
+        "summary": "/ 获取会员信息",
+        "operationId": "Member_MemberProfile",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/memberMemberInfoReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Member"
+        ]
+      }
+    },
+    "/v1/member/reg": {
+      "post": {
+        "summary": "/ 注册",
+        "operationId": "Member_Register",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/commonSuccessEmptyReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/memberRegisterReq"
+            }
+          }
+        ],
+        "tags": [
+          "Member"
+        ]
+      }
+    },
+    "/v1/send_code": {
+      "post": {
+        "summary": "/ 发送短信验证码",
+        "operationId": "Member_SendCode",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/memberCodeReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/memberPhoneReq"
+            }
+          }
+        ],
+        "tags": [
+          "Member"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "commonSuccessEmptyReply": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "title": "成功响应空结构"
+    },
+    "memberAddress": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "county": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "areaCode": {
+          "type": "string",
+          "format": "int64"
+        },
+        "isDefault": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "收货地址结构"
+    },
+    "memberAddressAddReq": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "county": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "areaCode": {
+          "type": "string",
+          "format": "int64"
+        },
+        "isDefault": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "添加地址结构"
+    },
+    "memberAddressIDReply": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": "string",
+          "format": "int64"
+        }
+      },
+      "title": "收货地址id结构"
+    },
+    "memberAddressIDReq": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      },
+      "title": "收货地址id结构"
+    },
+    "memberAddressReply": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/memberAddress"
+          }
+        }
+      },
+      "title": "收货地址列表响应"
+    },
+    "memberCodeReply": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": "string"
+        }
+      },
+      "title": "发送短信响应结构"
+    },
+    "memberLoginReq": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "title": "登录请求结构"
+    },
+    "memberMemberEditReq": {
+      "type": "object",
+      "properties": {
+        "avatar": {
+          "type": "string"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "sign": {
+          "type": "string"
+        }
+      },
+      "title": "会员信息修改请求结构"
+    },
+    "memberMemberInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "username": {
+          "type": "string"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "sign": {
+          "type": "string"
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "area": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        }
+      },
+      "title": "会员基础信息"
+    },
+    "memberMemberInfoReply": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/memberMemberInfo"
+        }
+      },
+      "title": "会员信息响应结构"
+    },
+    "memberMemberToken": {
+      "type": "object",
+      "properties": {
+        "member": {
+          "$ref": "#/definitions/memberMemberInfo"
+        },
+        "token": {
+          "type": "string"
+        }
+      },
+      "title": "用户令牌信息"
+    },
+    "memberMemberTokenReply": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/memberMemberToken"
+        }
+      },
+      "title": "登录成功令牌会员信息"
+    },
+    "memberPhoneLoginReq": {
+      "type": "object",
+      "properties": {
+        "phone": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        }
+      },
+      "title": "手机号登录请求结构"
+    },
+    "memberPhoneReq": {
+      "type": "object",
+      "properties": {
+        "phone": {
+          "type": "string"
+        }
+      },
+      "title": "手机号请求结构"
+    },
+    "memberPwdEditReq": {
+      "type": "object",
+      "properties": {
+        "oldPassword": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "confirmPassword": {
+          "type": "string"
+        }
+      },
+      "title": "修改密码请求"
+    },
+    "memberRegisterReq": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "confirmPassword": {
+          "type": "string"
+        }
+      },
+      "title": "注册请求结构"
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string",
+          "description": "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+        }
+      },
+      "additionalProperties": {},
+      "description": "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(\u0026foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := \u0026pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := \u0026pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": \u003cstring\u003e,\n      \"lastName\": \u003cstring\u003e\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

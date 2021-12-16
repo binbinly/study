@@ -1,0 +1,17 @@
+type: google.api.Service
+config_version: 3
+
+http:
+  rules:
+    - selector: market.Market.GetHomeData
+      get: "/v1/app/home"
+    - selector: market.Market.GetHomeCatData
+      post: "/v1/app/home_cat"
+      body: "*"
+    - selector: market.Market.GetNoticeList
+      post: "/v1/app/notice"
+      body: "*"
+    - selector: market.Market.GetSearchData
+      get: "/v1/app/search"
+    - selector: market.Market.GetPayConfig
+      get: "/v1/app/pay"

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package warehouse;
+
+option go_package = "./proto;common";
+
+// 仓储服务消息结构
+message Event {
+  int64 order_id = 1; // 订单id
+  bool finish = 2;  //订单是否已完成
+}

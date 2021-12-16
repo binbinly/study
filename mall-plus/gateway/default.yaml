@@ -1,0 +1,39 @@
+app:
+  Name: gateway
+  Version: latest
+  JwtSecret: Your-Jwt-Secret
+  Debug: true
+http:
+  Addr: :9520
+  ReadTimeout: 5s
+  WriteTimeout: 5s
+registry:
+  Name: consul
+  Addr: 127.0.0.1:8500
+service:
+  Cart:
+    Name: mall.cart
+    Timeout: 5s
+    QPSLimit: 500
+  Market:
+    Name: mall.market
+    Timeout: 5s
+    QPSLimit: 500
+  Member:
+    Name: mall.member
+    Timeout: 5s
+    QPSLimit: 500
+  Order:
+    Name: mall.order
+    Timeout: 5s
+    QPSLimit: 500
+  Product:
+    Name: mall.product
+    Timeout: 5s
+    QPSLimit: 500
+  Seckill:
+    Name: mall.seckill
+    Timeout: 5s
+    QPSLimit: 500
+trace:
+  Endpoint: http://127.0.0.1:14268/api/traces

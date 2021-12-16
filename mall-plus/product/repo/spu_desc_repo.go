@@ -1,0 +1,26 @@
+package repo
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/pkg/errors"
+
+	"product/model"
+)
+
+//GetSpuDescBySpuID 获取spu介绍
+func (r *Repo) GetSpuDescBySpuID(ctx context.Context, spuID int64) (desc *model.SpuDescModel, err error) {
+	doKey := fmt.Sprintf("spuDesc:%d", spuID)
+	if err = r.QueryCache(ctx, doKey, &desc, func(data interface{}) error {
+		// 从数据库中获取
+		if err := r.DB.WithContext(ctx).Where("spu_id=?", spuID).First(data).Error; err != nil {
+			return errors.Wrapf(err, "[repo.spuDesc] query db")
+		}
+		return nil
+	}); err != nil {
+		return nil, errors.Wrapf(err, "[repo.spuDesc] query cache")
+	}
+
+	return
+}

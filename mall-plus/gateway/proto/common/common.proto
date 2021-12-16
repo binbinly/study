@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package common;
+
+option go_package = "gateway/proto/common;gateway";
+
+// 成功响应空结构
+message SuccessEmptyReply {
+  int32 code = 1;     /// 状态码
+  string message = 2; /// 消息
+}

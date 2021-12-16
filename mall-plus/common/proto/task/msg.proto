@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package task;
+
+option go_package = "./proto;common";
+
+// 消息格式
+message Msg {
+  enum Type {
+    // 指定用户消息
+    SEND = 0;
+    // 广播消息
+    BROADCAST = 1;
+    // 主动关闭客户端连接
+    CLOSE = 2;
+    // 历史消息
+    History = 3;
+  }
+  Type type = 1; //发送类型
+  string server = 2; //用户所在服务器id
+  string event = 3; //消息类型
+  repeated int64 userIds = 4;
+  int64 timestamp = 5;
+  bytes body = 6;
+}

@@ -1,0 +1,15 @@
+third:
+  redis:
+    Addr: 127.0.0.1:6379
+    Password: ""
+    DB: 0
+    MinIdleConn: 30
+    DialTimeout: 5
+    ReadTimeout: 3
+    WriteTimeout: 3
+    PoolSize: 500
+  sms:
+    IsReal: false  # 是否真实发送短信
+  eth:
+    NetworkUrl: ws://127.0.0.1:8546  # 网络地址，要监听 event 必须使用 ws
+    NetworkID: 15

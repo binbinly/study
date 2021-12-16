@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package order;
+
+option go_package = "./proto;common";
+
+// 订单服务秒杀消息结构
+message Event {
+  int64 member_id = 1;  /// 会员id
+  int64 sku_id = 2;     /// 商品id
+  int64 address_id = 3; /// 收货地址id
+  int32 num = 4;        /// 秒杀数量
+  int32 price = 5;      /// 秒杀价格
+  string order_no = 6;  /// 订单号
+}

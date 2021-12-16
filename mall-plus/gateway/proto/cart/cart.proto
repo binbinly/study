@@ -1,0 +1,98 @@
+/**
+ * 购物车服务
+ */
+syntax = "proto3";
+
+package cart;
+
+option go_package = "./proto;gateway";
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "global/validate/validate.proto";
+import "common/common.proto";
+
+// 购物车服务接口给定义
+service Cart {
+  /// 添加购物车
+  rpc AddCart(AddReq) returns (common.SuccessEmptyReply){
+    option (google.api.http) = {
+      post: "/v1/cart/add"
+      body: "*"
+    };
+  };
+  /// 更新购物车
+  rpc EditCart(EditReq) returns (common.SuccessEmptyReply){
+    option (google.api.http) = {
+      post: "/v1/cart/edit"
+      body: "*"
+    };
+  };
+  /// 更新购物车数量
+  rpc EditCartNum(AddReq) returns (common.SuccessEmptyReply){
+    option (google.api.http) = {
+      post: "/v1/cart/edit_num"
+      body: "*"
+    };
+  };
+  /// 批量删除购物车
+  rpc BatchDelCart(SkuReq) returns (common.SuccessEmptyReply){
+    option (google.api.http) = {
+      post: "/v1/cart/del"
+      body: "*"
+    };
+  };
+  /// 清空购物车
+  rpc ClearCart(google.protobuf.Empty) returns (common.SuccessEmptyReply){
+    option (google.api.http) = {
+      get: "/v1/cart/clear"
+    };
+  };
+  /// 我的购物车
+  rpc MyCart(google.protobuf.Empty) returns (CartsReply){
+    option (google.api.http) = {
+      get: "/v1/cart/list"
+    };
+  };
+}
+
+// ---- 请求结构 ----
+
+// 添加购物车请求结构
+message AddReq {
+  int64 sku_id = 2 [(validate.rules).int64.gt = 0]; /// sku_id
+  int32 num = 3 [(validate.rules).int32.gt = 0]; /// 数量
+}
+
+// 修改购物车购微项请求结构
+message EditReq {
+  int64 old_sku_id = 2 [(validate.rules).int64.gt = 0]; /// 修改前商品id
+  int64 new_sku_id = 3 [(validate.rules).int64.gt = 0]; /// 修改后商品id
+  int32 num = 4 [(validate.rules).int32.gt = 0];  /// 数量
+}
+
+// sku_id请求结构
+message SkuReq {
+  int64 sku_id = 2 [(validate.rules).int64.gt = 0]; /// sku_id
+}
+
+// ---- 响应结构 ----
+
+// 购物车列表
+message CartsReply {
+  int32 code = 1;     /// 状态码
+  string message = 2; /// 消息
+  repeated CartItem data = 3;
+}
+
+// ---- 基础数据结构定义 ----
+
+// 购物车结构
+message CartItem {
+  int64 sku_id = 1; /// sku_id
+  string title = 2; /// 商品标题
+  double price = 3;  /// 商品价格
+  string cover = 4; /// 商品封面
+  string sku_attr = 5;  /// 商品销售属性
+  int32 num = 7;  /// 数量
+}

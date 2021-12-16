@@ -1,0 +1,15 @@
+third:
+  redis:
+    Addr: redis:6379
+    Password: ""
+    DB: 0
+    MinIdleConn: 30
+    DialTimeout: 5
+    ReadTimeout: 3
+    WriteTimeout: 3
+    PoolSize: 500
+  sms:
+    IsReal: false  # 是否真实发送短信
+  eth:
+    NetworkUrl: https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161  # 网络地址，local要监听 event 必须使用 ws
+    NetworkID: 15

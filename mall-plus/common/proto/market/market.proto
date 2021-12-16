@@ -1,0 +1,190 @@
+/**
+ * 营销服务
+ */
+syntax = "proto3";
+
+package market;
+
+option go_package = "./proto;common";
+
+import "google/protobuf/empty.proto";
+import "global/validate/validate.proto";
+
+// 营销服务接口定义
+service Market {
+  /// 获取首页配置数据
+  rpc GetHomeData(google.protobuf.Empty) returns (HomeDataReply);
+  /// 获取首页分类下配置数据
+  rpc GetHomeCatData(CatReq) returns (AppSettingReply);
+  /// 获取公告列表
+  rpc GetNoticeList(PageReq) returns (NoticeReply);
+  /// 获取搜索页配置数据
+  rpc GetSearchData(google.protobuf.Empty) returns (SearchReply);
+  /// 获取支付配置
+  rpc GetPayConfig(google.protobuf.Empty) returns (PayReply);
+  /// 商品可以领取的优惠券列表
+  rpc GetCouponList(SkuReq) returns (CouponListReply);
+  /// 我的优惠券列表
+  rpc GetMyCouponList(google.protobuf.Empty) returns (CouponListReply);
+  /// 领取优惠券
+  rpc CouponDraw(CouponReq) returns (google.protobuf.Empty);
+  /// ---- 以下内部调用 ----
+  /// 使用优惠券
+  rpc CouponUsed(CouponUsedReq) returns (google.protobuf.Empty);
+  /// 获取优惠券详情
+  rpc GetCouponInfo(CouponInfoReq) returns (CouponInternal);
+}
+
+// ---- 请求结构 ----
+
+// 分类id
+message CatReq {
+  int64 cat_id = 1;
+}
+
+// 分页结构
+message PageReq {
+  int32 page = 1; /// 第几页
+}
+
+// 商品请求结构
+message SkuReq {
+  int64 sku_id = 1; /// sku_id
+}
+
+// 优惠券请求结构
+message CouponReq {
+  int64 coupon_id = 1 [(validate.rules).int64.gt = 0]; /// 优惠券id
+}
+
+// 优惠券使用请求结构
+message CouponUsedReq {
+  int64 user_id = 1; /// 用户id
+  int64 coupon_id = 2; /// 优惠券id
+  int64 order_id = 3; /// 订单id
+}
+
+// 优惠券详情请求结构
+message CouponInfoReq {
+  int64 user_id = 1; /// 用户id
+  int64 coupon_id = 2; /// 会员优惠券id
+}
+
+// ---- 响应结构 ----
+
+// 首页分类数据
+message HomeCatDataReply {
+  repeated AppSetting data = 3; /// 分类下配置页面数据
+}
+
+// 首页数据
+message HomeDataReply {
+  repeated HomeDataItem data = 3;
+}
+
+// 页面配置列表
+message AppSettingReply {
+  repeated AppSetting data = 3;
+}
+
+// 公告列表
+message NoticeReply{
+  repeated Notice data = 3; /// 公告列表
+}
+
+// 搜索页配置
+message SearchReply{
+  repeated AppSetting data = 3; /// 搜索页配置数据
+  repeated string hot = 4;  /// 搜索热词
+}
+
+// 支付配置
+message PayReply{
+  repeated PayItem data = 3;
+}
+
+// 优惠券列表
+message CouponListReply {
+  repeated Coupon data = 3;
+}
+
+// ---- 内部响应 ----
+// 优惠券详情
+message CouponInternal {
+  Coupon info = 1;
+}
+
+// ---- 基础数据结构定义 ----
+
+// 首页数据
+message HomeDataItem {
+  int64 id = 1; /// 分类id
+  string name = 2;  /// 分类名
+  repeated AppSetting list = 3; /// 分类下配置页面数据
+}
+
+// 优惠券结构
+message Coupon {
+  int64 id = 1; /// 优惠券id
+  string name = 2;  /// 优惠券名称
+  double amount = 3; /// 优惠券面值
+  double min_point = 4;  /// 使用门槛
+  int64 start_at = 5; /// 有效开始时间
+  int64 end_at = 6; /// 有效结束时间
+  string note = 7;  /// 描述
+  int32 status = 8; /// 状态
+}
+
+// 公告结构
+message Notice{
+  int64 id = 1; /// 公告id
+  string title = 2; /// 公告标题
+  string content = 3;   /// 公告内容
+  int64 created_at = 4; /// 公告创建时间
+}
+
+// 页面配置数据结构
+message AppSetting {
+  int32 type = 1; /// 配置类型
+  oneof data {
+      SettingImages images = 2;
+      SettingNavs navs = 3;
+      SettingAds ads = 4;
+      SettingProduct product = 5;
+  }
+}
+
+// 支付配置
+message PayItem {
+  int64 id = 1;   /// 支付id
+  string name = 2;  /// 支付名称
+  string address = 3; /// 支付地址
+}
+
+// 页面配置类型
+// 图片组结构
+message SettingImages {
+  repeated string list = 1;
+}
+
+// 图标结构
+message SettingNav {
+  string title = 1; // 标题
+  string icon = 2;  // icon
+}
+
+// 图标组
+message SettingNavs {
+  repeated SettingNav list = 1;
+}
+
+// 单图广告结构
+message SettingAds {
+  string title = 1; // 标题
+  string cover = 2; // 广告图
+}
+
+// 产品列表
+message SettingProduct {
+  string router = 1; // 路由
+}

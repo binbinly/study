@@ -1,0 +1,173 @@
+/**
+ * 会员服务
+ */
+syntax = "proto3";
+
+package member;
+
+option go_package = "./proto;common";
+
+import "google/protobuf/empty.proto";
+import "global/validate/validate.proto";
+
+/**
+ * 会员服务接口定义
+ */
+service Member {
+  /// 注册
+  rpc Register(RegisterReq) returns (google.protobuf.Empty);
+  /// 用户名密码登录
+  rpc Login(LoginReq) returns (MemberTokenReply);
+  /// 手机号登录
+  rpc PhoneLogin(PhoneLoginReq) returns (MemberTokenReply);
+  /// 修改会员信息
+  rpc MemberEdit(MemberEditReq) returns (google.protobuf.Empty);
+  /// 修改密码
+  rpc MemberPwdEdit(PwdEditReq) returns (google.protobuf.Empty);
+  /// 获取会员信息
+  rpc MemberProfile(google.protobuf.Empty) returns (MemberInfoReply);
+  /// 登出
+  rpc Logout(google.protobuf.Empty) returns (google.protobuf.Empty);
+  /// 添加收货地址
+  rpc AddressAdd(AddressAddReq) returns (AddressIDReply);
+  /// 修改收货地址
+  rpc AddressEdit(Address) returns (google.protobuf.Empty);
+  /// 收货地址列表
+  rpc GetAddressList(google.protobuf.Empty) returns (AddressReply);
+  /// 删除收货地址
+  rpc AddressDel(AddressIDReq) returns (google.protobuf.Empty);
+  /// 发送短信验证码
+  rpc SendCode(PhoneReq) returns (CodeReply);
+  /// ---- 以下内部调用 ----
+  /// 获取收货地址信息
+  rpc GetAddressInfo(AddressInfoReq) returns (AddressInfoInternal);
+}
+
+// ---- 请求结构 ----
+
+// 注册请求结构
+message RegisterReq {
+  string username = 1 [(validate.rules).string = {min_len: 4, max_len: 20}];  /// 用户名
+  string phone = 2 [(validate.rules).string.len = 11];   /// 手机号
+  string code = 3 [(validate.rules).string.len = 6];    /// 验证码
+  string password = 4 [(validate.rules).string = {min_len: 6, max_len: 20}];  /// 密码
+  string confirm_password = 5 [(validate.rules).string = {min_len: 6, max_len: 20}];  /// 确认密码
+}
+
+// 登录请求结构
+message LoginReq {
+  string username = 1 [(validate.rules).string = {min_len: 4, max_len: 20}];  /// 用户名
+  string password = 2 [(validate.rules).string = {min_len: 6, max_len: 20}];  /// 密码
+}
+
+// 手机号登录请求结构
+message PhoneLoginReq {
+  string phone = 1 [(validate.rules).string.len = 11]; /// 手机号
+  string code = 2 [(validate.rules).string.len = 6];  /// 验证码
+}
+
+// 会员信息修改请求结构
+message MemberEditReq {
+  string avatar = 1;
+  string nickname = 2;
+  string sign = 3;
+}
+
+// 修改密码请求
+message PwdEditReq {
+  string old_password = 1 [(validate.rules).string = {min_len: 6, max_len: 20}]; /// 原密码
+  string password = 2 [(validate.rules).string = {min_len: 6, max_len: 20}];  /// 密码
+  string confirm_password = 3 [(validate.rules).string = {min_len: 6, max_len: 20}];  /// 确认密码
+}
+
+//添加地址结构
+message AddressAddReq {
+  string name = 2 [(validate.rules).string.min_len = 2];  /// 收货人
+  string phone = 3 [(validate.rules).string.len = 11]; /// 收货人手机号
+  string province = 4 [(validate.rules).string.min_len = 2];  /// 省
+  string city = 5 [(validate.rules).string.min_len = 2];  /// 市
+  string county = 6 [(validate.rules).string.min_len = 2];  /// 区/县
+  string detail = 7 [(validate.rules).string.min_len = 3]; /// 详细地址
+  int64 area_code = 8;  /// 地区码
+  int32 is_default = 9; /// 是否设置默认地址
+}
+
+//收货地址id结构
+message AddressIDReq {
+  int64 id = 1 [(validate.rules).int64.gt = 0]; /// 收货地址id
+}
+
+// 手机号请求结构
+message PhoneReq {
+  string phone = 1 [(validate.rules).string.len = 11]; /// 手机号
+}
+
+// 获取收货地址详情
+message AddressInfoReq {
+  int64 user_id = 1 [(validate.rules).int64.gt = 0]; /// 用户id
+  int64 address_id = 2 [(validate.rules).int64.gt = 0]; /// 收货地址id
+}
+
+// ---- 响应结构 ----
+
+//登录成功令牌会员信息
+message MemberTokenReply {
+  MemberToken data = 3;
+}
+
+//收货地址列表响应
+message AddressReply {
+  repeated Address data = 3;
+}
+
+// 会员信息响应结构
+message MemberInfoReply {
+    MemberInfo data = 3;
+}
+
+// 发送短信响应结构
+message CodeReply {
+  string data = 3;  /// 验证码
+}
+
+//收货地址详情详情结构
+message AddressInfoInternal {
+  Address info = 1;
+}
+
+//收货地址id结构
+message AddressIDReply {
+  int64 data = 3; /// 收货地址id
+}
+
+// ---- 基础数据结构定义 ----
+
+// 用户令牌信息
+message MemberToken{
+  MemberInfo member = 1; /// 会员信息
+  string token = 2;   /// 令牌
+}
+
+// 会员基础信息
+message MemberInfo{
+  int64 id = 1;         /// 用户id
+  string username = 2;  /// 用户名
+  string nickname = 3;  /// 昵称
+  string sign = 4;      /// 用户签名
+  string avatar = 5;    /// 用户头像
+  string area = 6;      /// 地区信息
+  string phone = 7;     /// 手机号
+}
+
+//收货地址结构
+message Address {
+  int64 id = 1; /// 主键
+  string name = 3;  /// 收货人
+  string phone = 4; /// 收货人手机号
+  string province = 5;  /// 省
+  string city = 6;  /// 市
+  string county = 7;  /// 区/县
+  string detail = 8; /// 详细地址
+  int64 area_code = 9;  /// 地区码
+  int32 is_default = 10; /// 是否设置默认地址
+}

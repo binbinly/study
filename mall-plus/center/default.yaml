@@ -1,0 +1,24 @@
+center:
+  app:
+    Name: center
+    JwtSecret: Your-Jwt-Secret
+    JwtTimeout: 86400
+  mysql:
+    Name: center                      # 数据库名称
+    Addr: 192.168.8.76:3306           # 如果是 docker,可以替换为 对应的服务名称，eg: db:3306
+    UserName: root
+    Password: "123456"
+    TablePrefix: ""                   # 表前缀
+    Debug: true                       # 是否开启调试，打印所有sql
+    MaxIdleConn: 10                   # 最大闲置的连接数，0意味着使用默认的大小2， 小于0表示不使用连接池
+    MaxOpenConn: 100                  # 最大打开的连接数, 需要小于数据库配置中的max_connections数
+    ConnMaxLifeTime: 60               # 单个连接最大存活时间，建议设置比数据库超时时长(wait_timeout)稍小一些
+  redis:
+    Addr: 192.168.8.76:6379
+    Password: ""
+    DB: 0
+    MinIdleConn: 30
+    DialTimeout: 5
+    ReadTimeout: 3
+    WriteTimeout: 3
+    PoolSize: 500

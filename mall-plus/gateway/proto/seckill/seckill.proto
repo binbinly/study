@@ -1,0 +1,109 @@
+/**
+ * 秒杀服务
+ */
+syntax = "proto3";
+
+package seckill;
+
+option go_package = "./proto;gateway";
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "global/validate/validate.proto";
+
+//秒杀服务接口定义
+service Seckill {
+  //秒杀
+  rpc Kill(KillReq) returns (KillReply){
+    option (google.api.http) = {
+      post: "/v1/seckill/submit"
+      body: "*"
+    };
+  };
+  //获取所有秒杀场次
+  rpc GetSessionAll(google.protobuf.Empty) returns (SessionsReply){
+    option (google.api.http) = {
+      get: "/v1/seckill/sessions"
+    };
+  };
+  //获取场次下所有秒杀商品
+  rpc GetSkusList(SessionIdReq) returns (SkusReply){
+    option (google.api.http) = {
+      get: "/v1/seckill/skus/{session_id}"
+    };
+  };
+  //获取商品秒杀详情
+  rpc GetSkuByID(SkuIdReq) returns (SkuReply){
+    option (google.api.http) = {
+      get: "/v1/seckill/detail/{sku_id}"
+    };
+  };
+}
+
+// 秒杀请求结构
+message KillReq {
+  int64 sku_id = 1 [(validate.rules).int64.gt = 0];
+  int64 address_id = 2 [(validate.rules).int64.gt = 0];
+  int64 num = 3 [(validate.rules).int64.gt = 0];
+  string key = 4 [(validate.rules).string.len = 32];
+}
+
+// 场次id
+message SessionIdReq {
+  int64 session_id = 1 [(validate.rules).int64.gt = 0]; /// 场次id
+}
+
+// 商品id
+message SkuIdReq {
+  int64 sku_id = 1 [(validate.rules).int64.gt = 0]; /// 商品id
+}
+
+//秒杀响应结构
+message KillReply {
+  int32 code = 1;     /// 状态码
+  string message = 2; /// 消息
+  string data = 3; /// 订单号
+}
+
+//秒杀场次响应结构
+message SessionsReply {
+  int32 code = 1;     /// 状态码
+  string message = 2; /// 消息
+  repeated Session data = 3;
+}
+
+//秒杀商品列表
+message SkusReply {
+  int32 code = 1;     /// 状态码
+  string message = 2; /// 消息
+  repeated Sku data = 3;
+}
+
+//秒杀商品信息
+message SkuReply {
+  int32 code = 1;     /// 状态码
+  string message = 2; /// 消息
+  Sku data = 3;
+}
+
+// 秒杀商品信息
+message Sku {
+  int64 id = 1; ///商品id
+  double price = 2; ///秒杀价格
+  int32 count = 3; ///秒杀数量
+  int32 limit = 4; ///个人限购
+  double original_price = 5; ///原价
+  string title = 6; ///标题
+  string cover = 7; ///封面
+  string key = 8; ///加密key
+  bool open = 9; /// 是否正在秒杀
+  int64 start_at = 10; /// 秒杀开始时间
+}
+
+// 场次信息
+message Session {
+  int64 id = 1; /// 场次id
+  string name = 2;  /// 场次名
+  bool open = 3;  /// 是否正在秒杀
+  repeated Sku skus = 4; /// 所有秒杀商品
+}

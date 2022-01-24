@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package connect;
+
+option go_package = "./proto;chat";
+
+import "google/protobuf/empty.proto";
+import "global/validate/validate.proto";
+
+// 连接层服务
+service Connect {
+  // 主动关闭用户连接
+  rpc Close(CloseReq) returns (google.protobuf.Empty);
+  // 发送消息
+  rpc Send(SendReq) returns (google.protobuf.Empty);
+  // 广播消息
+  rpc Broadcast(BroadcastReq) returns (google.protobuf.Empty);
+}
+
+message CloseReq {
+  uint32 user_id = 1 [(validate.rules).uint32.gt = 0];
+  uint32 msg_id = 2;
+  bytes data = 3 [(validate.rules).bytes.min_len = 3];
+}
+
+message SendReq {
+  repeated uint32 user_ids = 1 [(validate.rules).repeated.min_items = 1];
+  uint32 msg_id = 2;
+  bytes data = 3 [(validate.rules).bytes.min_len = 3];
+}
+
+message BroadcastReq {
+  uint32 msg_id = 1;
+  bytes data = 2 [(validate.rules).bytes.min_len = 3];
+}

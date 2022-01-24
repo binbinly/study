@@ -1,0 +1,8 @@
+*.md
+.git
+/frontend
+/logs
+/example
+/admin
+/.idea
+/.DS_Store

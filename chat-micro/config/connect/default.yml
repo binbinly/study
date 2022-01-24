@@ -1,0 +1,11 @@
+#debug: true
+#name: chat.connect
+#wsAddress: :9070
+#tcpAddress: :9060
+#registryAddress: 127.0.0.1:8500
+#tracerAddress:
+#grpc:
+#  Network: tcp
+#  Addr: :20005
+#  Timeout: 5s
+#  MaxMsgSize: 4194304 # 1024 * 1024 * 4

@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package logic;
+
+option go_package = "./proto;chat";
+
+import "google/protobuf/empty.proto";
+import "global/validate/validate.proto";
+
+service Logic {
+  // 用户上线，建立长连接
+  rpc Online(OnlineReq) returns (OnlineReply);
+  // 用户下线
+  rpc Offline(OfflineReq) returns (google.protobuf.Empty);
+  // 获取用户长连接所在的服务器ID
+  rpc ServerByUserID(UIDReq) returns(ServerIDReply);
+  // 批量获取长连接所在的服务器ID
+  rpc BatchServersByUserIDs(UIDsReq) returns(ServerIDsReply);
+}
+
+message UIDReq {
+  uint32 id = 1 [(validate.rules).uint32.gt = 0];
+}
+
+message UIDsReq {
+  repeated uint32 ids = 1 [(validate.rules).repeated.min_items = 1];
+}
+
+message OnlineReq {
+  string server_id = 1 [(validate.rules).string.min_len = 3];
+  string token = 2 [(validate.rules).string.min_len = 3];
+}
+
+message OnlineReply {
+  uint32 uid = 1;
+  string key = 2;
+}
+
+message OfflineReq {
+  uint32 uid = 1 [(validate.rules).uint32.gt = 0];
+  string key = 2;
+  string server_id = 3 [(validate.rules).string.min_len = 3];
+}
+
+message ServerIDReply {
+  string server_id = 1;
+}
+
+message ServerIDsReply {
+  repeated string server_ids = 1;
+}

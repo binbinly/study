@@ -1,0 +1,47 @@
+package friend
+
+import (
+	"errors"
+
+	"github.com/gin-gonic/gin"
+
+	"chat-micro/app/logic/ecode"
+	"chat-micro/app/logic/service"
+	"chat-micro/pkg/app"
+	"chat-micro/pkg/errno"
+	"chat-micro/pkg/logger"
+)
+
+// Destroy 删除好友
+// @Summary 删除好友
+// @Description 删除好友
+// @Tags 好友
+// @Accept json
+// @Produce  json
+// @Param Token header string true "用户令牌"
+// @Param req body DestroyParams true "destroy"
+// @Success 0 {string} json "{"code":0,"msg":"OK","data":{}}"
+// @Router /friend/auth [post]
+func Destroy(c *gin.Context) {
+	var req DestroyParams
+	v := app.BindJSON(c, &req)
+	if !v {
+		app.Error(c, errno.ErrBind)
+		return
+	}
+	userID := app.GetUInt32UserID(c)
+	if userID == req.UserID {
+		app.Error(c, ecode.ErrUserNoSelf)
+		return
+	}
+	err := service.Svc.FriendDestroy(c.Request.Context(), userID, req.UserID)
+	if errors.Is(err, service.ErrFriendNotRecord) {
+		app.Error(c, ecode.ErrFriendNotFound)
+		return
+	} else if err != nil {
+		logger.Warnf("[http.friend] destroy err: %v", err)
+		app.Error(c, errno.InternalServerError)
+		return
+	}
+	app.SuccessNil(c)
+}

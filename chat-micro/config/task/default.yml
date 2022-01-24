@@ -1,0 +1,17 @@
+#name: chat.task
+#registryAddress: 127.0.0.1:8500
+#brokerAddress: nats://127.0.0.1:4222
+#tracerAddress:
+#routineNum: 128 #任务容量
+#routineSize: 4 #任务个数
+#debug: true
+#redis:
+#  Addr: 127.0.0.1:6379
+#  Password: ""
+#  DB: 0
+#  MinIdleConn: 30
+#  DialTimeout: 60
+#  ReadTimeout: 3
+#  WriteTimeout: 3
+#  PoolSize: 500
+#  PoolTimeout: 240

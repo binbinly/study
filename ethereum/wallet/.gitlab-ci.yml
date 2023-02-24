@@ -1,0 +1,22 @@
+variables:
+  PROJECT_NAME: wallet
+  DEPLOY_DEV_PATH: /www/wwwroot
+  DEPLOY_MASTER_PATH: /www/wwwroot
+
+stages:
+  - deploy
+
+deploy_dev:
+  stage: deploy
+  script:
+    - rsync -avzu --progress --delete -e ssh --exclude='.git' --exclude='package-lock.json' --exclude='node_modules/' $CI_PROJECT_DIR www@192.168.8.76:$DEPLOY_DEV_PATH
+    - ssh root@192.168.8.76 "cd $DEPLOY_DEV_PATH/$PROJECT_NAME && EGG_SERVER_ENV=local npm restart && chown -R www:www ."
+  only:
+    - dev
+deploy_test:
+  stage: deploy
+  script:
+    - rsync -avzu --progress --delete -e ssh --exclude='.git' --exclude='package-lock.json' --exclude='node_modules/' $CI_PROJECT_DIR www@34.92.76.255:$DEPLOY_DEV_PATH
+    - ssh www@34.92.76.255 "cd $DEPLOY_DEV_PATH/$PROJECT_NAME && EGG_SERVER_ENV=unittest npm restart"
+  only:
+    - test

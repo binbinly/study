@@ -1,11 +1,11 @@
 ## 友情提示
 
-> 1. **快速体验项目**：[在线访问地址](http://mall.example.com)。
+<!-- > 1. **快速体验项目**：[在线访问地址](http://mall.example.com)。 -->
 
 ## 项目介绍
 
 `mall` 是一套商城全栈学习项目，项目出自 [uni-app实战商城类app和小程序](https://study.163.com/course/introduction/1209401825.htm)
-，原项目使用（`uni-app + php`），此项目使用 `golang + vant` 重写了整个项目，支付使用以太币（`ethereum`）
+，原项目使用（`uni-app + php`），此项目使用 `golang + vant` 重写了整个项目，支付调用以太坊钱包（metamask）使用以太币（`ethereum`）,[支付合约](https://github.com/binbinly/study/blob/master/mall/frontend/contracts/Payment.sol)
 
 ## Usage
 

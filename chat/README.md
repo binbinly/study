@@ -1,11 +1,11 @@
 ## 友情提示
 
-> 1. **快速体验项目**：[在线访问地址](http://chat.example.com)。
+<!-- > 1. **快速体验项目**：[在线访问地址](http://chat.example.com)。 -->
 
 ## 项目介绍
 
 `chat` 是一套仿微信ui的即时通讯全栈学习项目，项目出自 [uni-app实战仿微信app开发](https://study.163.com/course/introduction/1209487898.htm)
-，已购买学习(`uni-app+nodejs`)，于是用 `golang + vue` 微服务思想，重写了整个项目，
+，原项目使用(`uni-app+nodejs`)，于是用 `golang + vue` 微服务思想，学习了整个项目，
 - 主要功能点已实现
 ![功能点](./deploy/img/app.png)
 

@@ -9,5 +9,6 @@
 # tools
 - https://www.ghxi.com
 - https://ai-bot.cn
+- https://railway.app
 
 agent neo

@@ -8,5 +8,6 @@
 
 # tools
 - https://www.ghxi.com
+- https://ai-bot.cn
 
 agent neo

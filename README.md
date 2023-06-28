@@ -10,5 +10,9 @@
 - https://www.ghxi.com
 - https://ai-bot.cn
 - https://railway.app
+- https://console.upstash.com
+- https://www.cloudflare.com/zh-cn
+- https://app.planetscale.com
+- https://vercel.com
 
 agent neo

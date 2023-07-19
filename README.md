@@ -14,5 +14,6 @@
 - https://www.cloudflare.com/zh-cn
 - https://app.planetscale.com
 - https://vercel.com
+- https://www.zsrq.net
 
 agent neo

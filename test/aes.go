@@ -12,6 +12,7 @@ import (
 )
 
 // 9OCkv4AMKkzCnJgV40mzzpiChtCEJpU/lz5pcLvapJukMy3W/4xUVQzV4o15wU5Y4pDddQ0s9Uz5FRkrk6AdPUXzi+eTOb4satRfMCeGwAHIyYamDP7+mJyhMNrSx5rl
+// W652fJc832q3euZsAUEYtI75Lm7OwiCJ4ggCJU/8OW5kcLoCLsnyXr20ZJm9yKzchTH2teF/kjh+O1vXbkN97T0TJftUbhyRLEvDLr2+x9WtdNo/vAG1C7Ss0aVUjoUN
 func main() {
 	origData := []byte("Hello World") // 待加密的数据
 	key := []byte("ABCDEFGHIJKLMNOP") // 加密的密钥

@@ -13,6 +13,8 @@ import (
 
 // 9OCkv4AMKkzCnJgV40mzzpiChtCEJpU/lz5pcLvapJukMy3W/4xUVQzV4o15wU5Y4pDddQ0s9Uz5FRkrk6AdPUXzi+eTOb4satRfMCeGwAHIyYamDP7+mJyhMNrSx5rl
 // W652fJc832q3euZsAUEYtI75Lm7OwiCJ4ggCJU/8OW5kcLoCLsnyXr20ZJm9yKzchTH2teF/kjh+O1vXbkN97T0TJftUbhyRLEvDLr2+x9WtdNo/vAG1C7Ss0aVUjoUN
+
+//vGo0HjQAh8fvMs8IBWa63Cd5ZwRjpJv3HIr4cUf5eQ/rcyN6p28aHonnwuAyX5iM6c3j/crWZ1ZWHfLV6NsZEJmuPlOxj0cFi4jGnMIW61cHiLMOmuxuzHUDlaSMX+CrYcNtKtjHDh73D83N/w0GU68LA+iAFC5jASaiv5VImOhGsUBxUyQhvdKx5z4YJqaSM4TcOgN4CoFfS4kjNFXiprOjRKIKNDRlmCPgYYDT4tev2WQorXZfwMcn+a08CMc/
 func main() {
 	origData := []byte("Hello World") // 待加密的数据
 	key := []byte("ABCDEFGHIJKLMNOP") // 加密的密钥

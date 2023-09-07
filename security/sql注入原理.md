@@ -28,3 +28,26 @@ SQL 注入的分类基本上都是根据注入的方式进行分类，大概分�
 - 字符型 1' or '1'='1
 
 ### [sqli-labs 学习环境](https://github.com/Audi-1/sqli-lab)
+
+### SQL 注入联合查询-获取数据库数据
+
+#### 爆出字段的显示位置
+```sql
+-- UNION 操作符用于合并两个或多个 SELECT 语句的结果集。
+-- 请注意，UNION 内部的 SELECT 语句必须拥有相同数量的列。列也必须拥有相似的数据类型。同时，每条 SELECT 语句中的列的顺序必须相同。
+-- SQL UNION 语法:
+SELECT column_name(s) FROM table_name1
+UNION
+SELECT column_name(s) FROM table_name2
+```
+
+#### 在 MySQL 中使用 union 爆出字段 
+```sql
+-- 先使用单条语句查询： 
+select * from users where id=1;
+-- 使用两条语句结合查询
+select * from users where id=1 union select 1,2,3;
+```
+> 由此可以看到两条语句结合输出的结果，而 union select 1,2,3 表示，在上一条语句的查询结果中，再输出 1 2 3 到对应的字段中，因此可以利用来做爆出字段的显示位置
+
+### 基于报错的 SQL 注入

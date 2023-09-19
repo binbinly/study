@@ -15,6 +15,7 @@
 - https://app.planetscale.com
 - https://vercel.com
 - https://www.zsrq.net
+- https://ttsmaker.com/zh-cn
 
 # web3
 - https://antcave.club

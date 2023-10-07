@@ -17,6 +17,9 @@
 - https://www.zsrq.net
 - https://ttsmaker.com/zh-cn
 
+# storage
+- https://www.elastic.org.cn
+
 # web3
 - https://antcave.club
 

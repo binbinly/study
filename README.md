@@ -22,5 +22,6 @@
 
 # web3
 - https://antcave.club
+- https://www.quicknode.com
 
 agent neo

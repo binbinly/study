@@ -25,4 +25,7 @@
 - https://www.quicknode.com
 - https://remix.ethereum.org
 
+# job
+- https://eleduck.com
+
 agent neo

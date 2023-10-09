@@ -23,5 +23,6 @@
 # web3
 - https://antcave.club
 - https://www.quicknode.com
+- https://remix.ethereum.org
 
 agent neo

@@ -28,6 +28,7 @@
 # video
 - https://app.fliki.ai
 - https://lumen5.com
+- https://quillbot.com
 
 # job
 - https://eleduck.com

@@ -25,6 +25,10 @@
 - https://www.quicknode.com
 - https://remix.ethereum.org
 
+# video
+- https://app.fliki.ai
+- https://lumen5.com
+
 # job
 - https://eleduck.com
 

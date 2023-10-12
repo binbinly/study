@@ -29,6 +29,7 @@
 - https://app.fliki.ai
 - https://lumen5.com
 - https://quillbot.com
+- https://www.canva.cn
 
 # job
 - https://eleduck.com

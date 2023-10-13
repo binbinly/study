@@ -25,6 +25,10 @@
 - https://www.quicknode.com
 - https://remix.ethereum.org
 
+# email
+- https://mail.proton.me
+- https://outlook.live.com
+
 # video
 - https://app.fliki.ai
 - https://lumen5.com

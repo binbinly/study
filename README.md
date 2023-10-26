@@ -16,6 +16,7 @@
 - https://vercel.com
 - https://www.zsrq.net
 - https://ttsmaker.com/zh-cn
+- https://oneinstack.com/
 
 # storage
 - https://www.elastic.org.cn

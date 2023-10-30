@@ -30,6 +30,7 @@
 # email
 - https://mail.proton.me
 - https://outlook.live.com
+- https://app.tuta.com/mail
 
 # video
 - https://app.fliki.ai
